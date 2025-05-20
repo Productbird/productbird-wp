@@ -1,0 +1,29 @@
+/**
+ * Any global styles go here.
+ */
+
+ #wpcontent {
+	padding-left: 0 !important;
+	position: relative;
+}
+
+dd,
+li {
+	margin-bottom: 0;
+}
+
+#productbird-admin-settings {
+	@apply relative h-full bg-gray-50;
+}
+
+
+/* For Webkit-based browsers (Chrome, Safari and Opera) */
+.productbird-scrollbar-hide::-webkit-scrollbar {
+	display: none;
+}
+
+/* For IE, Edge and Firefox */
+.productbird-scrollbar-hide {
+	-ms-overflow-style: none; /* IE and Edge */
+	scrollbar-width: none; /* Firefox */
+}

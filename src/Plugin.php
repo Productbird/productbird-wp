@@ -3,13 +3,13 @@
 namespace Productbird;
 
 use Productbird\Admin\Admin;
-use Productbird\Frontend\Frontend;
 use Productbird\Admin\ProductDescriptionBulkAction;
 use Productbird\Admin\ProductGenerationStatusColumn;
 use Productbird\Admin\NoDescriptionFilter;
 use Productbird\Rest\ProductDescriptionCallbackEndpoint;
 use Productbird\Rest\ProductStatusCheckEndpoint;
-use Productbird\Cron\ProductbirdPoller;
+use Productbird\Rest\OidcCallbackEndpoint;
+use Productbird\Auth\OidcClient;
 
 /**
  * Core plugin class.
@@ -36,14 +36,15 @@ class Plugin
             (new ProductDescriptionBulkAction())->init();
             (new ProductGenerationStatusColumn())->init();
             (new NoDescriptionFilter())->init();
-        } else {
-            (new Frontend())->init();
         }
 
         (new ProductDescriptionCallbackEndpoint())->init();
         (new ProductStatusCheckEndpoint())->init();
 
-        (new ProductbirdPoller())->init();
+        // OIDC integration (connect WordPress with Productbird login)
+        (new OidcCallbackEndpoint())->init();
+        // The OidcClient registers its own hooks (e.g. disconnect handler).
+        (new OidcClient())->init();
     }
 
     /**
@@ -63,13 +64,6 @@ class Plugin
      */
     public function deactivate(): void
     {
-        // Clear scheduled cron job
-        $timestamp = wp_next_scheduled('productbird_poll_statuses');
-
-        if ($timestamp) {
-            wp_unschedule_event($timestamp, 'productbird_poll_statuses');
-        }
-
         // Plugin deactivation logic.
     }
 }

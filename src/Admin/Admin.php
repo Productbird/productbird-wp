@@ -2,7 +2,8 @@
 
 namespace Productbird\Admin;
 
-use Productbird\Api\Client;
+use Productbird\Auth\OidcClient;
+use Kucrut\Vite;
 
 /**
  * Handles WordPress admin integration.
@@ -13,16 +14,6 @@ class Admin
      * The option name used to store all settings.
      */
     private const OPTION_NAME = 'productbird_settings';
-
-    /**
-     * Bulk action identifier for generating product descriptions.
-     */
-    private const BULK_ACTION_GENERATE_DESCRIPTION = 'productbird_generate_description';
-
-    /**
-     * Non-selectable group label to visually separate Productbird actions.
-     */
-    private const BULK_ACTION_GROUP_LABEL = 'productbird_ai_options';
 
     /**
      * Allowed tone options.
@@ -56,6 +47,9 @@ class Admin
         // Add menu entry and register settings.
         add_action('admin_menu', [$this, 'add_settings_page']);
         add_action('admin_init', [$this, 'register_settings']);
+
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_assets']);
+
     }
 
     /**
@@ -69,12 +63,31 @@ class Admin
             'productbird_settings_group',
             self::OPTION_NAME,
             [
-                'type'              => 'array',
+                // Store the option as an object and make it available via REST.
+                'type'              => 'object',
                 'sanitize_callback' => [$this, 'sanitize_settings'],
                 'default'           => [
                     'api_key'   => '',
                     'tone'      => 'expert',
-                    'ffmality' => 'informal',
+                    'formality' => 'informal',
+                ],
+                'show_in_rest'      => [
+                    'schema' => [
+                        'type'       => 'object',
+                        'properties' => [
+                            'api_key'   => [
+                                'type' => 'string',
+                            ],
+                            'tone'      => [
+                                'type' => 'string',
+                                'enum' => array_keys($this->tones),
+                            ],
+                            'formality' => [
+                                'type' => 'string',
+                                'enum' => array_keys($this->formalities),
+                            ],
+                        ],
+                    ],
                 ],
             ]
         );
@@ -115,18 +128,23 @@ class Admin
     }
 
     /**
-     * Adds the Productbird settings page under Settings.
+     * Adds the Productbird settings page as a top-level menu item.
      *
      * @return void
      */
     public function add_settings_page(): void
     {
-        add_options_page(
+        // phpcs:ignore -- this is a base64 encoded SVG icon for the WP admin menu.
+		$icon_svg = 'data:image/svg+xml;base64,' . base64_encode(file_get_contents(plugin_dir_path(dirname(__FILE__, 2)) . 'assets/images/menu-icon.svg'));
+
+        add_menu_page(
             __('Productbird', 'productbird'),
             __('Productbird', 'productbird'),
             'manage_options',
             'productbird',
-            [$this, 'render_settings_page']
+            [$this, 'render_settings_page'],
+            $icon_svg,
+			'99.999'
         );
     }
 
@@ -164,51 +182,7 @@ class Admin
     public function render_settings_page(): void
     {
         ?>
-        <div class="wrap">
-            <h1><?php esc_html_e('Productbird Settings', 'productbird'); ?></h1>
-            <form method="post" action="options.php">
-                <?php
-                settings_fields('productbird_settings_group');
-                do_settings_sections('productbird');
-                submit_button();
-                ?>
-            </form>
-            <style>
-                /* Simple styling for the API key wrapper */
-                .productbird-api-key-wrap {
-                    display: flex;
-                    align-items: center;
-                }
-
-                .productbird-api-key-wrap .productbird-toggle-api-key {
-                    margin-left: 4px;
-                }
-            </style>
-
-            <script>
-                (function () {
-                    const btn = document.querySelector('.productbird-toggle-api-key');
-                    if (!btn) return;
-
-                    const input = document.getElementById('productbird_api_key');
-                    const icon = btn.querySelector('.dashicons');
-
-                    btn.addEventListener('click', () => {
-                        if (input.type === 'password') {
-                            input.type = 'text';
-                            icon.classList.remove('dashicons-visibility');
-                            icon.classList.add('dashicons-hidden');
-                            btn.setAttribute('aria-label', '<?php echo esc_js(__('Hide API Key', 'productbird')); ?>');
-                        } else {
-                            input.type = 'password';
-                            icon.classList.remove('dashicons-hidden');
-                            icon.classList.add('dashicons-visibility');
-                            btn.setAttribute('aria-label', '<?php echo esc_js(__('Show API Key', 'productbird')); ?>');
-                        }
-                    });
-                })();
-            </script>
-        </div>
+            <div id="productbird-admin-settings"></div>
         <?php
     }
 
@@ -267,5 +241,41 @@ class Admin
             <?php endforeach; ?>
         </select>
         <?php
+    }
+
+    /**
+     * Enqueue the compiled/admin Vite assets on Productbird settings page.
+     *
+     * @param string $hook_suffix The current admin page hook suffix.
+     */
+    public function enqueue_assets(string $hook_suffix): void
+    {
+        // Only load our assets on the Productbird settings page.
+        if ('toplevel_page_productbird' !== $hook_suffix) {
+            return;
+        }
+
+        $dist_path = PRODUCTBIRD_PLUGIN_DIR . '/dist';
+        $source_entry = 'assets/admin-settings/index.ts';
+
+        Vite\enqueue_asset(
+            $dist_path,
+            $source_entry,
+            [
+                'handle'       => 'productbird-admin',
+                'dependencies' => ['jquery', 'wp-api-fetch', 'wp-i18n'],
+                // Load the script in footer to avoid render-blocking.
+                'in-footer'    => true,
+            ]
+        );
+
+        wp_localize_script(
+            'productbird-admin',
+            'productbird_admin',
+            [
+                'admin_url' => admin_url(),
+                'settings_page_url' => menu_page_url('productbird', false),
+            ]
+        );
     }
 }

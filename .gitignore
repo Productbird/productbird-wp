@@ -1,30 +1,77 @@
 # Composer
 /vendor/
-composer.phar
+composer.lock
 
-# IDE/Editor
-.idea/
-.vscode/
-*.sublime-project
-*.sublime-workspace
-*.swp
-*.swo
-.DS_Store
-Thumbs.db
-
-# Build/Deploy
-*.zip
-*.tar.gz
-*.tgz
-build/
-dist/
+# Node.js
+/node_modules/
+npm-debug.log
+yarn-error.log
 
 # Environment files
 .env
 .env.*
 !.env.example
 
-# WordPress specific
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE specific files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# WordPress
+wp-config.php
+wp-content/advanced-cache.php
+wp-content/backup-db/
+wp-content/backups/
+wp-content/blogs.dir/
+wp-content/cache/
+wp-content/upgrade/
+wp-content/uploads/
+wp-content/wp-cache-config.php
+wp-content/plugins/hello.php
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+node_modules
+vendor
+.pnp
+.pnp.js
+
+# Build
+assets/dist
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# WordPress
 wp-config.php
 wp-content/advanced-cache.php
 wp-content/backup-db/
@@ -37,19 +84,14 @@ wp-content/mu-plugins/
 wp-content/wp-cache-config.php
 wp-content/plugins/hello.php
 
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Composer
+composer.phar
 
-# Node (if using any frontend tools)
-node_modules/
-npm-debug.log
-yarn-error.log
-package-lock.json
-yarn.lock
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# Testing
-/coverage/
-.phpunit.result.cache
+.cursor
