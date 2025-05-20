@@ -3,6 +3,7 @@
 namespace Productbird\Admin;
 
 use Productbird\Api\Client;
+use Kucrut\Vite;
 
 /**
  * Handles WooCommerce product bulk actions that rely on Productbird AI.
@@ -39,6 +40,7 @@ class ProductDescriptionBulkAction
         add_filter('handle_bulk_actions-edit-product', [$this, 'handle_bulk_action'], 10, 3);
         add_action('admin_notices', [$this, 'bulk_action_notices']);
         add_action('admin_footer-edit.php', [$this, 'disable_group_label_option']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_assets']);
     }
 
     // ---------------------------------------------------------------------
@@ -391,5 +393,51 @@ class ProductDescriptionBulkAction
         }
 
         return [];
+    }
+
+    // ---------------------------------------------------------------------
+    // Asset Enqueuing
+    // ---------------------------------------------------------------------
+
+    /**
+     * Enqueues the compiled Vite asset that mounts the product-description modal.
+     *
+     * @param string $hook_suffix The current admin page hook suffix.
+     */
+    public function enqueue_assets(string $hook_suffix): void
+    {
+        // Only load on the products list table (edit.php for post_type=product).
+        if ($hook_suffix !== 'edit.php') {
+            return;
+        }
+
+        $screen = get_current_screen();
+        if (!$screen || $screen->post_type !== 'product') {
+            return;
+        }
+
+        $dist_path    = PRODUCTBIRD_PLUGIN_DIR . '/dist';
+        $source_entry = 'assets/product-description/index.ts';
+
+        Vite\enqueue_asset(
+            $dist_path,
+            $source_entry,
+            [
+                'handle'       => 'productbird-product-description',
+                'dependencies' => ['jquery', 'wp-api-fetch', 'wp-i18n'],
+                'in-footer'    => true,
+            ]
+        );
+
+        wp_localize_script(
+            'productbird-product-description',
+            'productbird_bulk',
+            [
+                'nonce'         => wp_create_nonce('wp_rest'),
+                'api_root_url'  => get_rest_url(),
+                'admin_url'     => admin_url(),
+                'max_batch'     => self::MAX_BULK_ITEMS,
+            ]
+        );
     }
 }

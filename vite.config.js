@@ -23,7 +23,11 @@ export default defineConfig({
 		wp_scripts(),
 		svelte(),
 		v4wp({
-			input: ["assets/admin-settings/index.ts"],
+			//
+			input: [
+				"assets/admin-settings/index.ts",
+				"assets/product-description/index.ts",
+			],
 		}),
 	],
 	css: {
