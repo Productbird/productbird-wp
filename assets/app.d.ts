@@ -9,6 +9,7 @@ declare global {
 	interface Window {
 		productbird_admin: {
 			admin_url: string;
+			app_url: string;
 			nonce: string;
 			settings_page_url: string;
 			api_root_url: string;

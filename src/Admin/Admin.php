@@ -3,6 +3,7 @@
 namespace Productbird\Admin;
 
 use Productbird\Auth\OidcClient;
+use Productbird\Api\Client;
 use Kucrut\Vite;
 
 /**
@@ -304,13 +305,13 @@ class Admin
                 'nonce' => wp_create_nonce('wp_rest'),
                 'admin_url' => admin_url(),
                 'settings_page_url' => menu_page_url('productbird', false),
+                'app_url' => Client::determine_base_url(),
                 'api_root_url' => get_rest_url(),
                 'current_user' => [
                     'id' => $user->ID,
                     'email' => $user->user_email,
                     'display_name' => $user->display_name,
                 ],
-                // Surface OIDC connection state to the Svelte app.
                 'oidc' => [
                     'is_connected'   => $is_connected,
                     'auth_url'       => $auth_url,

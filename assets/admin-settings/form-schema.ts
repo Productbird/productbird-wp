@@ -1,14 +1,7 @@
 import { z } from "zod";
 import type { SuperForm } from "sveltekit-superforms";
 import { __ } from "@wordpress/i18n";
-
-export const onboardingFormSchema = z.object({
-	selectedOrgId: z
-		.number()
-		.min(1, __("Organization is required", "productbird"))
-		.optional(),
-});
-
+import { Formality, Tone } from "$lib/utils/schemas";
 // Page: Dashboard (Home)
 export const dashboardFormSchema = z.object({
 	selectedOrgId: z
@@ -19,7 +12,8 @@ export const dashboardFormSchema = z.object({
 
 // Page: General Settings (extends Dashboard)
 export const generalSettingsFormSchema = dashboardFormSchema.extend({
-	tone: z.string().min(1, __("Tone is required", "productbird")).optional(),
+	tone: z.nativeEnum(Tone),
+	formality: z.nativeEnum(Formality),
 });
 
 export const adminSettingsFormSchema = generalSettingsFormSchema;

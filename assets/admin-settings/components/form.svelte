@@ -5,7 +5,7 @@
   import { __, sprintf } from "@wordpress/i18n";
   import * as Form from "$lib/components/ui/form/index.js";
   import { log } from "$lib/utils/logging";
-  import { routerConfig, getRouteByKey } from "$admin-settings/constants";
+  import { routerConfig } from "$admin-settings/constants";
   import { Route, Fallback, location } from "@wjfe/n-savant";
   import NotFound from "$admin-settings/routes/not-found.svelte";
   import { updateSettings } from "$lib/utils/api";
@@ -26,8 +26,6 @@
     mutationFn: updateSettings,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings"] });
-
-      toast.success(__("Settings saved", "productbird"));
     },
   }));
 
@@ -36,11 +34,7 @@
   );
 
   $effect(() => {
-    console.log("location.hashPaths.single", location.hashPaths);
-    console.log("routerConfig", routerConfig);
-    console.log("currentValidatorBasedOnRoute", currentValidatorBasedOnRoute);
     if (currentValidatorBasedOnRoute) {
-      // @ts-expect-error -- Ignore for now
       options.validators = currentValidatorBasedOnRoute;
     } else {
       console.warn("No validator found for current route", location.hashPaths.single);
@@ -69,18 +63,41 @@
        */
       const result = await validateForm({
         update: true,
-        // @ts-expect-error -- Ignore for now
+
         schema: currentValidatorBasedOnRoute,
       });
-
-      console.log("result", result);
 
       if (result.valid) {
         try {
           isProcessing = true;
 
           log("[onSubmit] submitting form", "log", $formData);
-          await updateSettingsMutation.mutateAsync($formData);
+
+          /**
+           * After saving do not show this message when moving away.
+           */
+          options.taintedMessage = false;
+
+          const result = await updateSettingsMutation.mutateAsync($formData);
+
+          /**
+           * IMPORTANT: This setTimeout MUST remain in place.
+           *
+           * SuperForms has internal state updates that occur in the microtask queue after form submission.
+           * Using tick() or queueMicrotask() doesn't work because they also run in the microtask queue,
+           * before SuperForms has finished its updates. setTimeout(0) ensures our reset runs in a new
+           * macrotask, after all microtasks (including SuperForms' internal state updates) have completed.
+           *
+           * Removing this setTimeout or replacing it with tick()/queueMicrotask will cause form reset issues.
+           */
+          setTimeout(() => {
+            reset({
+              data: result,
+              newState: result,
+            });
+
+            toast.success(__("Settings saved", "productbird"));
+          }, 0);
         } catch (error) {
           console.error("Error saving form state:", error);
         } finally {

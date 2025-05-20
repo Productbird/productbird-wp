@@ -1,4 +1,5 @@
 import type { AdminSettingsFormSchema } from "$admin-settings/form-schema";
+import { Formality, Tone } from "./schemas";
 import type { OrganizationMe } from "./types";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -98,7 +99,8 @@ export async function getSettings(): Promise<AdminSettingsFormSchema> {
 	if (!data) {
 		return {
 			selectedOrgId: undefined,
-			tone: undefined,
+			tone: Tone.Expert,
+			formality: Formality.Informal,
 		};
 	}
 

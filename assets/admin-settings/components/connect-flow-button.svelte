@@ -22,15 +22,17 @@
 </script>
 
 {#if oidc.is_connected}
-  <p class="mb-2">
-    <strong>{__("Connected to Productbird", "productbird")}</strong>
-  </p>
+  <div class="flex flex-col">
+    <p class="mb-2">
+      <strong>{__("Connected to Productbird", "productbird")}</strong>
+    </p>
 
-  {#if oidc.disconnect_url}
-    <Button.Root href={disconnectUrl} size="sm" variant="outline">
-      {__("Disconnect", "productbird")}
-    </Button.Root>
-  {/if}
+    {#if oidc.disconnect_url}
+      <Button.Root href={disconnectUrl} size="sm" variant="destructive">
+        {__("Disconnect", "productbird")}
+      </Button.Root>
+    {/if}
+  </div>
 {:else if oidc.auth_url}
   <!-- When not connected show the ConnectButton linking to the auth URL -->
   <ConnectButton href={decodeUrl(oidc.auth_url)} />

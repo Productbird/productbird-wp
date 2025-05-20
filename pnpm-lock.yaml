@@ -45,6 +45,9 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.16
         version: 0.5.16(tailwindcss@3.4.17)
+      '@tanstack/table-core':
+        specifier: ^8.21.3
+        version: 8.21.3
       '@tsconfig/svelte':
         specifier: ^5.0.4
         version: 5.0.4
@@ -717,6 +720,10 @@ packages:
     version: 5.73.2
     peerDependencies:
       svelte: ^5.0.0
+
+  '@tanstack/table-core@8.21.3':
+    resolution: {integrity: sha512-ldZXEhOBb8Is7xLs01fR3YEc3DERiz5silj8tnGkFZytt1abEvl/GhUmCE0PMLaMPTa3Jk4HbKmRlHmu+gCftg==}
+    engines: {node: '>=12'}
 
   '@tsconfig/svelte@5.0.4':
     resolution: {integrity: sha512-BV9NplVgLmSi4mwKzD8BD/NQ8erOY/nUE/GpgWe2ckx+wIQF5RyRirn/QsSSCPeulVpc3RA/iJt6DpfTIZps0Q==}
@@ -2185,6 +2192,8 @@ snapshots:
     dependencies:
       '@tanstack/query-core': https://pkg.pr.new/TanStack/query/@tanstack/query-core@ee9346a
       svelte: 5.31.1
+
+  '@tanstack/table-core@8.21.3': {}
 
   '@tsconfig/svelte@5.0.4': {}
 

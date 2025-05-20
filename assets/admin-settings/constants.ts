@@ -1,6 +1,9 @@
-import { dashboardFormSchema, onboardingFormSchema } from "./form-schema";
+import { z } from "zod";
+import { dashboardFormSchema, generalSettingsFormSchema } from "./form-schema";
 import Dashboard from "./routes/dashboard.svelte";
+import GeneralSettings from "./routes/general-settings.svelte";
 import Onboarding from "./routes/onboarding.svelte";
+
 import { zod } from "sveltekit-superforms/adapters";
 
 export const routerConfig = [
@@ -14,12 +17,21 @@ export const routerConfig = [
 		hidden: false,
 	},
 	{
+		key: "settings",
+		label: "Settings",
+		href: "#/settings",
+		path: "/settings",
+		component: GeneralSettings,
+		schema: zod(generalSettingsFormSchema),
+		hidden: false,
+	},
+	{
 		key: "onboarding",
 		label: "Onboarding",
 		href: "#/onboarding",
 		path: "/onboarding",
 		component: Onboarding,
-		schema: zod(onboardingFormSchema),
+		schema: zod(z.object({})),
 		hidden: true,
 	},
 ] as const;

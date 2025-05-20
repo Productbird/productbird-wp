@@ -7,14 +7,14 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"format": "pnpm biome check --write",
-		"check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
+		"check": "svelte-check",
 		"i18n": "php -d memory_limit=4096M $(which wp) i18n --allow-root make-pot . languages/riviera-maison-flooring.pot --slug=riviera-maison-flooring --domain=rmf --include=src,dist/js --exclude=bin,node_modules,tests,vendor"
 	},
 	"dependencies": {
 		"@formkit/auto-animate": "^0.8.2",
 		"@mateothegreat/svelte5-router": "^2.14.1",
-		"@wordpress/api-fetch": "^7.20.0",
-		"@tanstack/svelte-query": "https://pkg.pr.new/@tanstack/svelte-query@ee9346a"
+		"@tanstack/svelte-query": "https://pkg.pr.new/@tanstack/svelte-query@ee9346a",
+		"@wordpress/api-fetch": "^7.20.0"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
@@ -25,6 +25,7 @@
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"@tailwindcss/forms": "^0.5.10",
 		"@tailwindcss/typography": "^0.5.16",
+		"@tanstack/table-core": "^8.21.3",
 		"@tsconfig/svelte": "^5.0.4",
 		"@types/jquery": "^3.5.29",
 		"@wjfe/n-savant": "^0.3.0",

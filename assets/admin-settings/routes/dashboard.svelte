@@ -21,12 +21,12 @@
     return organization?.name;
   }
 
-  const balance = $derived.by(() => {
+  const organization = $derived.by(() => {
     const organization = organizationsQuery.data?.find(
       (organization) => organization.id.toString() === $formData.selectedOrgId
     );
 
-    return organization?.balance ?? null;
+    return organization ?? null;
   });
 </script>
 
@@ -49,8 +49,8 @@
 
     <Card.Content>
       <p class="text-5xl font-bold">
-        {#if balance}
-          {balance}
+        {#if organization}
+          {organization.balance}
         {:else}
           -
         {/if}
@@ -58,57 +58,59 @@
     </Card.Content>
 
     <Card.Footer class="pt-2 flex gap-1.5 flex-row items-start">
-      <Button.Root size="sm" variant="outline" href="https://app.productbird.ai">
-        {__("View activity", "productbird")}
-      </Button.Root>
+      {#if organization}
+        <Button.Root
+          size="sm"
+          variant="outline"
+          target="_blank"
+          href={`${adminSettings.app_url}/${organization.id}/billing`}
+        >
+          {__("View activity", "productbird")}
+        </Button.Root>
+      {/if}
     </Card.Footer>
   </Card.Root>
 
-  <!-- Tools prompt grid -->
-  <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-    <Card.Root class="max-w-md">
-      <Card.Header>
-        <Card.Title class="text-lg font-semibold">
-          {__("Connection Status", "productbird")}
-        </Card.Title>
-        <Card.Description>
-          {__("Your connected Productbird account", "productbird")}
-        </Card.Description>
-      </Card.Header>
+  <Card.Root class="max-w-md">
+    <Card.Header>
+      <Card.Title class="text-lg font-semibold">
+        {__("Connection Status", "productbird")}
+      </Card.Title>
+      <Card.Description>
+        {__("Your connected Productbird account", "productbird")}
+      </Card.Description>
+    </Card.Header>
 
-      <Card.Content>
-        <QueryWrapper query={organizationsQuery}>
-          {#snippet children({ data })}
-            <Form.Field {form} name="selectedOrgId">
-              <Form.Control>
-                {#snippet children({ props })}
-                  <Form.Label>Organization</Form.Label>
-                  <Select.Root type="single" bind:value={$formData.selectedOrgId} name={props.name}>
-                    <Select.Trigger {...props}>
-                      {$formData.selectedOrgId
-                        ? getOrganizationName($formData.selectedOrgId)
-                        : "Select an organization"}
-                    </Select.Trigger>
-                    <Select.Content>
-                      {#each data as organization}
-                        <Select.Item value={organization.id.toString()} label={organization.name} />
-                      {/each}
-                    </Select.Content>
-                  </Select.Root>
-                {/snippet}
-              </Form.Control>
-              <Form.Description>
-                You can manage email address in your <a href="/examples/forms">email settings</a>.
-              </Form.Description>
-              <Form.FieldErrors />
-            </Form.Field>
-          {/snippet}
-        </QueryWrapper>
-      </Card.Content>
+    <Card.Content>
+      <QueryWrapper query={organizationsQuery}>
+        {#snippet children({ data })}
+          <Form.Field {form} name="selectedOrgId">
+            <Form.Control>
+              {#snippet children({ props })}
+                <Form.Label>Organization</Form.Label>
+                <Select.Root type="single" bind:value={$formData.selectedOrgId} name={props.name}>
+                  <Select.Trigger {...props}>
+                    {$formData.selectedOrgId ? getOrganizationName($formData.selectedOrgId) : "Select an organization"}
+                  </Select.Trigger>
+                  <Select.Content>
+                    {#each data as organization}
+                      <Select.Item value={organization.id.toString()} label={organization.name} />
+                    {/each}
+                  </Select.Content>
+                </Select.Root>
+              {/snippet}
+            </Form.Control>
+            <Form.Description>
+              You can manage email address in your <a href="/examples/forms">email settings</a>.
+            </Form.Description>
+            <Form.FieldErrors />
+          </Form.Field>
+        {/snippet}
+      </QueryWrapper>
+    </Card.Content>
 
-      <Card.Footer class="pt-2 flex gap-1.5 flex-row items-start">
-        <ConnectFlowButton />
-      </Card.Footer>
-    </Card.Root>
-  </div>
+    <Card.Footer class="pt-2 flex gap-1.5 flex-row items-start">
+      <ConnectFlowButton />
+    </Card.Footer>
+  </Card.Root>
 </div>

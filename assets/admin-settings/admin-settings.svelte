@@ -18,7 +18,7 @@
 </script>
 
 <Layout {isOnboarding}>
-  <QueryWrapper query={settingsQuery}>
+  <QueryWrapper query={settingsQuery} asPage={true}>
     {#snippet children({ data })}
       <Form initialData={data} />
     {/snippet}

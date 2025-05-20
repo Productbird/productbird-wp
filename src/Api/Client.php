@@ -229,7 +229,7 @@ class Client
     /**
      * Decide which base URL should be used by default.
      */
-    private static function determine_base_url(): string
+    public static function determine_base_url(): string
     {
         return self::is_local_site() ? self::LOCAL_BASE_URL : self::PROD_BASE_URL;
     }
