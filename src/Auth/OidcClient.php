@@ -367,34 +367,12 @@ class OidcClient
 
         $tokens = $this->get_tokens();
 
-        // Log that we're making the userinfo request and with what token
-        error_log('Productbird: Making userinfo request with token: ' . substr($tokens['access_token'], 0, 10) . '...');
-        error_log('Productbird: Using base URL: ' . $this->get_base_url());
-
-        // Also log the scopes from the original authentication
-        error_log('Productbird: Originally requested scopes: openid profile email orgs');
-
         // Decode and log ID token if available
         if (!empty($tokens['id_token'])) {
             // ID tokens are JWT format (header.payload.signature)
             $jwt_parts = explode('.', $tokens['id_token']);
             if (count($jwt_parts) === 3) {
                 $payload = json_decode(base64_decode(str_replace(['-', '_'], ['+', '/'], $jwt_parts[1])), true);
-                error_log('Productbird: ID Token payload: ' . wp_json_encode($payload, JSON_PRETTY_PRINT));
-
-                // Check if scopes are in the ID token
-                if (isset($payload['scope'])) {
-                    error_log('Productbird: Scopes in ID token: ' . $payload['scope']);
-                } else {
-                    error_log('Productbird: No scopes found in ID token');
-                }
-
-                // Check if orgs data is directly in the ID token
-                if (isset($payload['orgs'])) {
-                    error_log('Productbird: Orgs data found in ID token: ' . wp_json_encode($payload['orgs']));
-                } else {
-                    error_log('Productbird: No orgs data found in ID token');
-                }
             }
         } else {
             error_log('Productbird: No ID token available');
@@ -419,17 +397,6 @@ class OidcClient
         $code = wp_remote_retrieve_response_code($response);
         $body = wp_remote_retrieve_body($response);
         $data = json_decode($body, true);
-
-        error_log('Productbird: UserInfo response code: ' . $code);
-        error_log('Productbird: UserInfo raw response body: ' . $body);
-        error_log('Productbird: UserInfo parsed data: ' . wp_json_encode($data, JSON_PRETTY_PRINT));
-
-        // Specifically check for orgs data
-        if (isset($data['orgs'])) {
-            error_log('Productbird: Orgs data is present: ' . wp_json_encode($data['orgs']));
-        } else {
-            error_log('Productbird: ⚠️ Orgs data is missing from the response');
-        }
 
         if ($code >= 200 && $code < 300) {
             return is_array($data) ? $data : [];

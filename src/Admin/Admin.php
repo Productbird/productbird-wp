@@ -14,43 +14,15 @@ class Admin
     /**
      * The option name used to store all settings.
      */
-    private const OPTION_NAME = 'productbird_settings';
-
-    /**
-     * Allowed tone options.
-     *
-     * @var string[]
-     */
-    private array $tones = [
-        'expert'         => 'Expert',
-        'daring'         => 'Daring',
-        'playful'        => 'Playful',
-        'sophisticated'  => 'Sophisticated',
-        'persuasive'     => 'Persuasive',
-        'supportive'     => 'Supportive',
-    ];
-
-    /**
-     * Allowed formality options.
-     *
-     * @var string[]
-     */
-    private array $formalities = [
-        'formal'    => 'Formal',
-        'informal'  => 'Informal',
-    ];
+    private const SETTINGS_OPTION_NAME = 'productbird_settings';
 
     /**
      * Bootstraps admin hooks.
      */
     public function init(): void
     {
-        // Add menu entry and register settings.
         add_action('admin_menu', [$this, 'add_settings_page']);
-
-        // Register settings early so they are available in both admin pages and REST API requests.
         add_action('init', [$this, 'register_settings']);
-
         add_action('admin_enqueue_scripts', [$this, 'enqueue_assets']);
 
     }
@@ -64,7 +36,7 @@ class Admin
     {
         register_setting(
             'productbird_settings_group',
-            self::OPTION_NAME,
+            self::SETTINGS_OPTION_NAME,
             [
                 // Store the option as an object and make it available via REST.
                 'type'              => 'object',
@@ -74,28 +46,7 @@ class Admin
                     'tone'          => 'expert',
                     'formality'     => 'informal',
                     'selectedOrgId' => '',
-                ],
-                'show_in_rest'      => [
-                    'schema' => [
-                        'type'       => 'object',
-                        'properties' => [
-                            'api_key'   => [
-                                'type' => 'string',
-                            ],
-                            'tone'      => [
-                                'type' => 'string',
-                                'enum' => array_keys($this->tones),
-                            ],
-                            'formality' => [
-                                'type' => 'string',
-                                'enum' => array_keys($this->formalities),
-                            ],
-                            'selectedOrgId' => [
-                                'type' => 'string',
-                            ],
-                        ],
-                    ],
-                ],
+                ]
             ]
         );
     }
@@ -129,32 +80,13 @@ class Admin
      */
     public function sanitize_settings(array $input): array
     {
-        error_log('Productbird sanitize_settings called');
-        error_log('Input: ' . print_r($input, true));
-
         $output = [];
 
-        // API key – allow only trimmed string.
-        if (isset($input['api_key'])) {
-            $output['api_key'] = sanitize_text_field($input['api_key']);
-        }
+        $output['api_key'] = sanitize_text_field($input['api_key']);
+        $output['tone'] = sanitize_text_field($input['tone']);
+        $output['formality'] = sanitize_text_field($input['formality']);
+        $output['selectedOrgId'] = sanitize_text_field($input['selectedOrgId']);
 
-        // Tone – validate against whitelist.
-        $output['tone'] = isset($input['tone'], $this->tones[$input['tone']])
-            ? $input['tone']
-            : 'expert';
-
-        // Formality – validate against whitelist.
-        $output['formality'] = isset($input['formality'], $this->formalities[$input['formality']])
-            ? $input['formality']
-            : 'informal';
-
-        // Selected organization ID - allow only trimmed string.
-        if (isset($input['selectedOrgId'])) {
-            $output['selectedOrgId'] = sanitize_text_field($input['selectedOrgId']);
-        }
-
-        error_log('Output: ' . print_r($output, true));
         return $output;
     }
 
@@ -165,63 +97,6 @@ class Admin
     {
         ?>
             <div id="productbird-admin-settings"></div>
-        <?php
-    }
-
-    /**
-     * Render API key input field.
-     */
-    public function render_api_key_field(): void
-    {
-        $options = get_option(self::OPTION_NAME);
-        ?>
-        <div class="productbird-api-key-wrap">
-            <input
-                type="password"
-                id="productbird_api_key"
-                name="<?php echo esc_attr(self::OPTION_NAME . '[api_key]'); ?>"
-                value="<?php echo isset($options['api_key']) ? esc_attr($options['api_key']) : ''; ?>"
-                class="regular-text"
-                autocomplete="off"
-                data-1p-ignore="true"
-                data-lpignore="true"
-            />
-            <button type="button" class="button productbird-toggle-api-key" aria-label="<?php esc_attr_e('Show API Key', 'productbird'); ?>">
-                <span class="dashicons dashicons-visibility"></span>
-            </button>
-        </div>
-        <?php
-    }
-
-    /**
-     * Render tone dropdown field.
-     */
-    public function render_tone_field(): void
-    {
-        $options = get_option(self::OPTION_NAME);
-        $current = $options['tone'] ?? 'expert';
-        ?>
-        <select name="<?php echo esc_attr(self::OPTION_NAME . '[tone]'); ?>">
-            <?php foreach ($this->tones as $value => $label) : ?>
-                <option value="<?php echo esc_attr($value); ?>" <?php selected($current, $value); ?>><?php echo esc_html($label); ?></option>
-            <?php endforeach; ?>
-        </select>
-        <?php
-    }
-
-    /**
-     * Render formality dropdown field.
-     */
-    public function render_formality_field(): void
-    {
-        $options = get_option(self::OPTION_NAME);
-        $current = $options['formality'] ?? 'informal';
-        ?>
-        <select name="<?php echo esc_attr(self::OPTION_NAME . '[formality]'); ?>">
-            <?php foreach ($this->formalities as $value => $label) : ?>
-                <option value="<?php echo esc_attr($value); ?>" <?php selected($current, $value); ?>><?php echo esc_html($label); ?></option>
-            <?php endforeach; ?>
-        </select>
         <?php
     }
 

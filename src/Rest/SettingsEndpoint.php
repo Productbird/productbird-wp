@@ -63,6 +63,7 @@ class SettingsEndpoint {
      */
     public function get_settings( WP_REST_Request $request ) {
         $settings = get_option( 'productbird_settings', [] );
+
         return new WP_REST_Response( $settings );
     }
 
@@ -75,6 +76,7 @@ class SettingsEndpoint {
             return new WP_REST_Response( [ 'message' => 'Invalid payload' ], 400 );
         }
 
+        error_log( print_r( $params, true ) );
         // Merge with existing settings so we only overwrite provided keys.
         $current   = get_option( 'productbird_settings', [] );
         $merged    = array_merge( $current, $params );
@@ -82,6 +84,8 @@ class SettingsEndpoint {
         // Sanitize via existing helper.
         $admin      = new Admin();
         $sanitized  = $admin->sanitize_settings( $merged );
+
+        error_log( print_r( $sanitized, true ) );
 
         update_option( 'productbird_settings', $sanitized );
 

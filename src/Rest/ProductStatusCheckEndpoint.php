@@ -74,7 +74,6 @@ class ProductStatusCheckEndpoint
         $statuses = [];
 
         if (empty($product_ids) || !is_array($product_ids)) {
-            error_log('Productbird Status Check: No product IDs provided in request');
             return new WP_REST_Response(['message' => 'No product IDs provided'], 400);
         }
 
