@@ -5,6 +5,9 @@ import { wp_scripts } from "@kucrut/vite-for-wp/plugins";
 import path from "node:path";
 
 export default defineConfig({
+	server: {
+		port: 3000,
+	},
 	/**
 	 * @see https://github.com/ciscoheat/sveltekit-superforms/issues/321
 	 */
@@ -41,8 +44,13 @@ export default defineConfig({
 				find: "$app",
 				replacement: path.resolve("./assets/lib/sk/app"),
 			},
+			{
+				find: "$admin-settings",
+				replacement: path.resolve("./assets/admin-settings"),
+			},
 		],
 	},
+
 	build: {
 		sourcemap: true,
 		rollupOptions: {

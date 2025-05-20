@@ -10,6 +10,8 @@ use Productbird\Rest\ProductDescriptionCallbackEndpoint;
 use Productbird\Rest\ProductStatusCheckEndpoint;
 use Productbird\Rest\OidcCallbackEndpoint;
 use Productbird\Auth\OidcClient;
+use Productbird\Rest\OrganizationsEndpoint;
+use Productbird\Rest\SettingsEndpoint;
 
 /**
  * Core plugin class.
@@ -40,9 +42,10 @@ class Plugin
 
         (new ProductDescriptionCallbackEndpoint())->init();
         (new ProductStatusCheckEndpoint())->init();
-
-        // OIDC integration (connect WordPress with Productbird login)
+        (new OrganizationsEndpoint())->init();
+        (new SettingsEndpoint())->init();
         (new OidcCallbackEndpoint())->init();
+
         // The OidcClient registers its own hooks (e.g. disconnect handler).
         (new OidcClient())->init();
     }

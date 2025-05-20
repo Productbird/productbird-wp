@@ -10,13 +10,8 @@ export function log(
 	level: "log" | "error" | "warn" = "log",
 	...args: unknown[]
 ): void {
-	// Only log if debug is enabled
-	if (!window.ma_params?.debug) {
-		return;
-	}
-
 	// Add prefix to message
-	const prefixedMessage = `[MA] ${message}`;
+	const prefixedMessage = `[Productbird] ${message}`;
 
 	// Use the appropriate console method
 	switch (level) {

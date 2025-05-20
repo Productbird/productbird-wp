@@ -148,7 +148,7 @@ class OidcClient
             'response_type' => 'code',
             'client_id'     => $client['client_id'],
             'redirect_uri'  => $this->get_redirect_uri(),
-            'scope'         => 'openid profile email',
+            'scope'         => 'openid profile email orgs',
             'state'         => $state,
         ];
 
@@ -172,11 +172,6 @@ class OidcClient
 
         $url = $this->get_base_url() . '/api/auth/oauth2/register';
 
-        error_log('Client registration request:');
-        error_log('URL: ' . $url);
-        error_log('Body: ' . wp_json_encode($body));
-        error_log('Redirect URI: ' . $this->get_redirect_uri());
-
         $response = wp_remote_post(
             $url,
             [
@@ -196,9 +191,6 @@ class OidcClient
 
         $code = wp_remote_retrieve_response_code($response);
         $raw_body = wp_remote_retrieve_body($response);
-        error_log('Response code: ' . $code);
-        error_log('Raw response: ' . $raw_body);
-
         $data = json_decode($raw_body, true);
 
         if ($code >= 200 && $code < 300 && isset($data['client_id'], $data['client_secret'])) {
@@ -221,13 +213,11 @@ class OidcClient
     private function ensure_client_registered(): bool
     {
         if ($this->get_client_credentials()) {
-            error_log('client registered');
             return true;
         }
 
         $registered = $this->register_client();
-        error_log('registered');
-        error_log(print_r($registered, true));
+
         return !is_wp_error($registered);
     }
 
@@ -291,8 +281,8 @@ class OidcClient
 
         // Persist the tokens.
         update_option(self::OPTION_TOKENS, [
-            'access_token'  => sanitize_text_field($data['access_token']),
-            'refresh_token' => sanitize_text_field($data['refresh_token'] ?? ''),
+            'access_token'  => isset($data['access_token']) ? sanitize_text_field($data['access_token']) : '',
+            'refresh_token' => isset($data['refresh_token']) ? sanitize_text_field($data['refresh_token']) : '',
             'expires_at'    => time() + (int) ($data['expires_in'] ?? 3600),
             'id_token'      => isset($data['id_token']) ? sanitize_text_field($data['id_token']) : '',
         ]);
@@ -351,10 +341,10 @@ class OidcClient
         }
 
         $new_tokens = [
-            'access_token'  => sanitize_text_field($data['access_token']),
-            'refresh_token' => sanitize_text_field($data['refresh_token'] ?? $tokens['refresh_token']),
+            'access_token'  => isset($data['access_token']) ? sanitize_text_field($data['access_token']) : '',
+            'refresh_token' => isset($data['refresh_token']) ? sanitize_text_field($data['refresh_token']) : sanitize_text_field($tokens['refresh_token'] ?? ''),
             'expires_at'    => time() + (int) ($data['expires_in'] ?? 3600),
-            'id_token'      => isset($data['id_token']) ? sanitize_text_field($data['id_token']) : ($tokens['id_token'] ?? ''),
+            'id_token'      => isset($data['id_token']) ? sanitize_text_field($data['id_token']) : sanitize_text_field($tokens['id_token'] ?? ''),
         ];
 
         update_option(self::OPTION_TOKENS, $new_tokens);
@@ -377,6 +367,39 @@ class OidcClient
 
         $tokens = $this->get_tokens();
 
+        // Log that we're making the userinfo request and with what token
+        error_log('Productbird: Making userinfo request with token: ' . substr($tokens['access_token'], 0, 10) . '...');
+        error_log('Productbird: Using base URL: ' . $this->get_base_url());
+
+        // Also log the scopes from the original authentication
+        error_log('Productbird: Originally requested scopes: openid profile email orgs');
+
+        // Decode and log ID token if available
+        if (!empty($tokens['id_token'])) {
+            // ID tokens are JWT format (header.payload.signature)
+            $jwt_parts = explode('.', $tokens['id_token']);
+            if (count($jwt_parts) === 3) {
+                $payload = json_decode(base64_decode(str_replace(['-', '_'], ['+', '/'], $jwt_parts[1])), true);
+                error_log('Productbird: ID Token payload: ' . wp_json_encode($payload, JSON_PRETTY_PRINT));
+
+                // Check if scopes are in the ID token
+                if (isset($payload['scope'])) {
+                    error_log('Productbird: Scopes in ID token: ' . $payload['scope']);
+                } else {
+                    error_log('Productbird: No scopes found in ID token');
+                }
+
+                // Check if orgs data is directly in the ID token
+                if (isset($payload['orgs'])) {
+                    error_log('Productbird: Orgs data found in ID token: ' . wp_json_encode($payload['orgs']));
+                } else {
+                    error_log('Productbird: No orgs data found in ID token');
+                }
+            }
+        } else {
+            error_log('Productbird: No ID token available');
+        }
+
         $response = wp_remote_get(
             $this->get_base_url() . '/api/auth/oauth2/userinfo',
             [
@@ -389,11 +412,24 @@ class OidcClient
         );
 
         if (is_wp_error($response)) {
+            error_log('Productbird: UserInfo request failed with WP_Error: ' . $response->get_error_message());
             return $response;
         }
 
         $code = wp_remote_retrieve_response_code($response);
-        $data = json_decode(wp_remote_retrieve_body($response), true);
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+
+        error_log('Productbird: UserInfo response code: ' . $code);
+        error_log('Productbird: UserInfo raw response body: ' . $body);
+        error_log('Productbird: UserInfo parsed data: ' . wp_json_encode($data, JSON_PRETTY_PRINT));
+
+        // Specifically check for orgs data
+        if (isset($data['orgs'])) {
+            error_log('Productbird: Orgs data is present: ' . wp_json_encode($data['orgs']));
+        } else {
+            error_log('Productbird: ⚠️ Orgs data is missing from the response');
+        }
 
         if ($code >= 200 && $code < 300) {
             return is_array($data) ? $data : [];
@@ -417,6 +453,7 @@ class OidcClient
     {
         check_admin_referer('productbird_disconnect');
         delete_option(self::OPTION_TOKENS);
+
         // Keep client credentials so future connect is quicker, but allow a
         // hard reset when holding the `reset_client` query parameter.
         if (isset($_GET['reset_client']) && $_GET['reset_client'] === '1') {
@@ -425,5 +462,35 @@ class OidcClient
 
         wp_safe_redirect(admin_url('options-general.php?page=productbird&disconnected=1'));
         exit;
+    }
+
+    public function get_organizations() {
+        if ( $this->is_connected() ) {
+            $tokens = $this->get_tokens();          // refresh_access_token() is done in is_connected()
+            $url    = $this->get_base_url() . '/api/v1/organizations/me';
+
+            $response = wp_remote_get( $url, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $tokens['access_token'],
+                    'Accept'        => 'application/json',
+                ],
+                'timeout' => 15,
+            ] );
+
+            if ( is_wp_error( $response ) ) {
+                return $response;
+            }
+
+            $code = wp_remote_retrieve_response_code( $response );
+            $body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+            return ( $code >= 200 && $code < 300 ) ? $body : new \WP_Error(
+                'productbird_org_failed',
+                __( 'Failed to retrieve organization', 'productbird' ),
+                [ 'status' => $code, 'response' => $body ]
+            );
+        }
+
+        return new \WP_Error( 'productbird_not_connected', __( 'Not connected to Productbird', 'productbird' ) );
     }
 }

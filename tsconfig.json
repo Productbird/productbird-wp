@@ -35,6 +35,12 @@
 			],
 			"$app/*": [
 				"assets/lib/sk/app/*"
+			],
+			"$admin-settings": [
+				"assets/admin-settings"
+			],
+			"$admin-settings/*": [
+				"assets/admin-settings/*"
 			]
 		}
 	},

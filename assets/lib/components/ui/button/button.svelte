@@ -8,6 +8,7 @@
     variants: {
       variant: {
         default: "!bg-primary text-primary-foreground hover:!bg-primary/90 shadow",
+        black: "!bg-black text-white hover:!bg-black/90 shadow",
         destructive:
           "!bg-destructive text-destructive-foreground !border-destructive hover:!bg-destructive/90 shadow-sm",
         outline: "!border-input !bg-background hover:!bg-accent hover:text-accent-foreground !border !shadow-sm",
@@ -39,7 +40,7 @@
 </script>
 
 <script lang="ts">
-  import { cn } from "$lib/utils.js";
+  import { cn } from "$lib/utils/ui.js";
 
   let {
     class: className,

@@ -13,7 +13,8 @@
 	"dependencies": {
 		"@formkit/auto-animate": "^0.8.2",
 		"@mateothegreat/svelte5-router": "^2.14.1",
-		"@wordpress/api-fetch": "^7.20.0"
+		"@wordpress/api-fetch": "^7.20.0",
+		"@tanstack/svelte-query": "https://pkg.pr.new/@tanstack/svelte-query@ee9346a"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",

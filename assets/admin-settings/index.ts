@@ -1,4 +1,4 @@
-import App from "./admin-settings.svelte";
+import App from "./root.svelte";
 import { createComponentMounter } from "$lib/utils/component-mounter";
 import "$lib/styles/global.css";
 

@@ -1,57 +1,21 @@
-// WordPress REST API helper for Productbird plugin.
-//
-// This utility wraps `fetch` so that calls automatically:
-//  • Prepend the WP REST root (`wpApiSettings.root` or `/wp-json/`).
-//  • Add the `X-WP-Nonce` header when available for authenticated requests.
-//  • JSON-encode / decode bodies.
-//
-// It then exposes convenience helpers for the routes used by the Productbird
-// plugin (settings + generation-status).
+import type { AdminSettingsFormSchema } from "$admin-settings/form-schema";
+import type { OrganizationMe } from "./types";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────────────
 
-export interface ProductbirdSettings {
-	api_key: string;
-	tone: string;
-	formality: string;
-}
-
 export type GenerationStatus = "none" | "running" | "completed" | "error";
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Global type augmentation (avoid `any`)
-// ─────────────────────────────────────────────────────────────────────────────
-
-declare global {
-	interface Window {
-		wpApiSettings?: {
-			root: string;
-			nonce: string;
-		};
-	}
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Internal helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Resolve the REST API root URL (always ends with a trailing slash).
- */
-function getApiRoot(): string {
-	// The global emitted by WordPress when using wp_add_inline_script + apiFetch.
-	// See https://developer.wordpress.org/rest-api/using-the-rest-api/#global-javascript-variables
-	const root = window.wpApiSettings?.root ?? "/wp-json/";
-	return root.endsWith("/") ? root : `${root}/`;
-}
-
-/**
  * Try to obtain the WP nonce that authorises authenticated requests.
  */
 function getNonce(): string | undefined {
-	return window.wpApiSettings?.nonce;
+	return window.productbird_admin.nonce;
 }
 
 interface RequestOptions extends Omit<RequestInit, "body"> {
@@ -61,15 +25,18 @@ interface RequestOptions extends Omit<RequestInit, "body"> {
 	auth?: boolean;
 }
 
-async function request<T = unknown>(path: string, options: RequestOptions = {}): Promise<T> {
+async function request<T = unknown>(
+	path: string,
+	options: RequestOptions = {},
+): Promise<T> {
 	const { body, auth = true, headers, ...rest } = options;
 
 	// Build full URL.
-	const url = new URL(path.replace(/^\//, ""), getApiRoot()).toString();
+	const url = window.productbird_admin.api_root_url + path;
 
 	// Default headers.
 	const defaultHeaders: HeadersInit = {
-		"Accept": "application/json",
+		Accept: "application/json",
 	};
 
 	// Add nonce for mutating requests if available.
@@ -103,7 +70,9 @@ async function request<T = unknown>(path: string, options: RequestOptions = {}):
 			message = await response.text();
 		}
 
-		throw new Error(`Request failed: ${response.status} ${response.statusText}. ${JSON.stringify(message)}`);
+		throw new Error(
+			`Request failed: ${response.status} ${response.statusText}. ${JSON.stringify(message)}`,
+		);
 	}
 
 	// 204 No Content – nothing to parse.
@@ -121,29 +90,45 @@ async function request<T = unknown>(path: string, options: RequestOptions = {}):
 /**
  * Fetch the Productbird settings option from `/wp/v2/settings`.
  */
-export async function getSettings(): Promise<ProductbirdSettings> {
-	const data = await request<{ productbird_settings: ProductbirdSettings }>(
-		"wp/v2/settings",
+export async function getSettings(): Promise<AdminSettingsFormSchema> {
+	const data = await request<AdminSettingsFormSchema>(
+		"productbird/v1/settings",
 	);
 
-	return data.productbird_settings;
+	if (!data) {
+		return {
+			selectedOrgId: undefined,
+			tone: undefined,
+		};
+	}
+
+	return data;
+}
+
+/**
+ * Fetch the Productbird organizations from `/productbird/v1/organizations/me`.
+ */
+export async function getOrganizations(): Promise<OrganizationMe[]> {
+	const data = await request<OrganizationMe[]>("productbird/v1/organizations");
+
+	return data;
 }
 
 /**
  * Update one or more Productbird settings.
  */
 export async function updateSettings(
-	partial: Partial<ProductbirdSettings>,
-): Promise<ProductbirdSettings> {
-	const data = await request<{ productbird_settings: ProductbirdSettings }>(
-		"wp/v2/settings",
+	partial: Partial<AdminSettingsFormSchema>,
+): Promise<AdminSettingsFormSchema> {
+	const data = await request<AdminSettingsFormSchema>(
+		"productbird/v1/settings",
 		{
 			method: "POST",
-			body: { productbird_settings: partial },
+			body: partial,
 		},
 	);
 
-	return data.productbird_settings;
+	return data;
 }
 
 /**
@@ -152,10 +137,13 @@ export async function updateSettings(
 export async function checkGenerationStatus(
 	productIds: number[],
 ): Promise<Record<number, GenerationStatus>> {
-	return request<Record<number, GenerationStatus>>("productbird/v1/check-generation-status", {
-		method: "POST",
-		body: { productIds },
-	});
+	return request<Record<number, GenerationStatus>>(
+		"productbird/v1/check-generation-status",
+		{
+			method: "POST",
+			body: { productIds },
+		},
+	);
 }
 
 // The module also re-exports the low-level request helper for advanced use.

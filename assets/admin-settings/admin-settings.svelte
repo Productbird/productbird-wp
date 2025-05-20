@@ -1,32 +1,26 @@
 <script lang="ts">
-  import { Router, Route, Fallback, RouterTrace, init, location } from "@wjfe/n-savant";
-  import NotFound from "./routes/not-found.svelte";
+  import { __ } from "@wordpress/i18n";
 
-  import "$lib/styles/app.pcss";
   import Layout from "./components/layout.svelte";
-  import { routerConfig, getRouteByKey } from "./constants";
+  import Form from "./components/form.svelte";
+  import QueryWrapper from "$lib/components/query-wrapper.svelte";
+  import { getSettings } from "$lib/utils/api";
+  import { createQuery } from "@tanstack/svelte-query";
+  import { location } from "@wjfe/n-savant";
+  import { getRouteByKey } from "./constants";
 
-  init({ implicitMode: "hash" });
-
-  const showTracer = false;
   const onboardingRoute = getRouteByKey("onboarding");
   const isOnboarding = $derived(location.hashPaths.single === onboardingRoute.path);
+  const settingsQuery = createQuery(() => ({
+    queryKey: ["settings"],
+    queryFn: async () => await getSettings(),
+  }));
 </script>
 
-<Router id="root-router">
-  <Layout {isOnboarding}>
-    {#each routerConfig as { key, path, component: Component }}
-      <Route {key} {path}>
-        <Component />
-      </Route>
-    {/each}
-
-    <Fallback>
-      <NotFound />
-    </Fallback>
-  </Layout>
-
-  {#if showTracer}
-    <RouterTrace />
-  {/if}
-</Router>
+<Layout {isOnboarding}>
+  <QueryWrapper query={settingsQuery}>
+    {#snippet children({ data })}
+      <Form initialData={data} />
+    {/snippet}
+  </QueryWrapper>
+</Layout>

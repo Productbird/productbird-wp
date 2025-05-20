@@ -14,6 +14,9 @@ importers:
       '@mateothegreat/svelte5-router':
         specifier: ^2.14.1
         version: 2.14.1(svelte@5.31.1)
+      '@tanstack/svelte-query':
+        specifier: https://pkg.pr.new/@tanstack/svelte-query@ee9346a
+        version: https://pkg.pr.new/@tanstack/svelte-query@ee9346a(svelte@5.31.1)
       '@wordpress/api-fetch':
         specifier: ^7.20.0
         version: 7.23.0
@@ -704,6 +707,16 @@ packages:
 
   '@tannin/postfix@1.1.0':
     resolution: {integrity: sha512-oocsqY7g0cR+Gur5jRQLSrX2OtpMLMse1I10JQBm8CdGMrDkh1Mg2gjsiquMHRtBs4Qwu5wgEp5GgIYHk4SNPw==}
+
+  '@tanstack/query-core@https://pkg.pr.new/TanStack/query/@tanstack/query-core@ee9346a':
+    resolution: {tarball: https://pkg.pr.new/TanStack/query/@tanstack/query-core@ee9346a}
+    version: 5.72.2
+
+  '@tanstack/svelte-query@https://pkg.pr.new/@tanstack/svelte-query@ee9346a':
+    resolution: {tarball: https://pkg.pr.new/@tanstack/svelte-query@ee9346a}
+    version: 5.73.2
+    peerDependencies:
+      svelte: ^5.0.0
 
   '@tsconfig/svelte@5.0.4':
     resolution: {integrity: sha512-BV9NplVgLmSi4mwKzD8BD/NQ8erOY/nUE/GpgWe2ckx+wIQF5RyRirn/QsSSCPeulVpc3RA/iJt6DpfTIZps0Q==}
@@ -2165,6 +2178,13 @@ snapshots:
       '@tannin/compile': 1.1.0
 
   '@tannin/postfix@1.1.0': {}
+
+  '@tanstack/query-core@https://pkg.pr.new/TanStack/query/@tanstack/query-core@ee9346a': {}
+
+  '@tanstack/svelte-query@https://pkg.pr.new/@tanstack/svelte-query@ee9346a(svelte@5.31.1)':
+    dependencies:
+      '@tanstack/query-core': https://pkg.pr.new/TanStack/query/@tanstack/query-core@ee9346a
+      svelte: 5.31.1
 
   '@tsconfig/svelte@5.0.4': {}
 

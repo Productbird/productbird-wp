@@ -1,0 +1,90 @@
+<?php
+namespace Productbird\Rest;
+
+use Productbird\Admin\Admin;
+use WP_REST_Request;
+use WP_REST_Response;
+
+/**
+ * Provides GET and POST endpoints for Productbird plugin settings.
+ *
+ * Route: /wp-json/productbird/v1/settings
+ */
+class SettingsEndpoint {
+    /**
+     * Bootstraps the REST route registration.
+     */
+    public function init(): void {
+        add_action( 'rest_api_init', [ $this, 'register_routes' ] );
+    }
+
+    /**
+     * Registers REST routes.
+     */
+    public function register_routes(): void {
+        // Read settings
+        register_rest_route(
+            'productbird/v1',
+            '/settings',
+            [
+                'methods'             => \WP_REST_Server::READABLE, // GET
+                'callback'            => [ $this, 'get_settings' ],
+                'permission_callback' => [ $this, 'check_permissions' ],
+            ]
+        );
+
+        // Update settings
+        register_rest_route(
+            'productbird/v1',
+            '/settings',
+            [
+                'methods'             => \WP_REST_Server::CREATABLE, // POST
+                'callback'            => [ $this, 'update_settings' ],
+                'permission_callback' => [ $this, 'check_permissions' ],
+                'args'                => [
+                    'api_key'       => [ 'type' => 'string', 'required' => false ],
+                    'tone'          => [ 'type' => 'string', 'required' => false ],
+                    'formality'     => [ 'type' => 'string', 'required' => false ],
+                    'selectedOrgId' => [ 'type' => 'string', 'required' => false ],
+                ],
+            ]
+        );
+    }
+
+    /**
+     * Permission callback – only allow admins.
+     */
+    public function check_permissions(): bool {
+        return current_user_can( 'manage_options' );
+    }
+
+    /**
+     * Returns the current plugin settings.
+     */
+    public function get_settings( WP_REST_Request $request ) {
+        $settings = get_option( 'productbird_settings', [] );
+        return new WP_REST_Response( $settings );
+    }
+
+    /**
+     * Updates plugin settings.
+     */
+    public function update_settings( WP_REST_Request $request ) {
+        $params = $request->get_json_params();
+        if ( ! is_array( $params ) ) {
+            return new WP_REST_Response( [ 'message' => 'Invalid payload' ], 400 );
+        }
+
+        // Merge with existing settings so we only overwrite provided keys.
+        $current   = get_option( 'productbird_settings', [] );
+        $merged    = array_merge( $current, $params );
+
+        // Sanitize via existing helper.
+        $admin      = new Admin();
+        $sanitized  = $admin->sanitize_settings( $merged );
+
+        update_option( 'productbird_settings', $sanitized );
+
+        return new WP_REST_Response( $sanitized );
+    }
+}

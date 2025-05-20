@@ -46,7 +46,9 @@ class Admin
     {
         // Add menu entry and register settings.
         add_action('admin_menu', [$this, 'add_settings_page']);
-        add_action('admin_init', [$this, 'register_settings']);
+
+        // Register settings early so they are available in both admin pages and REST API requests.
+        add_action('init', [$this, 'register_settings']);
 
         add_action('admin_enqueue_scripts', [$this, 'enqueue_assets']);
 
@@ -67,9 +69,10 @@ class Admin
                 'type'              => 'object',
                 'sanitize_callback' => [$this, 'sanitize_settings'],
                 'default'           => [
-                    'api_key'   => '',
-                    'tone'      => 'expert',
-                    'formality' => 'informal',
+                    'api_key'       => '',
+                    'tone'          => 'expert',
+                    'formality'     => 'informal',
+                    'selectedOrgId' => '',
                 ],
                 'show_in_rest'      => [
                     'schema' => [
@@ -86,44 +89,13 @@ class Admin
                                 'type' => 'string',
                                 'enum' => array_keys($this->formalities),
                             ],
+                            'selectedOrgId' => [
+                                'type' => 'string',
+                            ],
                         ],
                     ],
                 ],
             ]
-        );
-
-        add_settings_section(
-            'productbird_main_section',
-            __('General Settings', 'productbird'),
-            '__return_false', // No callback needed – we render nothing here.
-            'productbird'
-        );
-
-        // API Key field.
-        add_settings_field(
-            'productbird_api_key',
-            __('API Key', 'productbird'),
-            [$this, 'render_api_key_field'],
-            'productbird',
-            'productbird_main_section'
-        );
-
-        // Tone dropdown.
-        add_settings_field(
-            'productbird_tone',
-            __('Default Tone', 'productbird'),
-            [$this, 'render_tone_field'],
-            'productbird',
-            'productbird_main_section'
-        );
-
-        // Formality dropdown.
-        add_settings_field(
-            'productbird_formality',
-            __('Default Formality', 'productbird'),
-            [$this, 'render_formality_field'],
-            'productbird',
-            'productbird_main_section'
         );
     }
 
@@ -156,6 +128,9 @@ class Admin
      */
     public function sanitize_settings(array $input): array
     {
+        error_log('Productbird sanitize_settings called');
+        error_log('Input: ' . print_r($input, true));
+
         $output = [];
 
         // API key – allow only trimmed string.
@@ -173,6 +148,12 @@ class Admin
             ? $input['formality']
             : 'informal';
 
+        // Selected organization ID - allow only trimmed string.
+        if (isset($input['selectedOrgId'])) {
+            $output['selectedOrgId'] = sanitize_text_field($input['selectedOrgId']);
+        }
+
+        error_log('Output: ' . print_r($output, true));
         return $output;
     }
 
@@ -255,6 +236,18 @@ class Admin
             return;
         }
 
+        /**
+         * Small hack to ensure the hash is always set to the root path.
+         * This is required by our SPA router.
+         */
+        wp_add_inline_script('jquery', '
+            jQuery(document).ready(function($) {
+                if (window.location.hash === "") {
+                    window.location.hash = "/";
+                }
+            });
+        ');
+
         $dist_path = PRODUCTBIRD_PLUGIN_DIR . '/dist';
         $source_entry = 'assets/admin-settings/index.ts';
 
@@ -269,12 +262,61 @@ class Admin
             ]
         );
 
+        $user = wp_get_current_user();
+
+        // Prepare OIDC connection data for the Svelte frontend.
+        $oidc              = new OidcClient();
+        $is_connected      = $oidc->is_connected();
+        $auth_url          = $is_connected ? '' : $oidc->build_authorization_url();
+
+        $disconnect_url    = '';
+        $connected_user    = '';
+
+        if ($is_connected) {
+            // Build the nonce-protected disconnect URL similar to the legacy PHP UI.
+            $disconnect_url = wp_nonce_url(
+                admin_url('admin-post.php?action=productbird_oidc_disconnect'),
+                'productbird_disconnect'
+            );
+
+            // Try to retrieve the user info ( best-effort, ignore errors ).
+            $userinfo = $oidc->get_userinfo();
+            if (!is_wp_error($userinfo)) {
+                $connected_user = $userinfo['name'] ?? ($userinfo['email'] ?? '');
+            }
+        }
+
+        // Make sure URLs are not HTML-encoded when passing to JS
+        // using wp_nonce_url() can produce HTML entities like &amp;
+        // which causes problems when used directly in href attributes.
+        if ($disconnect_url) {
+            $disconnect_url = html_entity_decode($disconnect_url);
+        }
+
+        if ($auth_url) {
+            $auth_url = html_entity_decode($auth_url);
+        }
+
         wp_localize_script(
             'productbird-admin',
             'productbird_admin',
             [
+                'nonce' => wp_create_nonce('wp_rest'),
                 'admin_url' => admin_url(),
                 'settings_page_url' => menu_page_url('productbird', false),
+                'api_root_url' => get_rest_url(),
+                'current_user' => [
+                    'id' => $user->ID,
+                    'email' => $user->user_email,
+                    'display_name' => $user->display_name,
+                ],
+                // Surface OIDC connection state to the Svelte app.
+                'oidc' => [
+                    'is_connected'   => $is_connected,
+                    'auth_url'       => $auth_url,
+                    'disconnect_url' => $disconnect_url,
+                    'name'           => $connected_user,
+                ],
             ]
         );
     }
