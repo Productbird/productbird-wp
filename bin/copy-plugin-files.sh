@@ -2,6 +2,7 @@ cd "$1" || exit
 rsync ./ "$2" --recursive --delete --delete-excluded \
 	--include=".wordpress-org/" \
 	--include=".wordpress-org/**" \
+	--include="assets/" \
 	--exclude=".*/" \
 	--exclude="*.md" \
 	--exclude=".*" \
@@ -11,7 +12,7 @@ rsync ./ "$2" --recursive --delete --delete-excluded \
 	--exclude=node_modules/ \
 	--exclude=tests/ \
 	--exclude=docs/ \
-	--exclude=ts/ \
+	--exclude="assets/ts/" \
 	--exclude=stats.html \
 	--exclude=phpcs.xml \
 	--exclude=phpunit.xml.dist \
@@ -38,7 +39,7 @@ rsync ./ "$2" --recursive --delete --delete-excluded \
 	--exclude=tsconfig.node.json \
 	--exclude=*.zip \
 	--exclude=env.d.ts \
-	--exclude=leat-crm.zip \
+	--exclude=productbird.zip \
 	--exclude="zip-file/" \
 	--exclude=packages/ \
     --exclude=patches/ \
