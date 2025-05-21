@@ -4,11 +4,14 @@ namespace Productbird\Admin;
 
 /**
  * Adds a filter to the WooCommerce products list to find products without descriptions.
+ * @since 0.1.0
  */
 class NoDescriptionFilter
 {
     /**
      * Initializes hooks for the filter.
+     * @since 0.1.0
+     * @return void
      */
     public function init(): void
     {
@@ -19,8 +22,10 @@ class NoDescriptionFilter
     /**
      * Adds a dropdown to filter products by empty description.
      *
+     * @since 0.1.0
      * @param string $post_type The current post type.
      * @param string $which     Position of the filter (top or bottom).
+     * @return void
      */
     public function add_empty_description_filter(string $post_type, string $which): void
     {
@@ -42,7 +47,9 @@ class NoDescriptionFilter
     /**
      * Modifies the query to filter products with empty descriptions.
      *
+     * @since 0.1.0
      * @param \WP_Query $query The WordPress query object.
+     * @return void
      */
     public function filter_products_by_empty_description(\WP_Query $query): void
     {
@@ -76,6 +83,7 @@ class NoDescriptionFilter
     /**
      * Adds a WHERE clause to the SQL query to find products with empty content.
      *
+     * @since 0.1.0
      * @param string $where The current WHERE clause.
      * @return string Modified WHERE clause.
      */

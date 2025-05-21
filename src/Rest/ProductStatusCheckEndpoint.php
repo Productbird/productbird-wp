@@ -13,11 +13,13 @@ use WP_Error;
  *
  * This endpoint provides a way for the admin UI to check the status of
  * product descriptions that are being generated asynchronously.
+ * @since 0.1.0
  */
 class ProductStatusCheckEndpoint
 {
     /**
      * Initialize the REST route registration.
+     * @since 0.1.0
      */
     public function init(): void
     {
@@ -26,6 +28,7 @@ class ProductStatusCheckEndpoint
 
     /**
      * Register the REST route for status checking.
+     * @since 0.1.0
      */
     public function register_routes(): void
     {
@@ -55,6 +58,7 @@ class ProductStatusCheckEndpoint
     /**
      * Check if the current user has permission to use this endpoint.
      *
+     * @since 0.1.0
      * @return bool Whether the user has permission.
      */
     public function check_permissions(): bool
@@ -65,6 +69,7 @@ class ProductStatusCheckEndpoint
     /**
      * Handle the status check request.
      *
+     * @since 0.1.0
      * @param WP_REST_Request $request The request object.
      * @return WP_REST_Response|WP_Error The response or error.
      */
@@ -82,7 +87,6 @@ class ProductStatusCheckEndpoint
         $api_key = $options['api_key'] ?? '';
 
         if (empty($api_key)) {
-            error_log('Productbird Status Check: API key not configured');
             return new WP_REST_Response(['message' => 'API key not configured'], 400);
         }
 
@@ -103,21 +107,12 @@ class ProductStatusCheckEndpoint
 
             // If we have a completed or error status already, just return it
             if (in_array($current_status, ['completed', 'error'], true)) {
-                error_log(sprintf(
-                    'Productbird Status Check: Product %d already has final status: %s',
-                    $product_id,
-                    $current_status
-                ));
                 $statuses[$product_id] = $current_status;
                 continue;
             }
 
             // If we don't have a status ID, mark as none
             if (empty($status_id)) {
-                error_log(sprintf(
-                    'Productbird Status Check: Product %d has no status ID',
-                    $product_id
-                ));
                 $statuses[$product_id] = 'none';
                 continue;
             }
@@ -126,11 +121,6 @@ class ProductStatusCheckEndpoint
             $response = $client->get_product_description_status($status_id);
 
             if (is_wp_error($response)) {
-                error_log(sprintf(
-                    'Productbird Status Check: Error checking status for product %d: %s',
-                    $product_id,
-                    $response->get_error_message()
-                ));
                 // Keep the current status on error, or default to 'running'
                 $statuses[$product_id] = $current_status ?: 'running';
                 continue;
@@ -138,11 +128,6 @@ class ProductStatusCheckEndpoint
 
             // Map workflowState to internal status
             $workflow_state = $response['status'] ?? '';
-            error_log(sprintf(
-                'Productbird Status Check: Processing product %d with workflow state: %s',
-                $product_id,
-                $workflow_state
-            ));
 
             switch ($workflow_state) {
                 case 'RUN_SUCCESS':
@@ -152,15 +137,6 @@ class ProductStatusCheckEndpoint
                     if ($product && !empty($response['description'])) {
                         $product->set_description(wp_kses_post($response['description']));
                         $product->save();
-                        error_log(sprintf(
-                            'Productbird Status Check: Successfully updated description for product %d',
-                            $product_id
-                        ));
-                    } else {
-                        error_log(sprintf(
-                            'Productbird Status Check: Failed to update product %d - Product not found or no description in response',
-                            $product_id
-                        ));
                     }
 
                     // Update meta to mark as completed
@@ -170,10 +146,6 @@ class ProductStatusCheckEndpoint
                         'completed'
                     );
                     delete_post_meta($product_id, ProductGenerationStatusColumn::META_KEY_STATUS_ID);
-                    error_log(sprintf(
-                        'Productbird Status Check: Marked product %d as completed',
-                        $product_id
-                    ));
 
                     $statuses[$product_id] = 'completed';
                     break;
@@ -186,11 +158,6 @@ class ProductStatusCheckEndpoint
                         'error'
                     );
                     delete_post_meta($product_id, ProductGenerationStatusColumn::META_KEY_STATUS_ID);
-                    error_log(sprintf(
-                        'Productbird Status Check: Marked product %d as failed/canceled with state: %s',
-                        $product_id,
-                        $workflow_state
-                    ));
 
                     $statuses[$product_id] = 'error';
                     break;
@@ -202,11 +169,6 @@ class ProductStatusCheckEndpoint
                         ProductGenerationStatusColumn::META_KEY_GENERATION_STATUS,
                         'running'
                     );
-                    error_log(sprintf(
-                        'Productbird Status Check: Product %d is still running (state: %s)',
-                        $product_id,
-                        $workflow_state
-                    ));
 
                     $statuses[$product_id] = 'running';
                     break;

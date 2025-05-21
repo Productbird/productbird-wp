@@ -5,6 +5,7 @@ namespace Productbird\Admin;
 /**
  * Adds and manages an "AI Description" column in the WooCommerce products list
  * to show the status of Productbird-generated descriptions.
+ * @since 0.1.0
  */
 class ProductGenerationStatusColumn
 {
@@ -21,6 +22,7 @@ class ProductGenerationStatusColumn
     /**
      * Initialize hooks and actions.
      *
+     * @since 0.1.0
      * @return void
      */
     public function init(): void
@@ -34,6 +36,7 @@ class ProductGenerationStatusColumn
     /**
      * Add the AI Description column to the product list table.
      *
+     * @since 0.1.0
      * @param array $columns Existing columns.
      * @return array Modified columns.
      */
@@ -55,6 +58,7 @@ class ProductGenerationStatusColumn
     /**
      * Render the content of the AI Description column for each product.
      *
+     * @since 0.1.0
      * @param string $column_name The name of the column being rendered.
      * @param int    $product_id  The ID of the product.
      * @return void
@@ -89,6 +93,7 @@ class ProductGenerationStatusColumn
     /**
      * Add custom CSS for the status column.
      *
+     * @since 0.1.0
      * @return void
      */
     public function add_column_styles(): void
@@ -131,6 +136,7 @@ class ProductGenerationStatusColumn
     /**
      * Enqueue JavaScript for auto-updating status.
      *
+     * @since 0.1.0
      * @param string $hook The current admin page.
      * @return void
      */
@@ -162,7 +168,7 @@ class ProductGenerationStatusColumn
             [
                 'restUrl' => esc_url_raw(rest_url('productbird/v1/check-generation-status')),
                 'nonce' => wp_create_nonce('wp_rest'),
-                'pollInterval' => 3000, // 30 seconds
+                'pollInterval' => 10000, // Changed from 3000ms to 10000ms (10 seconds)
             ]
         );
     }
@@ -170,6 +176,7 @@ class ProductGenerationStatusColumn
     /**
      * Get the JavaScript for auto-updating status.
      *
+     * @since 0.1.0
      * @return string The JavaScript code.
      */
     private function get_status_updater_script(): string

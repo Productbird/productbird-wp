@@ -5,7 +5,7 @@ namespace Productbird\Api;
 use WP_Error;
 
 /**
- * Handles HTTP communication with the Productbird AI service.
+ * Handles HTTP communication with the Productbird service.
  *
  * The base URL is automatically determined based on whether the current
  * WordPress site is running locally ( localhost / 127.0.0.1 / *.local ) or
@@ -18,6 +18,7 @@ use WP_Error;
  * $client = new \Productbird\Api\Client( $api_key );
  * $response = $client->generate_product_description( $payload );
  * ```
+ * @since 0.1.0
  */
 class Client
 {
@@ -26,7 +27,7 @@ class Client
      */
     private const GENERATE_PRODUCT_DESCRIPTION_ENDPOINT = '/api/v1/generate/product-description';
 
-        /**
+    /**
      * Endpoint path for generating a product description in bulk
      */
     private const GENERATE_PRODUCT_DESCRIPTION_BULK_ENDPOINT = '/api/v1/generate/product-description/bulk';
@@ -58,6 +59,7 @@ class Client
     /**
      * Constructor.
      *
+     * @since 0.1.0
      * @param string      $api_key  The secret API key.
      * @param string|null $base_url Optional base URL override. If omitted, this
      *                              class will decide automatically based on the
@@ -86,6 +88,7 @@ class Client
      *
      * @see WorkflowInput for the expected payload
      *
+     * @since 0.1.0
      * @param array<string,mixed> $payload Data matching the WorkflowInput schema.
      * @return array<string,mixed>|WP_Error The decoded JSON response on success
      *                                      or a WP_Error on failure.
@@ -104,6 +107,7 @@ class Client
      *
      * @see WorkflowInput for the expected payload structure of each element.
      *
+     * @since 0.1.0
      * @param array<int,array<string,mixed>> $payloads Array of WorkflowInput payloads.
      * @return array<string,mixed>|WP_Error The decoded JSON response on success
      *                                      or a WP_Error on failure.
@@ -119,6 +123,7 @@ class Client
      * This method checks if a previously requested description has been generated
      * and is ready for retrieval.
      *
+     * @since 0.1.0
      * @param string $status_id The status ID returned from the generation request.
      * @return array<string,mixed>|WP_Error The decoded JSON response on success
      *                                      or a WP_Error on failure.
@@ -131,6 +136,7 @@ class Client
     /**
      * Perform an authenticated POST request and decode the JSON response.
      *
+     * @since 0.1.0
      * @param string               $endpoint An endpoint path starting with '/'.
      * @param array<string,mixed>  $body     Request body.
      * @return array<string,mixed>|WP_Error  Decoded JSON on success or WP_Error.
@@ -151,8 +157,6 @@ class Client
         $response = wp_remote_post($url, $args);
 
         if (is_wp_error($response)) {
-            error_log('Productbird API request failed: ' . $response->get_error_message());
-
             return $response;
         }
 
@@ -181,6 +185,7 @@ class Client
     /**
      * Perform an authenticated GET request and decode the JSON response.
      *
+     * @since 0.1.0
      * @param string $endpoint An endpoint path starting with '/'.
      * @return array<string,mixed>|WP_Error Decoded JSON on success or WP_Error.
      */
@@ -199,7 +204,6 @@ class Client
         $response = wp_remote_get($url, $args);
 
         if (is_wp_error($response)) {
-            error_log('Productbird API request failed: ' . $response->get_error_message());
             return $response;
         }
 
@@ -228,6 +232,8 @@ class Client
 
     /**
      * Decide which base URL should be used by default.
+     * @since 0.1.0
+     * @return string The determined base URL.
      */
     public static function determine_base_url(): string
     {
@@ -236,6 +242,8 @@ class Client
 
     /**
      * Detects whether the site is running on a localhost-style domain.
+     * @since 0.1.0
+     * @return bool True if the site URL matches local patterns, false otherwise.
      */
     public static function is_local_site(): bool
     {

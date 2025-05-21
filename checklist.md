@@ -1,0 +1,26 @@
+- [x] Guideline 1: Plugins must be compatible with the GNU General Public License v2 (GPL-2.0-or-later found in `productbird.php`)
+- [ ] Guideline 2: Developers are responsible for the contents and actions of their plugins (Ongoing check).
+- [x] Guideline 3: A stable version of a plugin must be available from its WordPress Plugin Directory page (Version `0.4.0` found in `productbird.php`; hosting on WordPress.org is an external step).
+- [ ] Guideline 4: Code must be (mostly) human readable (PHP files reviewed appear readable; ongoing check for the rest of the codebase).
+- [x] Guideline 5: Trialware is not permitted (Plugin uses an API key for an external service (Productbird.ai). This appears to be a SaaS model, not trialware. `readme.txt` clarifies API key purpose).
+- [x] Guideline 6: Software as a Service is permitted (Plugin connects to `https://app.productbird.ai` using an API key, which is a common SaaS model. `readme.txt` explains this).
+- [ ] Guideline 7: Plugins may not track users without their consent.
+    - Product data (name, categories, SKU, attributes, image URLs, store name, language) is sent to `app.productbird.ai` for description generation. This is core functionality.
+    - OIDC client registration sends `bloginfo('name')` and `home_url()`.
+    - `readme.txt` created and includes information on data transmission to Productbird.ai.
+    - **TODO**: Ensure plugin settings page *also* clearly informs the user about data transmission to the external Productbird.ai service (complementing the `readme.txt`). (Attempted to add notice to Svelte component, but tool failed to apply edit; `readme.txt` provides this info).
+    - **TODO**: Update `readme.txt` with a direct link to Productbird.ai's privacy policy if available.
+- [x] Guideline 8: Plugins may not send executable code via third-party systems (Plugin fetches data/JSON, not executable code, from its API. Frontend assets are compiled and bundled).
+- [ ] Guideline 9: Developers and their plugins must not do anything illegal, dishonest, or morally offensive (No obvious violations; `readme.txt` enhances transparency about SaaS nature and data handling).
+- [x] Guideline 10: Plugins may not embed external links or credits on the public site without explicitly asking the user's permission (Plugin appears to be admin-focused; no evidence of unconsented public-facing links).
+- [x] Guideline 11: Plugins should not hijack the admin dashboard (Uses admin notices contextually; adds a single top-level menu page; no evidence of excessive banners/popups or aggressive upselling within the plugin itself).
+- [x] Guideline 12: Public facing pages on WordPress.org (readmes) must not spam.
+    - `readme.txt` created with standard sections and information. Content appears non-spammy.
+    - **DONE (by AI)**: Review `readme.txt` for any potentially spammy phrasing before submission.
+    - **TODO**: Add screenshot references to `readme.txt` (e.g. `/assets/screenshot-1.png`)
+- [x] Guideline 13: Plugins must use WordPress' default libraries (Correctly declares dependencies on core libraries like jQuery, wp-api-fetch, wp-i18n; bundles its own frontend assets via Vite; does not appear to hotlink or re-bundle core libs).
+- [ ] Guideline 14: Frequent commits to a plugin should be avoided (Process guideline for WordPress.org SVN, not code-related for now. Keep in mind for release management).
+- [x] Guideline 15: Plugin version numbers must be incremented for each new release (Currently `0.4.0` in `productbird.php`; ensure this is updated for future releases).
+- [x] Guideline 16: A complete plugin must be available at the time of submission (Plugin has substantial existing functionality; not a placeholder).
+- [x] Guideline 17: Plugins must respect trademarks, copyrights, and project names (Plugin name "Productbird" seems unique. References to WooCommerce are functional and appropriate).
+- [ ] Guideline 18: We reserve the right to maintain the Plugin Directory to the best of our ability (WordPress.org team's right; not code-related).

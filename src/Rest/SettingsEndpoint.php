@@ -9,10 +9,12 @@ use WP_REST_Response;
  * Provides GET and POST endpoints for Productbird plugin settings.
  *
  * Route: /wp-json/productbird/v1/settings
+ * @since 0.1.0
  */
 class SettingsEndpoint {
     /**
      * Bootstraps the REST route registration.
+     * @since 0.1.0
      */
     public function init(): void {
         add_action( 'rest_api_init', [ $this, 'register_routes' ] );
@@ -20,6 +22,7 @@ class SettingsEndpoint {
 
     /**
      * Registers REST routes.
+     * @since 0.1.0
      */
     public function register_routes(): void {
         // Read settings
@@ -53,6 +56,7 @@ class SettingsEndpoint {
 
     /**
      * Permission callback – only allow admins.
+     * @since 0.1.0
      */
     public function check_permissions(): bool {
         return current_user_can( 'manage_options' );
@@ -60,6 +64,8 @@ class SettingsEndpoint {
 
     /**
      * Returns the current plugin settings.
+     * @since 0.1.0
+     * @param WP_REST_Request $request The request object.
      */
     public function get_settings( WP_REST_Request $request ) {
         $settings = get_option( 'productbird_settings', [] );
@@ -69,6 +75,8 @@ class SettingsEndpoint {
 
     /**
      * Updates plugin settings.
+     * @since 0.1.0
+     * @param WP_REST_Request $request The request object.
      */
     public function update_settings( WP_REST_Request $request ) {
         $params = $request->get_json_params();
@@ -76,7 +84,6 @@ class SettingsEndpoint {
             return new WP_REST_Response( [ 'message' => 'Invalid payload' ], 400 );
         }
 
-        error_log( print_r( $params, true ) );
         // Merge with existing settings so we only overwrite provided keys.
         $current   = get_option( 'productbird_settings', [] );
         $merged    = array_merge( $current, $params );
@@ -84,8 +91,6 @@ class SettingsEndpoint {
         // Sanitize via existing helper.
         $admin      = new Admin();
         $sanitized  = $admin->sanitize_settings( $merged );
-
-        error_log( print_r( $sanitized, true ) );
 
         update_option( 'productbird_settings', $sanitized );
 

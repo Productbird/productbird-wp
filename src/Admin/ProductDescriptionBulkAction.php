@@ -4,10 +4,12 @@ namespace Productbird\Admin;
 
 use Productbird\Api\Client;
 use Kucrut\Vite;
+use Productbird\Admin\ProductGenerationStatusColumn;
 
 /**
  * Handles WooCommerce product bulk actions that rely on Productbird AI.
  *
+ * @since 0.1.0
  */
 class ProductDescriptionBulkAction
 {
@@ -33,6 +35,8 @@ class ProductDescriptionBulkAction
 
     /**
      * Initializes hooks for the bulk action.
+     * @since 0.1.0
+     * @return void
      */
     public function init(): void
     {
@@ -50,6 +54,7 @@ class ProductDescriptionBulkAction
     /**
      * Adds Productbird-specific items to the bulk-action selector.
      *
+     * @since 0.1.0
      * @param array<string,string> $actions Existing bulk actions.
      * @return array<string,string> Modified actions.
      */
@@ -70,6 +75,7 @@ class ProductDescriptionBulkAction
     /**
      * Handles the Productbird "Generate AI Description" bulk action.
      *
+     * @since 0.1.0
      * @param string  $redirect_to URL to send the user back to.
      * @param string  $action      Selected bulk action key.
      * @param int[]   $post_ids    IDs of the selected products.
@@ -158,8 +164,8 @@ class ProductDescriptionBulkAction
                 $product_id = (int) $payloads[0]['id'];
 
                 if (isset($response['statusId'])) {
-                    update_post_meta($product_id, '_productbird_status_id', sanitize_text_field($response['statusId']));
-                    update_post_meta($product_id, '_productbird_generation_status', 'queued');
+                    update_post_meta($product_id, ProductGenerationStatusColumn::META_KEY_STATUS_ID, sanitize_text_field($response['statusId']));
+                    update_post_meta($product_id, ProductGenerationStatusColumn::META_KEY_GENERATION_STATUS, 'queued');
                 }
             }
         } else {
@@ -181,8 +187,8 @@ class ProductDescriptionBulkAction
                         $product_id = (int) $result['productId'];
 
                         if (!empty($result['statusId'])) {
-                            update_post_meta($product_id, '_productbird_status_id', sanitize_text_field($result['statusId']));
-                            update_post_meta($product_id, '_productbird_generation_status', 'queued');
+                            update_post_meta($product_id, ProductGenerationStatusColumn::META_KEY_STATUS_ID, sanitize_text_field($result['statusId']));
+                            update_post_meta($product_id, ProductGenerationStatusColumn::META_KEY_GENERATION_STATUS, 'queued');
                         }
                     }
                 }
@@ -200,6 +206,8 @@ class ProductDescriptionBulkAction
 
     /**
      * Displays a result notice after the bulk action has completed.
+     * @since 0.1.0
+     * @return void
      */
     public function bulk_action_notices(): void
     {
@@ -265,6 +273,7 @@ class ProductDescriptionBulkAction
     /**
      * Outputs JS that disables the label option in the bulk-action dropdown.
      * The label acts purely as a visual separator and must not be selectable.
+     * @since 0.1.0
      */
     public function disable_group_label_option(): void
     {
@@ -291,6 +300,7 @@ class ProductDescriptionBulkAction
     /**
      * Returns the product's primary brand (if any) based on a `brand` or
      * `pa_brand` attribute/taxonomy.
+     * @since 0.1.0
      */
     private function get_product_brand(\WC_Product $product): ?string
     {
@@ -309,6 +319,7 @@ class ProductDescriptionBulkAction
     /**
      * Gets the product categories as simple objects with name properties.
      *
+     * @since 0.1.0
      * @param int $product_id
      * @return array<int,array{name:string}>
      */
@@ -334,6 +345,7 @@ class ProductDescriptionBulkAction
     /**
      * Collects visible product attributes (non-variation) as name/value pairs.
      *
+     * @since 0.1.0
      * @return array<int,array{ name:string, value:string }>
      */
     private function get_product_attributes(\WC_Product $product): array
@@ -373,6 +385,7 @@ class ProductDescriptionBulkAction
      * Returns up to one image URL (featured image) for the product as required
      * by the API schema.
      *
+     * @since 0.1.0
      * @return string[]
      */
     private function get_product_image_urls(\WC_Product $product): array
@@ -402,6 +415,7 @@ class ProductDescriptionBulkAction
     /**
      * Enqueues the compiled Vite asset that mounts the product-description modal.
      *
+     * @since 0.1.0
      * @param string $hook_suffix The current admin page hook suffix.
      */
     public function enqueue_assets(string $hook_suffix): void

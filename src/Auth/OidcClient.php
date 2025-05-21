@@ -6,20 +6,21 @@ use WP_Error;
 use WP_REST_Request;
 
 /**
- * Handles the OpenID-Connect client flow against the Productbird Better-Auth
- * instance. The flow is as follows:
+ * Handles the OpenID-Connect client flow against the Productbird
+ * app. The flow is as follows:
  *
- * 1. "Connect with Productbird" button sends the browser to the Better-Auth
- *    /authorize endpoint with the usual OIDC parameters.
- * 2. After sign-in / consent the provider redirects the user back to our
+ * 1. "Connect with Productbird" button sends the browser to the Productbird
+ *    auth endpoint with the usual OIDC parameters.
+ * 2. After sign-in and/or consent the provider redirects the user back to our
  *    redirect URI ( /wp-json/productbird/v1/oidc/callback ).
  * 3. We exchange the code for access & refresh tokens and persist them in a
  *    WordPress option.
- * 4. When required we can call the UserInfo endpoint or refresh the access
- *    token.
+ * 4. We call the /userinfo endpoint to get the user's profile information.
  *
  * All data is stored in regular WordPress options so it survives across
  * requests and works for all admins alike.
+ *
+ * @since 0.1.0
  */
 class OidcClient
 {
@@ -49,6 +50,11 @@ class OidcClient
     /* === Public bootstrap =============================================== */
     /* --------------------------------------------------------------------- */
 
+    /**
+     * Initializes hooks for the OIDC client.
+     * @since 0.1.0
+     * @return void
+     */
     public function init(): void
     {
         // Allow the admin to disconnect which simply wipes the stored data.
@@ -61,6 +67,8 @@ class OidcClient
 
     /**
      * Returns the Better-Auth base URL depending on local/remote environment.
+     * @since 0.1.0
+     * @return string The base URL for the OIDC provider.
      */
     public function get_base_url(): string
     {
@@ -77,6 +85,8 @@ class OidcClient
 
     /**
      * Fully-qualified redirect URI that Better-Auth will send the user back to.
+     * @since 0.1.0
+     * @return string The redirect URI.
      */
     public function get_redirect_uri(): string
     {
@@ -85,6 +95,8 @@ class OidcClient
 
     /**
      * Retrieve the stored client credentials if we already registered.
+     * @since 0.1.0
+     * @return array<string, string>|null Client credentials or null if not found.
      */
     private function get_client_credentials(): ?array
     {
@@ -94,6 +106,8 @@ class OidcClient
 
     /**
      * Retrieve the stored tokens ( may be expired ).
+     * @since 0.1.0
+     * @return array<string, mixed>|null Tokens or null if not found.
      */
     private function get_tokens(): ?array
     {
@@ -105,6 +119,9 @@ class OidcClient
 
     /**
      * Are we currently connected (i.e. we have a non-expired access token)?
+     * Will attempt to refresh the token if it is expired.
+     * @since 0.1.0
+     * @return bool True if connected, false otherwise.
      */
     public function is_connected(): bool
     {
@@ -126,6 +143,8 @@ class OidcClient
      * Generates the "Connect with Productbird" authorization URL.
      * This will dynamically register the WP site as an OIDC client if no
      * credentials exist yet.
+     * @since 0.1.0
+     * @return string|null The authorization URL or null on failure.
      */
     public function build_authorization_url(): ?string
     {
@@ -161,7 +180,8 @@ class OidcClient
 
     /**
      * Registers the WP site as an OAuth client with Better-Auth.
-     * Returns true on success or WP_Error on failure.
+     * @since 0.1.0
+     * @return true|WP_Error True on success or WP_Error on failure.
      */
     private function register_client()
     {
@@ -185,7 +205,6 @@ class OidcClient
         );
 
         if (is_wp_error($response)) {
-            error_log('WP_Error during client registration: ' . $response->get_error_message());
             return $response;
         }
 
@@ -209,6 +228,8 @@ class OidcClient
 
     /**
      * Make sure we have a client_id / secret. Attempts to register if missing.
+     * @since 0.1.0
+     * @return bool True if client is registered or registration was successful, false otherwise.
      */
     private function ensure_client_registered(): bool
     {
@@ -229,6 +250,9 @@ class OidcClient
      * Processes the /oidc/callback REST request. Exchanges the code for
      * tokens, stores them, and finally redirects the user back to the settings
      * page with a status indicator.
+     * @since 0.1.0
+     * @param WP_REST_Request $request The incoming REST request from the OIDC provider.
+     * @return WP_Error|void WP_Error on failure. Redirects on success, so effectively void.
      */
     public function process_callback(WP_REST_Request $request)
     {
@@ -299,6 +323,8 @@ class OidcClient
     /**
      * Refreshes the access token if we have a refresh token available.
      * Returns the updated token array or WP_Error on failure.
+     * @since 0.1.0
+     * @return array<string, mixed>|WP_Error The new token array or WP_Error on failure.
      */
     public function refresh_access_token()
     {
@@ -358,6 +384,8 @@ class OidcClient
     /**
      * Calls the /userinfo endpoint with the current access token.
      * Returns an associative array with the claims or WP_Error on failure.
+     * @since 0.1.0
+     * @return array<string, mixed>|WP_Error Userinfo claims or WP_Error.
      */
     public function get_userinfo()
     {
@@ -374,8 +402,6 @@ class OidcClient
             if (count($jwt_parts) === 3) {
                 $payload = json_decode(base64_decode(str_replace(['-', '_'], ['+', '/'], $jwt_parts[1])), true);
             }
-        } else {
-            error_log('Productbird: No ID token available');
         }
 
         $response = wp_remote_get(
@@ -390,7 +416,6 @@ class OidcClient
         );
 
         if (is_wp_error($response)) {
-            error_log('Productbird: UserInfo request failed with WP_Error: ' . $response->get_error_message());
             return $response;
         }
 
@@ -415,6 +440,8 @@ class OidcClient
     /**
      * Handles the admin-posted disconnect action – wipes stored credentials
      * and tokens.
+     * @since 0.1.0
+     * @return void As this method always calls exit.
      */
     public function handle_disconnect(): void
     {
@@ -431,6 +458,12 @@ class OidcClient
         exit;
     }
 
+    /**
+     * Retrieves organizations for the connected user.
+     * Requires an active OIDC connection.
+     * @since 0.1.0
+     * @return array<mixed>|WP_Error An array of organization data or WP_Error on failure.
+     */
     public function get_organizations() {
         if ( $this->is_connected() ) {
             $tokens = $this->get_tokens();          // refresh_access_token() is done in is_connected()

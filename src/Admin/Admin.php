@@ -9,6 +9,7 @@ use Productbird\FeatureFlags;
 
 /**
  * Handles WordPress admin integration.
+ * @since 0.1.0
  */
 class Admin
 {
@@ -19,6 +20,8 @@ class Admin
 
     /**
      * Bootstraps admin hooks.
+     * @since 0.1.0
+     * @return void
      */
     public function init(): void
     {
@@ -31,6 +34,7 @@ class Admin
     /**
      * Registers the Productbird settings and fields.
      *
+     * @since 0.1.0
      * @return void
      */
     public function register_settings(): void
@@ -55,6 +59,7 @@ class Admin
     /**
      * Adds the Productbird settings page as a top-level menu item.
      *
+     * @since 0.1.0
      * @return void
      */
     public function add_settings_page(): void
@@ -76,6 +81,7 @@ class Admin
     /**
      * Sanitize and validate settings before saving.
      *
+     * @since 0.1.0
      * @param array $input Raw option values.
      * @return array Sanitized values.
      */
@@ -93,6 +99,8 @@ class Admin
 
     /**
      * Render settings page markup.
+     * @since 0.1.0
+     * @return void
      */
     public function render_settings_page(): void
     {
@@ -104,7 +112,9 @@ class Admin
     /**
      * Enqueue the compiled/admin Vite assets on Productbird settings page.
      *
+     * @since 0.1.0
      * @param string $hook_suffix The current admin page hook suffix.
+     * @return void
      */
     public function enqueue_assets(string $hook_suffix): void
     {

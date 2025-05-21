@@ -12,14 +12,25 @@ use WP_Error;
  * Authorization-Code flow. The provider will call it with
  *   ?code=...&state=...
  * and we delegate the heavy lifting to the OidcClient helper.
+ * @since 0.1.0
  */
 class OidcCallbackEndpoint
 {
+    /**
+     * Initialize the REST route registration.
+     * @since 0.1.0
+     * @return void
+     */
     public function init(): void
     {
         add_action('rest_api_init', [$this, 'register_routes']);
     }
 
+    /**
+     * Register the REST route for the OIDC callback.
+     * @since 0.1.0
+     * @return void
+     */
     public function register_routes(): void
     {
         register_rest_route(
@@ -46,7 +57,9 @@ class OidcCallbackEndpoint
     /**
      * Delegates to OidcClient for processing.
      *
+     * @since 0.1.0
      * @param WP_REST_Request $request
+     * @return WP_REST_Response
      */
     public function handle_callback(WP_REST_Request $request)
     {

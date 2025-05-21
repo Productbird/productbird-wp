@@ -7,11 +7,13 @@ namespace Productbird;
  *
  * Flags can be modified by hooking into the `productbird_feature_flags` filter or by
  * defining a `PRODUCTBIRD_<FLAG>_ENABLED` constant (boolean).
+ * @since 0.1.0
  */
 class FeatureFlags
 {
     /**
      * Default feature matrix.  Extend as required.
+     * @since 0.1.0
      */
     private const DEFAULT_FLAGS = [
         // OpenID-Connect
@@ -20,6 +22,7 @@ class FeatureFlags
 
     /**
      * Check whether a feature is enabled.
+     * @since 0.1.0
      */
     public static function is_enabled(string $flag): bool
     {
@@ -41,6 +44,7 @@ class FeatureFlags
 
     /**
      * Return the complete flag map after applying filters / constant overrides.
+     * @since 0.1.0
      */
     public static function get_all(): array
     {

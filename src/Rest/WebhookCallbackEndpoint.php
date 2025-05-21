@@ -2,8 +2,10 @@
 
 namespace Productbird\Rest;
 
+use Productbird\Admin\ProductGenerationStatusColumn;
 use WP_REST_Request;
 use WP_Error;
+use WP_REST_Response;
 
 /**
  * Registers a REST endpoint that receives asynchronous callbacks from the
@@ -22,11 +24,14 @@ use WP_Error;
  *
  * The handler will locate the WooCommerce product by ID and update its long
  * description accordingly.
+ * @since 0.1.0
  */
-class ProductDescriptionCallbackEndpoint
+class WebhookCallbackEndpoint
 {
     /**
      * Bootstraps the REST route registration.
+     * @since 0.1.0
+     * @return void
      */
     public function init(): void
     {
@@ -35,6 +40,8 @@ class ProductDescriptionCallbackEndpoint
 
     /**
      * Registers the callback REST route.
+     * @since 0.1.0
+     * @return void
      */
     public function register_routes(): void
     {
@@ -44,7 +51,11 @@ class ProductDescriptionCallbackEndpoint
             [
                 'methods'             => \WP_REST_Server::CREATABLE, // POST, PUT, etc.
                 'callback'            => [$this, 'handle_callback'],
-                'permission_callback' => '__return_true', // Public endpoint – ensure no auth required.
+                'permission_callback' => function() {
+                    // TODO: Implement proper security check here.
+                    // Example: check_a_shared_secret_in_header();
+                    return false;
+                },
             ]
         );
     }
@@ -52,8 +63,9 @@ class ProductDescriptionCallbackEndpoint
     /**
      * Handles the incoming callback and updates the product.
      *
+     * @since 0.1.0
      * @param WP_REST_Request $request Incoming REST request.
-     * @return array<string,mixed>|WP_Error
+     * @return WP_REST_Response|WP_Error
      */
     public function handle_callback(WP_REST_Request $request)
     {
@@ -95,12 +107,12 @@ class ProductDescriptionCallbackEndpoint
         $product->set_description(implode("\n", $html_parts));
         $product->save();
 
-        update_post_meta($product_id, '_productbird_generation_status', 'completed');
-        delete_post_meta($product_id, '_productbird_status_id');
+        update_post_meta($product_id, ProductGenerationStatusColumn::META_KEY_GENERATION_STATUS, 'completed');
+        delete_post_meta($product_id, ProductGenerationStatusColumn::META_KEY_STATUS_ID);
 
-        return [
+        return new WP_REST_Response([
             'success'   => true,
             'productId' => $product_id,
-        ];
+        ]);
     }
 }

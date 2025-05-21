@@ -6,7 +6,7 @@ use Productbird\Admin\Admin;
 use Productbird\Admin\ProductDescriptionBulkAction;
 use Productbird\Admin\ProductGenerationStatusColumn;
 use Productbird\Admin\NoDescriptionFilter;
-use Productbird\Rest\ProductDescriptionCallbackEndpoint;
+use Productbird\Rest\WebhookCallbackEndpoint;
 use Productbird\Rest\ProductStatusCheckEndpoint;
 use Productbird\Rest\OidcCallbackEndpoint;
 use Productbird\Auth\OidcClient;
@@ -18,12 +18,14 @@ use Productbird\FeatureFlags;
  * Core plugin class.
  *
  * @package Productbird
+ * @since 0.1.0
  */
 class Plugin
 {
     /**
      * Initialize plugin parts.
      *
+     * @since 0.1.0
      * @return void
      */
     public function init(): void
@@ -41,7 +43,7 @@ class Plugin
             (new NoDescriptionFilter())->init();
         }
 
-        (new ProductDescriptionCallbackEndpoint())->init();
+        (new WebhookCallbackEndpoint())->init();
         (new ProductStatusCheckEndpoint())->init();
         (new OrganizationsEndpoint())->init();
         (new SettingsEndpoint())->init();
@@ -58,20 +60,22 @@ class Plugin
     /**
      * Runs on plugin activation.
      *
+     * @since 0.1.0
      * @return void
      */
     public function activate(): void
     {
-        // Plugin activation logic.
+        // Silence is golden.
     }
 
     /**
      * Runs on plugin deactivation.
      *
+     * @since 0.1.0
      * @return void
      */
     public function deactivate(): void
     {
-        // Plugin deactivation logic.
+        // Silence is golden.
     }
 }
