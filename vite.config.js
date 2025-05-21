@@ -27,8 +27,8 @@ export default defineConfig({
 		v4wp({
 			//
 			input: [
-				"assets/admin-settings/index.ts",
-				"assets/product-description/index.ts",
+				"assets/ts/admin-settings/index.ts",
+				"assets/ts/tools/product-description/index.ts",
 			],
 		}),
 		license({
@@ -50,18 +50,22 @@ export default defineConfig({
 	},
 	resolve: {
 		alias: [
-			{ find: "$lib", replacement: path.resolve("./assets/lib") },
+			{ find: "$lib", replacement: path.resolve("./assets/ts/lib") },
 			{
 				find: "$components",
-				replacement: path.resolve("./assets/lib/components"),
+				replacement: path.resolve("./assets/ts/lib/components"),
 			},
 			{
 				find: "$app",
-				replacement: path.resolve("./assets/lib/sk/app"),
+				replacement: path.resolve("./assets/ts/lib/sk/app"),
 			},
 			{
 				find: "$admin-settings",
-				replacement: path.resolve("./assets/admin-settings"),
+				replacement: path.resolve("./assets/ts/admin-settings"),
+			},
+			{
+				find: "$tools",
+				replacement: path.resolve("./assets/ts/tools"),
 			},
 		],
 	},

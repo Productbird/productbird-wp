@@ -19,28 +19,34 @@
 		"baseUrl": ".",
 		"paths": {
 			"$lib": [
-				"./assets/lib"
+				"./assets/ts/lib"
 			],
 			"$lib/*": [
-				"./assets/lib/*"
+				"./assets/ts/lib/*"
 			],
 			"$lib/components": [
-				"./assets/lib/components"
+				"./assets/ts/lib/components"
 			],
 			"$lib/components/*": [
-				"./assets/lib/components/*"
+				"./assets/ts/lib/components/*"
 			],
 			"$app": [
-				"assets/lib/sk/app"
+				"assets/ts/lib/sk/app"
 			],
 			"$app/*": [
-				"assets/lib/sk/app/*"
+				"assets/ts/lib/sk/app/*"
 			],
 			"$admin-settings": [
-				"assets/admin-settings"
+				"assets/ts/admin-settings"
 			],
 			"$admin-settings/*": [
-				"assets/admin-settings/*"
+				"assets/ts/admin-settings/*"
+			],
+			"$tools": [
+				"assets/ts/tools"
+			],
+			"$tools/*": [
+				"assets/ts/tools/*"
 			]
 		}
 	},

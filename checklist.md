@@ -1,6 +1,6 @@
 - [x] Guideline 1: Plugins must be compatible with the GNU General Public License v2 (GPL-2.0-or-later found in `productbird.php`)
 - [ ] Guideline 2: Developers are responsible for the contents and actions of their plugins (Ongoing check).
-- [x] Guideline 3: A stable version of a plugin must be available from its WordPress Plugin Directory page (Version `0.4.0` found in `productbird.php`; hosting on WordPress.org is an external step).
+- [x] Guideline 3: A stable version of a plugin must be available from its WordPress Plugin Directory page (Version `0.1.0` found in `productbird.php`; hosting on WordPress.org is an external step).
 - [ ] Guideline 4: Code must be (mostly) human readable (PHP files reviewed appear readable; ongoing check for the rest of the codebase).
 - [x] Guideline 5: Trialware is not permitted (Plugin uses an API key for an external service (Productbird.ai). This appears to be a SaaS model, not trialware. `readme.txt` clarifies API key purpose).
 - [x] Guideline 6: Software as a Service is permitted (Plugin connects to `https://app.productbird.ai` using an API key, which is a common SaaS model. `readme.txt` explains this).
@@ -20,7 +20,7 @@
     - **TODO**: Add screenshot references to `readme.txt` (e.g. `/assets/screenshot-1.png`)
 - [x] Guideline 13: Plugins must use WordPress' default libraries (Correctly declares dependencies on core libraries like jQuery, wp-api-fetch, wp-i18n; bundles its own frontend assets via Vite; does not appear to hotlink or re-bundle core libs).
 - [ ] Guideline 14: Frequent commits to a plugin should be avoided (Process guideline for WordPress.org SVN, not code-related for now. Keep in mind for release management).
-- [x] Guideline 15: Plugin version numbers must be incremented for each new release (Currently `0.4.0` in `productbird.php`; ensure this is updated for future releases).
+- [x] Guideline 15: Plugin version numbers must be incremented for each new release (Currently `0.1.0` in `productbird.php`; ensure this is updated for future releases).
 - [x] Guideline 16: A complete plugin must be available at the time of submission (Plugin has substantial existing functionality; not a placeholder).
 - [x] Guideline 17: Plugins must respect trademarks, copyrights, and project names (Plugin name "Productbird" seems unique. References to WooCommerce are functional and appropriate).
 - [ ] Guideline 18: We reserve the right to maintain the Plugin Directory to the best of our ability (WordPress.org team's right; not code-related).

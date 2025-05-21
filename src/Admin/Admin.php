@@ -124,7 +124,7 @@ class Admin
         }
 
         /**
-         * Small hack to ensure the hash is always set to the root path.
+         * Initializes the URL hash to the root path for client-side routing.
          * This is required by our SPA router.
          */
         wp_add_inline_script('jquery', '
@@ -136,7 +136,7 @@ class Admin
         ');
 
         $dist_path = PRODUCTBIRD_PLUGIN_DIR . '/dist';
-        $source_entry = 'assets/admin-settings/index.ts';
+        $source_entry = 'assets/ts/admin-settings/index.ts';
 
         Vite\enqueue_asset(
             $dist_path,

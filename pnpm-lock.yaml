@@ -812,7 +812,7 @@ packages:
 
   acorn@8.14.1:
     resolution: {integrity: sha512-OvQ/2pUDKmgfCg++xsTX1wGxfTaszcHVcTctW4UJB4hibJx2HXxxO5UmVgyjMa+ZDsiaf5wWLXYpRWMmBI0QHg==}
-    engines: {node: '>=0.4.0'}
+    engines: {node: '>=0.1.0'}
     hasBin: true
 
   ansi-regex@5.0.1:
@@ -1065,7 +1065,7 @@ packages:
 
   figlet@1.8.1:
     resolution: {integrity: sha512-kEC3Sme+YvA8Hkibv0NR1oClGcWia0VB2fC1SlMy027cwe795Xx40Xiv/nw/iFAwQLupymWh+uhAAErn/7hwPg==}
-    engines: {node: '>= 0.4.0'}
+    engines: {node: '>= 0.1.0'}
     hasBin: true
 
   fill-range@7.1.1:

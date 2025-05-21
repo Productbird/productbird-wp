@@ -3,7 +3,7 @@ Contributors: productbird
 Tags: woocommerce, ai, artificial intelligence, product description, ecommerce
 Requires at least: 5.0
 Tested up to: 6.5
-Stable tag: 0.4.0
+Stable tag: 0.1.0
 Requires PHP: 7.4
 Requires Plugins: woocommerce
 License: GPL-2.0-or-later
@@ -28,7 +28,7 @@ Connect your store to the Productbird.ai service using an API key, select your p
 
 **Important Note on Data Usage:**
 
-To provide AI-powered features, this plugin sends product data (such as product name, categories, SKU, attributes, image URLs, and store name) to the external Productbird.ai service. Your Productbird API key is required to use these features. Please ensure you are comfortable with this data usage before using the AI generation tools. You can find more information about Productbird.ai and its policies on [the Productbird website](https://productbird.ai). (TODO: Add direct link to privacy policy if available).
+To provide AI-powered features, this plugin sends product data (such as product name, categories, SKU, attributes, image URLs, store name, and store URL) to the external Productbird.ai service. Your Productbird API key is required to use these features. Only this specific product and store information is sent; no other user or site data is transmitted for this purpose. Please ensure you are comfortable with this data usage before using the AI generation tools. You can find more information about Productbird.ai and its policies on [the Productbird website](https://productbird.ai), including our [Privacy Policy](https://productbird.ai/privacy-policy/) and [Terms and Conditions](https://productbird.ai/terms-conditions/).
 
 == Installation ==
 
@@ -51,22 +51,14 @@ When generating descriptions, product details like name, categories, SKU, attrib
 
 = Is there a cost associated with using the AI features? =
 
-The plugin itself is free and licensed under GPL. However, the Productbird.ai service may have its own subscription plans or usage costs associated with API key access and AI generation, depending on your Productbird.ai account. Please refer to Productbird.ai for their pricing details.
-
-== Screenshots ==
-
-1.  Productbird settings page.
-2.  "AI Desc." column in product list.
-3.  Bulk action for generating descriptions.
-
-(TODO: Add actual screenshot file references once available, e.g., `/assets/screenshot-1.png`)
+The plugin itself is free and licensed under GPL. However, the Productbird.ai service has its own pricing plans and usage costs associated with API key access and AI generation, depending on your Productbird.ai account. Please refer to Productbird.ai for their pricing details.
 
 == Changelog ==
 
-= 0.4.0 =
+= 0.1.0 =
 * Initial release.
 
 == Upgrade Notice ==
 
-= 0.4.0 =
+= 0.1.0 =
 Initial release.
