@@ -4,6 +4,9 @@
  * Plugin URI:  https://productbird.ai
  * Description: Productbird helps ecommerce owners get more done by providing various AI tools.
  * Version:     0.0.1
+ * Requires at least: 5.0
+ * Tested up to: 6.8
+ * Requires PHP: 7.4
  * Author:      Productbird
  * License:     GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html

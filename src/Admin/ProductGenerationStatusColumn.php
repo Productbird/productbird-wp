@@ -103,8 +103,7 @@ class ProductGenerationStatusColumn
             return;
         }
 
-        ?>
-        <style>
+        $css = '
             .column-productbird_ai_status {
                 width: 80px;
                 text-align: center;
@@ -129,8 +128,10 @@ class ProductGenerationStatusColumn
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
-        </style>
-        <?php
+        ';
+
+        // "common" is a core admin style handle that is always enqueued in wp-admin.
+        wp_add_inline_style('common', $css);
     }
 
     /**
