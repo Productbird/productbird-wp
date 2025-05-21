@@ -147,20 +147,14 @@ class ProductGenerationStatusColumn
             return;
         }
 
-        wp_register_script(
+        // Enqueue the external JS file that handles status polling.
+        wp_enqueue_script(
             'productbird-status-updater',
-            false,
+            plugin_dir_url(dirname(__DIR__, 2) . '/productbird.php') . 'assets/js/columns.js',
             [],
-            '1.0',
+            PRODUCTBIRD_VERSION,
             true
         );
-
-        wp_add_inline_script(
-            'productbird-status-updater',
-            $this->get_status_updater_script()
-        );
-
-        wp_enqueue_script('productbird-status-updater');
 
         wp_localize_script(
             'productbird-status-updater',
@@ -171,88 +165,5 @@ class ProductGenerationStatusColumn
                 'pollInterval' => 10000, // Changed from 3000ms to 10000ms (10 seconds)
             ]
         );
-    }
-
-    /**
-     * Get the JavaScript for auto-updating status.
-     *
-     * @since 0.1.0
-     * @return string The JavaScript code.
-     */
-    private function get_status_updater_script(): string
-    {
-        return <<<'JS'
-(function() {
-    // Find all products with pending statuses
-    function collectPendingProductIds() {
-        const pendingStatuses = document.querySelectorAll(
-            '.productbird-status-queued, .productbird-status-running'
-        );
-
-        const productIds = [];
-        pendingStatuses.forEach(element => {
-            const productId = element.closest('.productbird-status').dataset.productId;
-            if (productId) {
-                productIds.push(parseInt(productId, 10));
-            }
-        });
-
-        return productIds;
-    }
-
-    // Update the status badges based on API response
-    function updateStatusBadges(statuses) {
-        for (const [productId, status] of Object.entries(statuses)) {
-            const statusEl = document.querySelector(`.productbird-status[data-product-id="${productId}"]`);
-            if (!statusEl) continue;
-
-            // Clear current content
-            statusEl.innerHTML = '';
-
-            // Create new status element based on response
-            let newStatusHtml = '';
-
-            if (status === 'completed') {
-                newStatusHtml = '<span class="productbird-status-completed" title="Description generated successfully"><span class="dashicons dashicons-yes-alt"></span></span>';
-            } else if (status === 'error') {
-                newStatusHtml = '<span class="productbird-status-error" title="Error generating description"><span class="dashicons dashicons-no-alt"></span></span>';
-            } else if (status === 'queued') {
-                newStatusHtml = '<span class="productbird-status-queued" title="Description generation queued"><span class="dashicons dashicons-clock"></span></span>';
-            } else if (status === 'none') {
-                newStatusHtml = '<span class="productbird-status-none" title="No AI description requested">—</span>';
-            } else {
-                // Default to "running" for any other status
-                newStatusHtml = '<span class="productbird-status-running" title="Description generation in progress"><span class="dashicons dashicons-update"></span></span>';
-            }
-
-            statusEl.innerHTML = newStatusHtml;
-        }
-    }
-
-    function checkStatuses() {
-        const productIds = collectPendingProductIds();
-        if (productIds.length === 0) return;
-
-        fetch(productbirdStatus.restUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-WP-Nonce': productbirdStatus.nonce
-            },
-            body: JSON.stringify({ productIds: productIds })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data && typeof data === 'object') {
-                updateStatusBadges(data);
-            }
-        })
-        .catch(error => console.error('Productbird status check failed:', error));
-    }
-
-    checkStatuses();
-    setInterval(checkStatuses, productbirdStatus.pollInterval);
-})();
-JS;
     }
 }

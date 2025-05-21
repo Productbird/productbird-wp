@@ -55,5 +55,10 @@
 		"assets/**/*.js",
 		"assets/**/*.svelte",
 		"assets/**/*.d.ts"
+	],
+	"exclude": [
+		"assets/js",
+		"node_modules",
+		"dist"
 	]
 }
