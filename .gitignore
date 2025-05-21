@@ -12,6 +12,8 @@ yarn-error.log
 .env.*
 !.env.example
 
+*.zip
+
 # OS generated files
 .DS_Store
 .DS_Store?
