@@ -76,7 +76,7 @@ if [ -z "$NO_CHECKS" ]; then
 fi
 
 # Add version to plugin header
-perl -i -pe "s/Version:.*$/Version: ${VERSION}/" productbird.php
+perl -i -pe "s/Version:.*$/Version:     ${VERSION}/" productbird.php
 
 # Update the PRODUCTBIRD_VERSION constant
 perl -i -pe "s/define\('PRODUCTBIRD_VERSION',\s*'[^']*'\);/define('PRODUCTBIRD_VERSION', '${VERSION}');/" productbird.php
