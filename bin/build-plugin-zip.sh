@@ -79,7 +79,7 @@ fi
 perl -i -pe "s/Version:.*$/Version: ${VERSION}/" productbird.php
 
 # Update the PRODUCTBIRD_VERSION constant
-perl -i -pe "s/(define\('PRODUCTBIRD_VERSION',\s*')[^']*('\s*\);)/\1${VERSION}\2/" productbird.php
+perl -i -pe "s/(?<=define\('PRODUCTBIRD_VERSION',\s*'\))[^']*(?='\s*\);)/${VERSION}/" productbird.php
 
 # Update the readme.txt Stable tag
 perl -i -pe "s/Stable tag:.*$/Stable tag: ${VERSION}/" readme.txt
