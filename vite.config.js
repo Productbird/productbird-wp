@@ -5,6 +5,7 @@ import { wp_scripts } from "@kucrut/vite-for-wp/plugins";
 import path from "node:path";
 import license from "rollup-plugin-license";
 import { join } from "node:path";
+import { createBanner } from "./bin/assets-banner";
 
 export default defineConfig({
 	server: {
@@ -40,6 +41,7 @@ export default defineConfig({
 				},
 			},
 		}),
+		createBanner("Productbird"),
 	],
 	css: {
 		preprocessorOptions: {

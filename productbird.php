@@ -20,6 +20,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+define('PRODUCTBIRD_VERSION', '0.1.0');
 define('PRODUCTBIRD_PLUGIN_DIR', plugin_dir_path(__FILE__));
 
 // Require Composer autoloader.

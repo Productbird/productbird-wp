@@ -129,6 +129,9 @@ importers:
       vite:
         specifier: ^6.3.0
         version: 6.3.5(@types/node@22.15.19)(jiti@1.21.7)(sass@1.89.0)(yaml@2.8.0)
+      vite-plugin-banner:
+        specifier: ^0.8.1
+        version: 0.8.1
       vite-plugin-external:
         specifier: ^6.1.1
         version: 6.2.2
@@ -812,7 +815,7 @@ packages:
 
   acorn@8.14.1:
     resolution: {integrity: sha512-OvQ/2pUDKmgfCg++xsTX1wGxfTaszcHVcTctW4UJB4hibJx2HXxxO5UmVgyjMa+ZDsiaf5wWLXYpRWMmBI0QHg==}
-    engines: {node: '>=0.1.0'}
+    engines: {node: '>=0.4.0'}
     hasBin: true
 
   ansi-regex@5.0.1:
@@ -1065,7 +1068,7 @@ packages:
 
   figlet@1.8.1:
     resolution: {integrity: sha512-kEC3Sme+YvA8Hkibv0NR1oClGcWia0VB2fC1SlMy027cwe795Xx40Xiv/nw/iFAwQLupymWh+uhAAErn/7hwPg==}
-    engines: {node: '>= 0.1.0'}
+    engines: {node: '>= 0.4.0'}
     hasBin: true
 
   fill-range@7.1.1:
@@ -1695,6 +1698,9 @@ packages:
     engines: {node: '>=18', pnpm: '>=8.7.0'}
     peerDependencies:
       svelte: ^5.0.0
+
+  vite-plugin-banner@0.8.1:
+    resolution: {integrity: sha512-0+gGguHk3MH0HvzMSOCJC6fGgH4+jtY9KlKVZh+hwwE+PBkGVzY8xe657JL74vEgbeUJD37XjVqTrmve8XvZBQ==}
 
   vite-plugin-external@6.2.2:
     resolution: {integrity: sha512-OpdFlWgVfWyZgx9nym3LAQp4DciutbqwSKzbA1l2Bg7CNzlDd3jnHfv1uWTY4y5h2gRfgT60ZtOgF5+W95i+3A==}
@@ -3270,6 +3276,8 @@ snapshots:
       runed: 0.23.4(svelte@5.31.1)
       svelte: 5.31.1
       svelte-toolbelt: 0.7.1(svelte@5.31.1)
+
+  vite-plugin-banner@0.8.1: {}
 
   vite-plugin-external@6.2.2:
     dependencies:
