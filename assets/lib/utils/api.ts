@@ -98,7 +98,7 @@ export async function getSettings(): Promise<AdminSettingsFormSchema> {
 
 	if (!data) {
 		return {
-			selectedOrgId: undefined,
+			selected_org_id: undefined,
 			tone: Tone.Expert,
 			formality: Formality.Informal,
 		};

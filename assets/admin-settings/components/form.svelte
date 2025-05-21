@@ -57,7 +57,7 @@
     invalidateAll: false,
     applyAction: false,
     taintedMessage: __("Weet je zeker dat je het formulier wilt verlaten?"),
-    onSubmit: async (event) => {
+    onSubmit: async () => {
       /**
        * Validate the final form
        */

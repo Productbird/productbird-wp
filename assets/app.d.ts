@@ -5,6 +5,10 @@ interface OidcData {
 	name?: string;
 }
 
+interface FeatureFlags {
+	oidc: boolean;
+}
+
 declare global {
 	interface Window {
 		productbird_admin: {
@@ -24,6 +28,7 @@ declare global {
 				disconnect_url: string;
 				name: string;
 			};
+			features: FeatureFlags;
 		};
 	}
 }

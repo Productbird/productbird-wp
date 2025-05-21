@@ -12,6 +12,7 @@ use Productbird\Rest\OidcCallbackEndpoint;
 use Productbird\Auth\OidcClient;
 use Productbird\Rest\OrganizationsEndpoint;
 use Productbird\Rest\SettingsEndpoint;
+use Productbird\FeatureFlags;
 
 /**
  * Core plugin class.
@@ -44,10 +45,14 @@ class Plugin
         (new ProductStatusCheckEndpoint())->init();
         (new OrganizationsEndpoint())->init();
         (new SettingsEndpoint())->init();
-        (new OidcCallbackEndpoint())->init();
 
-        // The OidcClient registers its own hooks (e.g. disconnect handler).
-        (new OidcClient())->init();
+        // Only bootstrap OIDC-related functionality if the feature flag is enabled.
+        if (FeatureFlags::is_enabled('oidc')) {
+            (new OidcCallbackEndpoint())->init();
+
+            // The OidcClient registers its own hooks (e.g. disconnect handler).
+            (new OidcClient())->init();
+        }
     }
 
     /**

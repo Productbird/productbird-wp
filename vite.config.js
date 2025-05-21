@@ -55,23 +55,23 @@ export default defineConfig({
 		],
 	},
 
-	build: {
-		sourcemap: true,
-		rollupOptions: {
-			output: {
-				assetFileNames: (assetInfo) => {
-					const extType = assetInfo.name.split(".").at(1);
-					if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
-						return "images/[name]-[hash][extname]";
-					}
-					if (/css/i.test(extType)) {
-						return "css/[name]-[hash][extname]";
-					}
-					return "[name]-[hash][extname]";
-				},
-				chunkFileNames: "js/[name]-[hash].js",
-				entryFileNames: "js/[name]-[hash].js",
-			},
-		},
-	},
+	// build: {
+	// 	sourcemap: true,
+	// 	rollupOptions: {
+	// 		output: {
+	// 			assetFileNames: (assetInfo) => {
+	// 				const extType = assetInfo.name.split(".").at(1);
+	// 				if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
+	// 					return "images/[name]-[hash][extname]";
+	// 				}
+	// 				if (/css/i.test(extType)) {
+	// 					return "css/[name]-[hash][extname]";
+	// 				}
+	// 				return "[name]-[hash][extname]";
+	// 			},
+	// 			chunkFileNames: "js/[name]-[hash].js",
+	// 			entryFileNames: "js/[name]-[hash].js",
+	// 		},
+	// 	},
+	// },
 });

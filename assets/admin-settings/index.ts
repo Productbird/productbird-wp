@@ -1,17 +1,21 @@
-import App from "./root.svelte";
 import { createComponentMounter } from "$lib/utils/component-mounter";
 import "$lib/styles/global.css";
+import Root from "./root.svelte";
 
-const mounter = createComponentMounter({
-	component: App,
-	mountDelay: 0,
-	selector: "#productbird-admin-settings",
-	onMountSuccess(element) {
-		console.log("Mounted admin settings", element);
-	},
-	onMountError(error, element) {
-		console.error("Failed to mount admin settings", error, element);
-	},
-});
+function initializeApp() {
+	const mounter = createComponentMounter({
+		component: Root,
+		mountDelay: 0,
+		selector: "#productbird-admin-settings",
+		onMountSuccess(element) {
+			console.log("Mounted admin settings", element);
+		},
+		onMountError(error, element) {
+			console.error("Failed to mount admin settings", error, element);
+		},
+	});
 
-export default mounter.getMountedApps();
+	return mounter;
+}
+
+export default initializeApp();

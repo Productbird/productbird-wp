@@ -2,11 +2,14 @@ import { z } from "zod";
 import type { SuperForm } from "sveltekit-superforms";
 import { __ } from "@wordpress/i18n";
 import { Formality, Tone } from "$lib/utils/schemas";
+import adminSettings from "$admin-settings";
+
 // Page: Dashboard (Home)
 export const dashboardFormSchema = z.object({
-	selectedOrgId: z
+	selected_org_id: z.string().optional(),
+	api_key: z
 		.string()
-		.min(1, __("Organization is required", "productbird"))
+
 		.optional(),
 });
 
