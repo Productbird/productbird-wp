@@ -19,6 +19,7 @@ rsync ./ "$2" --recursive --delete --delete-excluded \
 	--exclude=phpunit.xml.dist \
 	--exclude=CODEOWNERS \
 	--exclude=renovate.json \
+	--exclude=components.json \
 	--exclude=biome.json \
 	--exclude=biome.jsonc \
 	--exclude=README.md \
