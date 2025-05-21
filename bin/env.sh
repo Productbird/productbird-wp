@@ -17,7 +17,7 @@ PLUGIN_DIST_PATH=$PLUGIN_PATH/dist
 
 # Tool for grabbing version from package.json
 get_version() {
-	grep '\"version\"' $PLUGIN_PATH/package.json \
+	grep '\"version\"' ./package.json \
 	| cut -d ':' -f 2 \
 	| sed 's/"//g' \
 	| sed 's/,//g' \
