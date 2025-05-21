@@ -38,7 +38,7 @@ export default defineConfig({
 				includePrivate: false,
 				includeSelf: false,
 				output: {
-					file: join(__dirname, "dist", "dependencies.txt"),
+					file: join(__dirname, "assets/dist", "dependencies.txt"),
 				},
 			},
 		}),
@@ -75,6 +75,8 @@ export default defineConfig({
 
 	build: {
 		sourcemap: true,
+		minify: false,
+		cssMinify: false,
 		rollupOptions: {
 			output: {
 				assetFileNames: (assetInfo) => {
