@@ -41,18 +41,6 @@ done
 cd "$(dirname "$0")"
 cd ..
 
-# Tool for grabbing version from package.json
-get_version() {
-	grep '\"version\"' ./package.json \
-	| cut -d ':' -f 2 \
-	| sed 's/"//g' \
-	| sed 's/,//g' \
-	| sed 's/ //g'
-}
-
-# Set version
-VERSION=$(get_version)
-
 status "💃 Time to build the Productbird WordPress plugin ZIP 🕺"
 
 if [ -z "$NO_CHECKS" ]; then
@@ -127,6 +115,7 @@ fi
 # cleanup composer.json
 git checkout -- composer.json
 git checkout -- productbird.php
+git checkout -- readme.txt
 
 # regenerate classmap for development use
 composer dump-autoload

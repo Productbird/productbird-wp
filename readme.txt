@@ -3,7 +3,7 @@ Contributors: productbird
 Tags: woocommerce, ai, artificial intelligence, product description, ecommerce
 Requires at least: 5.0
 Tested up to: 6.5
-Stable tag: 0.3.0
+Stable tag: 0.2.0
 Requires PHP: 7.4
 Requires Plugins: woocommerce
 License: GPL-2.0-or-later
