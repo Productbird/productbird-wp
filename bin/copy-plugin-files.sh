@@ -7,6 +7,7 @@ rsync ./ "$2" --recursive --delete --delete-excluded \
 	--exclude="*.md" \
 	--exclude=".*" \
 	--exclude="composer.lock" \
+	--exclude="pnpm-lock.yaml" \
 	--exclude="*.lock" \
 	--exclude=bin/ \
 	--exclude=node_modules/ \

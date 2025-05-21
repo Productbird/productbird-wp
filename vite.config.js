@@ -31,6 +31,7 @@ export default defineConfig({
 				"assets/ts/admin-settings/index.ts",
 				"assets/ts/tools/product-description/index.ts",
 			],
+			outDir: "assets/dist",
 		}),
 		license({
 			thirdParty: {

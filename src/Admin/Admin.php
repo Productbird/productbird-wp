@@ -135,7 +135,7 @@ class Admin
             });
         ');
 
-        $dist_path = PRODUCTBIRD_PLUGIN_DIR . '/dist';
+        $dist_path = PRODUCTBIRD_PLUGIN_DIR . '/assets/dist';
         $source_entry = 'assets/ts/admin-settings/index.ts';
 
         Vite\enqueue_asset(

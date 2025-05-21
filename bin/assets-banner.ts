@@ -6,7 +6,7 @@ import { distDir } from "./common";
  * Create a banner for the assets.
  *
  * @param name Name that should appear in the banner.
- * @param suffix The subfolder in the ./dist folder should the banner be added to.
+ * @param suffix The subfolder in the ./assets/dist folder should the banner be added to.
  * @returns Banner content.
  */
 export function createBanner(name: string) {

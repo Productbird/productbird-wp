@@ -13,7 +13,7 @@ CURR_DIR=$(pwd)
 PLUGIN_PATH=$(dirname "$CURR_DIR")
 
 ## Dist folder.
-PLUGIN_DIST_PATH=$PLUGIN_PATH/dist
+PLUGIN_DIST_PATH=$PLUGIN_PATH/assets/dist
 
 # Tool for grabbing version from package.json
 get_version() {

@@ -430,7 +430,7 @@ class ProductDescriptionBulkAction
             return;
         }
 
-        $dist_path    = PRODUCTBIRD_PLUGIN_DIR . '/dist';
+        $dist_path    = PRODUCTBIRD_PLUGIN_DIR . '/assets/dist';
         $source_entry = 'assets/ts/tools/product-description/index.ts';
 
         Vite\enqueue_asset(
