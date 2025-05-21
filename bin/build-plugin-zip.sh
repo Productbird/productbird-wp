@@ -60,10 +60,12 @@ if [ -z "$NO_CHECKS" ]; then
 	# traceable to a particular commit and reliably reproducible. (This is not
 	# totally true at the moment because we download nightly vendor scripts).
 	changed=
-	if ! git diff --exit-code > /dev/null; then
-		changed="file(s) modified"
-	elif ! git diff --cached --exit-code > /dev/null; then
-		changed="file(s) staged"
+	# Check for unstaged changes, excluding package.json
+	if ! git diff --quiet -- . ":(exclude)package.json"; then
+		changed="file(s) modified (other than package.json)"
+	# Check for staged changes, excluding package.json
+	elif ! git diff --cached --quiet -- . ":(exclude)package.json"; then
+		changed="file(s) staged (other than package.json)"
 	fi
 	if [ ! -z "$changed" ]; then
 		git status
