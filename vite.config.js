@@ -3,6 +3,8 @@ import { defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import { wp_scripts } from "@kucrut/vite-for-wp/plugins";
 import path from "node:path";
+import license from "rollup-plugin-license";
+import { join } from "node:path";
 
 export default defineConfig({
 	server: {
@@ -28,6 +30,15 @@ export default defineConfig({
 				"assets/admin-settings/index.ts",
 				"assets/product-description/index.ts",
 			],
+		}),
+		license({
+			thirdParty: {
+				includePrivate: false,
+				includeSelf: false,
+				output: {
+					file: join(__dirname, "dist", "dependencies.txt"),
+				},
+			},
 		}),
 	],
 	css: {
@@ -55,23 +66,23 @@ export default defineConfig({
 		],
 	},
 
-	// build: {
-	// 	sourcemap: true,
-	// 	rollupOptions: {
-	// 		output: {
-	// 			assetFileNames: (assetInfo) => {
-	// 				const extType = assetInfo.name.split(".").at(1);
-	// 				if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
-	// 					return "images/[name]-[hash][extname]";
-	// 				}
-	// 				if (/css/i.test(extType)) {
-	// 					return "css/[name]-[hash][extname]";
-	// 				}
-	// 				return "[name]-[hash][extname]";
-	// 			},
-	// 			chunkFileNames: "js/[name]-[hash].js",
-	// 			entryFileNames: "js/[name]-[hash].js",
-	// 		},
-	// 	},
-	// },
+	build: {
+		sourcemap: true,
+		rollupOptions: {
+			output: {
+				assetFileNames: (assetInfo) => {
+					const extType = assetInfo.name.split(".").at(1);
+					if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
+						return "images/[name]-[hash][extname]";
+					}
+					if (/css/i.test(extType)) {
+						return "css/[name]-[hash][extname]";
+					}
+					return "[name]-[hash][extname]";
+				},
+				chunkFileNames: "js/[name]-[hash].js",
+				entryFileNames: "js/[name]-[hash].js",
+			},
+		},
+	},
 });
