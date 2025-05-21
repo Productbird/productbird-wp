@@ -11,6 +11,7 @@
   import * as Select from "$lib/components/ui/select/index.js";
   import { Badge } from "$lib/components/ui/badge";
   import PasswordInput from "$admin-settings/components/password-input.svelte";
+  import { getDashboardLink } from "$lib/utils/links";
 
   let { form }: AdminSettingsFormComponenProps = $props();
 
@@ -112,8 +113,46 @@
         </Form.Control>
         <Form.Description>
           {__("You can manage your API key in the Productbird dashboard.", "productbird")}
-          <a href={adminSettings.app_url} target="_blank">
+          <a href={getDashboardLink("/api-keys")} target="_blank">
             {__("Manage API key", "productbird")}
+          </a>
+        </Form.Description>
+        <Form.FieldErrors />
+      </Form.Field>
+    </Card.Content>
+  </Card.Root>
+
+  <!-- Webhook secret -->
+  <Card.Root class="max-w-md">
+    <Card.Header>
+      <Card.Title class="text-lg font-semibold flex items-center gap-2">
+        {__("Webhook Secret", "productbird")}
+      </Card.Title>
+      <Card.Description>
+        {__("Your webhook secret is used to verify webhook requests from Productbird.", "productbird")}
+      </Card.Description>
+    </Card.Header>
+
+    <Card.Content>
+      <Form.Field {form} name="api_key">
+        <Form.Control>
+          {#snippet children({ props })}
+            <Form.Label>Webhook Secret</Form.Label>
+
+            <PasswordInput
+              {...props}
+              autocomplete="off"
+              data-lpignore="true"
+              data-1p-ignore="true"
+              bind:value={$formData.api_key}
+              enableToggle
+            />
+          {/snippet}
+        </Form.Control>
+        <Form.Description>
+          {__("You can manage your webhook secret in the Productbird dashboard.", "productbird")}
+          <a href={getDashboardLink("/api-keys")} target="_blank">
+            {__("Manage webhook secret", "productbird")}
           </a>
         </Form.Description>
         <Form.FieldErrors />

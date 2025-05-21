@@ -98,6 +98,12 @@ class ProductDescriptionBulkAction
             return add_query_arg('productbird_bulk_error', 'no_api_key', $redirect_to);
         }
 
+        $webhook_secret = $options['webhook_secret'] ?? '';
+
+        if (empty($webhook_secret)) {
+            return add_query_arg('productbird_bulk_error', 'no_webhook_secret', $redirect_to);
+        }
+
         $client    = new Client($api_key);
         $success   = 0;
         $payloads  = [];

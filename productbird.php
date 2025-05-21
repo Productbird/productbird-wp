@@ -3,7 +3,7 @@
  * Plugin Name: Productbird
  * Plugin URI:  https://productbird.ai
  * Description: Productbird helps ecommerce owners get more done by providing various AI tools.
- * Version:     0.3.0
+ * Version:     0.5.0
  * Author:      Productbird
  * Author URI:  https://productbird.ai
  * License:     GPL-2.0-or-later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('PRODUCTBIRD_VERSION', '0.1.0');
+define('PRODUCTBIRD_VERSION', '0.5.0');
 define('PRODUCTBIRD_PLUGIN_DIR', plugin_dir_path(__FILE__));
 
 // Require Composer autoloader.

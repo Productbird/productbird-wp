@@ -51,13 +51,58 @@ class WebhookCallbackEndpoint
             [
                 'methods'             => \WP_REST_Server::CREATABLE, // POST, PUT, etc.
                 'callback'            => [$this, 'handle_callback'],
-                'permission_callback' => function() {
-                    // TODO: Implement proper security check here.
-                    // Example: check_a_shared_secret_in_header();
-                    return false;
+                'permission_callback' => function(WP_REST_Request $request) {
+                    $expected_secret = get_option('productbird_settings')['webhook_secret'];
+                    $provided_secret = $request->get_header('X-Productbird-Secret');
+
+                    if (empty($provided_secret) || !hash_equals($expected_secret, $provided_secret)) {
+                        return new WP_Error(
+                            'rest_forbidden',
+                            __('Invalid secret.', 'productbird'),
+                            ['status' => 401]
+                        );
+                    }
+                    return true;
                 },
             ]
         );
+    }
+
+    /**
+     * Verifies the webhook signature.
+     * @since 0.1.0
+     * @param WP_REST_Request $request Incoming REST request.
+     * @return bool|WP_Error True if authenticated, WP_Error otherwise.
+     */
+    public function verify_webhook_signature(\WP_REST_Request $request)
+    {
+        $body = $request->get_body();
+        $timestamp = $request->get_header('X-Productbird-Timestamp');
+        $signature_header = $request->get_header('X-Productbird-Signature');
+
+        // Check headers exist
+        if (!$timestamp || !$signature_header) {
+            return new \WP_Error('missing_headers', 'Missing required headers', ['status' => 401]);
+        }
+
+        // Extract signature from header
+        if (strpos($signature_header, 'sha256=') !== 0) {
+            return new \WP_Error('invalid_signature_format', 'Invalid signature format', ['status' => 401]);
+        }
+
+        // Extract the signature from the header
+        $provided_signature = substr($signature_header, 7);
+
+        // Recompute signature
+        $secret = get_option('productbird_settings')['webhook_secret'];
+        $signed_payload = $timestamp . '.' . $body;
+        $expected_signature = hash_hmac('sha256', $signed_payload, $secret);
+
+        if (!hash_equals($expected_signature, $provided_signature)) {
+            return new \WP_Error('invalid_signature', 'Signature mismatch', ['status' => 401]);
+        }
+
+        return true;
     }
 
     /**

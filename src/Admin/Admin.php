@@ -48,6 +48,7 @@ class Admin
                 'sanitize_callback' => [$this, 'sanitize_settings'],
                 'default'           => [
                     'api_key'       => '',
+                    "webhook_secret" => '',
                     'tone'          => 'expert',
                     'formality'     => 'informal',
                     'selected_org_id' => '',
@@ -90,6 +91,7 @@ class Admin
         $output = [];
 
         $output['api_key'] = sanitize_text_field($input['api_key']);
+        $output['webhook_secret'] = sanitize_text_field($input['webhook_secret']);
         $output['tone'] = sanitize_text_field($input['tone']);
         $output['formality'] = sanitize_text_field($input['formality']);
         $output['selected_org_id'] = sanitize_text_field($input['selected_org_id']);

@@ -46,6 +46,7 @@ class SettingsEndpoint {
                 'permission_callback' => [ $this, 'check_permissions' ],
                 'args'                => [
                     'api_key'       => [ 'type' => 'string', 'required' => false ],
+                    'webhook_secret' => [ 'type' => 'string', 'required' => false ],
                     'tone'          => [ 'type' => 'string', 'required' => false ],
                     'formality'     => [ 'type' => 'string', 'required' => false ],
                     'selected_org_id' => [ 'type' => 'string', 'required' => false ],
