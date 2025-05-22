@@ -6,6 +6,7 @@ use Productbird\Auth\OidcClient;
 use Productbird\Api\Client;
 use Kucrut\Vite;
 use Productbird\FeatureFlags;
+use Productbird\Traits\ScriptLocalization;
 
 /**
  * Handles WordPress admin integration.
@@ -13,6 +14,8 @@ use Productbird\FeatureFlags;
  */
 class Admin
 {
+    use ScriptLocalization;
+
     /**
      * The option name used to store all settings.
      */
@@ -211,20 +214,20 @@ class Admin
         wp_localize_script(
             'productbird-admin',
             'productbird_admin',
-            [
-                'nonce' => wp_create_nonce('wp_rest'),
-                'admin_url' => admin_url(),
-                'settings_page_url' => menu_page_url('productbird', false),
-                'app_url' => Client::determine_base_url(),
-                'api_root_url' => get_rest_url(),
-                'current_user' => [
-                    'id' => $user->ID,
-                    'email' => $user->user_email,
-                    'display_name' => $user->display_name,
-                ],
-                'features' => $features,
-                'oidc'     => $oidc_data,
-            ]
+            array_merge(
+                $this->get_common_localization_data(),
+                [
+                    'settings_page_url' => menu_page_url('productbird', false),
+                    'app_url' => Client::determine_base_url(),
+                    'current_user' => [
+                        'id' => $user->ID,
+                        'email' => $user->user_email,
+                        'display_name' => $user->display_name,
+                    ],
+                    'features' => $features,
+                    'oidc'     => $oidc_data,
+                ]
+            )
         );
     }
 }

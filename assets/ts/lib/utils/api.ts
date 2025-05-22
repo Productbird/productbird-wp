@@ -16,7 +16,7 @@ export type GenerationStatus = "none" | "running" | "completed" | "error";
  * Try to obtain the WP nonce that authorises authenticated requests.
  */
 function getNonce(): string | undefined {
-	return window.productbird_admin.nonce;
+	return window.productbird.nonce;
 }
 
 interface RequestOptions extends Omit<RequestInit, "body"> {
@@ -33,7 +33,7 @@ async function request<T = unknown>(
 	const { body, auth = true, headers, ...rest } = options;
 
 	// Build full URL.
-	const url = window.productbird_admin.api_root_url + path;
+	const url = window.productbird.api_root_url + path;
 
 	// Default headers.
 	const defaultHeaders: HeadersInit = {
@@ -96,14 +96,6 @@ export async function getSettings(): Promise<AdminSettingsFormSchema> {
 		"productbird/v1/settings",
 	);
 
-	if (!data) {
-		return {
-			selected_org_id: undefined,
-			tone: Tone.Expert,
-			formality: Formality.Informal,
-		};
-	}
-
 	return data;
 }
 
@@ -144,6 +136,21 @@ export async function checkGenerationStatus(
 		{
 			method: "POST",
 			body: { productIds },
+		},
+	);
+}
+
+/**
+ * Clear all Productbird post meta from products.
+ */
+export async function clearProductMeta(): Promise<{
+	success: boolean;
+	cleared: number;
+}> {
+	return request<{ success: boolean; cleared: number }>(
+		"productbird/v1/clear-product-meta",
+		{
+			method: "POST",
 		},
 	);
 }

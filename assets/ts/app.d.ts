@@ -9,8 +9,17 @@ interface FeatureFlags {
 	oidc: boolean;
 }
 
+interface GlobalAdminData {
+	admin_url: string;
+	app_url: string;
+	nonce: string;
+	settings_page_url: string;
+	api_root_url: string;
+}
+
 declare global {
 	interface Window {
+		productbird: GlobalAdminData;
 		productbird_admin: {
 			admin_url: string;
 			app_url: string;
@@ -29,6 +38,9 @@ declare global {
 				name: string;
 			};
 			features: FeatureFlags;
+		};
+		productbird_product_description: GlobalAdminData & {
+			max_batch: number;
 		};
 	}
 }

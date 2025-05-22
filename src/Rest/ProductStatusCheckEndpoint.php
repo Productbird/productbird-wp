@@ -5,6 +5,7 @@ namespace Productbird\Rest;
 use Productbird\Admin\ProductGenerationStatusColumn;
 use Productbird\Api\Client;
 
+use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_Error;
@@ -37,7 +38,7 @@ class ProductStatusCheckEndpoint
             'productbird/v1',
             '/check-generation-status',
             [
-                'methods'             => \WP_REST_Server::CREATABLE, // POST
+                'methods'             => WP_REST_Server::CREATABLE, // POST
                 'callback'            => [$this, 'handle_status_check'],
                 'permission_callback' => [$this, 'check_permissions'],
                 'args'                => [
@@ -49,6 +50,30 @@ class ProductStatusCheckEndpoint
                         ],
                         'sanitize_callback' => function ($param) {
                             return array_map('absint', $param);
+                        },
+                    ],
+                ],
+            ]
+        );
+
+        // Add a new endpoint for polling completed descriptions (for bulk feature)
+        register_rest_route(
+            'productbird/v1',
+            '/description-completed',
+            [
+                'methods'             => WP_REST_Server::READABLE, // GET
+                'callback'            => [$this, 'get_completed_descriptions'],
+                'permission_callback' => [$this, 'check_permissions'],
+                'args'                => [
+                    'productIds' => [
+                        'required'          => true,
+                        'type'              => 'string',
+                        'validate_callback' => function($param) {
+                            return !empty($param);
+                        },
+                        'sanitize_callback' => function($param) {
+                            $ids = explode(',', $param);
+                            return array_map('absint', $ids);
                         },
                     ],
                 ],
@@ -133,11 +158,19 @@ class ProductStatusCheckEndpoint
             switch ($workflow_state) {
                 case 'RUN_SUCCESS':
                     // Update the product with the new description
-                    $product = \wc_get_product($product_id);
+                    $product = wc_get_product($product_id);
 
                     if ($product && !empty($response['description'])) {
-                        $product->set_description(wp_kses_post($response['description']));
-                        $product->save();
+                        // Store as draft first
+                        update_post_meta($product_id, '_productbird_description_draft', $response['description']);
+
+                        // Get the batch mode to determine if we should auto-apply
+                        $batch_mode = get_user_meta(get_current_user_id(), 'productbird_last_batch_mode', true);
+                        if ($batch_mode === 'auto-apply') {
+                            // Auto-apply the description
+                            $product->set_description(wp_kses_post($response['description']));
+                            $product->save();
+                        }
                     }
 
                     // Update meta to mark as completed
@@ -177,5 +210,63 @@ class ProductStatusCheckEndpoint
         }
 
         return new WP_REST_Response($statuses);
+    }
+
+    /**
+     * Get the status of completed descriptions.
+     *
+     * @since 0.1.0
+     * @param WP_REST_Request $request Incoming REST request.
+     * @return WP_REST_Response|WP_Error
+     */
+    public function get_completed_descriptions(WP_REST_Request $request)
+    {
+        $product_ids = $request->get_param('productIds');
+
+        if (empty($product_ids) || !is_array($product_ids)) {
+            return new WP_Error(
+                'missing_product_ids',
+                __('No product IDs provided.', 'productbird'),
+                ['status' => 400]
+            );
+        }
+
+        $completed_items = [];
+        $remaining_count = 0;
+
+        foreach ($product_ids as $product_id) {
+            $status = get_post_meta($product_id, ProductGenerationStatusColumn::META_KEY_GENERATION_STATUS, true);
+
+            if ($status === 'completed') {
+                // Skip if we've already delivered this description
+                $already_delivered = (bool) get_post_meta($product_id, '_productbird_delivered', true);
+                if ($already_delivered) {
+                    continue;
+                }
+
+                // Only include products that have been marked as completed
+                $description_draft = get_post_meta($product_id, '_productbird_description_draft', true);
+
+                if (!empty($description_draft)) {
+                    $product = \wc_get_product($product_id);
+                    $completed_items[] = [
+                        'productId' => $product_id,
+                        'productName' => $product ? $product->get_name() : '',
+                        'descriptionHtml' => $description_draft,
+                    ];
+
+                    // Mark this as delivered so we don't send it again
+                    update_post_meta($product_id, '_productbird_delivered', true);
+                }
+            } else if ($status === 'queued' || $status === 'running') {
+                // Count how many are still in progress
+                $remaining_count++;
+            }
+        }
+
+        return new WP_REST_Response([
+            'completed' => $completed_items,
+            'remaining' => $remaining_count,
+        ]);
     }
 }

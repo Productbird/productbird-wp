@@ -4,7 +4,9 @@ namespace Productbird\Admin;
 
 use Productbird\Api\Client;
 use Kucrut\Vite;
-use Productbird\Admin\ProductGenerationStatusColumn;
+use Productbird\Traits\ScriptLocalization;
+use Productbird\Traits\ProductDataHelpers;
+use Productbird\FeatureFlags;
 
 /**
  * Handles WooCommerce product bulk actions that rely on Productbird AI.
@@ -13,6 +15,9 @@ use Productbird\Admin\ProductGenerationStatusColumn;
  */
 class ProductDescriptionBulkAction
 {
+    use ScriptLocalization;
+    use ProductDataHelpers;
+
     /**
      * Option name used to store Productbird settings.
      */
@@ -75,7 +80,6 @@ class ProductDescriptionBulkAction
     /**
      * Handles the Productbird "Generate AI Description" bulk action.
      *
-     * @since 0.1.0
      * @param string  $redirect_to URL to send the user back to.
      * @param string  $action      Selected bulk action key.
      * @param int[]   $post_ids    IDs of the selected products.
@@ -98,12 +102,6 @@ class ProductDescriptionBulkAction
             return add_query_arg('productbird_bulk_error', 'no_api_key', $redirect_to);
         }
 
-        $webhook_secret = $options['webhook_secret'] ?? '';
-
-        if (empty($webhook_secret)) {
-            return add_query_arg('productbird_bulk_error', 'no_webhook_secret', $redirect_to);
-        }
-
         $client    = new Client($api_key);
         $success   = 0;
         $payloads  = [];
@@ -118,20 +116,11 @@ class ProductDescriptionBulkAction
                 continue;
             }
 
-            $payload = [
-                'tone'       => $options['tone'] ?? null,
-                'formality'  => $options['formality'] ?? null,
-                'language'   => substr(get_locale(), 0, 2),
-                'store_name' => get_option('blogname') ?: 'Store',
-                'id'         => (string) $product_id,
-                'name'       => $product->get_name(),
-                'brand_name' => $this->get_product_brand($product),
-                'categories' => $this->get_product_category_paths($product_id),
-                'sku'        => $product->get_sku() ?: null,
-                'attributes' => $this->get_product_attributes($product),
-                'image_urls' => $this->get_product_image_urls($product),
-                'callback_url' => rest_url('productbird/v1/description-completed'),
-            ];
+            // Build the payload for this product
+            $payload = $this->build_product_payload($product, [
+                'tone' => $options['tone'] ?? null,
+                'formality' => $options['formality'] ?? null
+            ]);
 
             // Remove empty/null entries to keep the payload concise.
             $payload = array_filter(
@@ -160,8 +149,14 @@ class ProductDescriptionBulkAction
             $response = $client->generate_product_description($payloads[0]);
 
             // Check for unauthorized error
-            if (is_wp_error($response) && isset($response->get_error_data()['status']) && $response->get_error_data()['status'] === 401) {
-                return add_query_arg('productbird_bulk_error', 'unauthorized', $redirect_to);
+            if (is_wp_error($response) && isset($response->get_error_data()['status'])) {
+                $status = $response->get_error_data()['status'];
+                if ($status === 401) {
+                    return add_query_arg('productbird_bulk_error', 'unauthorized', $redirect_to);
+                }
+                if ($status === 402) {
+                    return add_query_arg('productbird_bulk_error', 'insufficient_credits', $redirect_to);
+                }
             }
 
             // Treat any non-error response as successfully queued.
@@ -170,15 +165,21 @@ class ProductDescriptionBulkAction
                 $product_id = (int) $payloads[0]['id'];
 
                 if (isset($response['statusId'])) {
-                    update_post_meta($product_id, ProductGenerationStatusColumn::META_KEY_STATUS_ID, sanitize_text_field($response['statusId']));
-                    update_post_meta($product_id, ProductGenerationStatusColumn::META_KEY_GENERATION_STATUS, 'queued');
+                    update_post_meta($product_id, '_productbird_status_id', sanitize_text_field($response['statusId']));
+                    update_post_meta($product_id, '_productbird_generation_status', 'queued');
                 }
             }
         } else {
             $response = $client->generate_product_description_bulk($payloads);
 
-            if (is_wp_error($response) && isset($response->get_error_data()['status']) && $response->get_error_data()['status'] === 401) {
-                return add_query_arg('productbird_bulk_error', 'unauthorized', $redirect_to);
+            if (is_wp_error($response) && isset($response->get_error_data()['status'])) {
+                $status = $response->get_error_data()['status'];
+                if ($status === 401) {
+                    return add_query_arg('productbird_bulk_error', 'unauthorized', $redirect_to);
+                }
+                if ($status === 402) {
+                    return add_query_arg('productbird_bulk_error', 'insufficient_credits', $redirect_to);
+                }
             }
 
             if (!is_wp_error($response)) {
@@ -193,13 +194,16 @@ class ProductDescriptionBulkAction
                         $product_id = (int) $result['productId'];
 
                         if (!empty($result['statusId'])) {
-                            update_post_meta($product_id, ProductGenerationStatusColumn::META_KEY_STATUS_ID, sanitize_text_field($result['statusId']));
-                            update_post_meta($product_id, ProductGenerationStatusColumn::META_KEY_GENERATION_STATUS, 'queued');
+                            update_post_meta($product_id, '_productbird_status_id', sanitize_text_field($result['statusId']));
+                            update_post_meta($product_id, '_productbird_generation_status', 'queued');
                         }
                     }
                 }
             }
         }
+
+        // Remove any existing error parameters from the URL
+        $redirect_to = remove_query_arg('productbird_bulk_error', $redirect_to);
 
         return add_query_arg(
             [
@@ -240,7 +244,16 @@ class ProductDescriptionBulkAction
         // Check for API unauthorized errors
         if (isset($_GET['productbird_bulk_error']) && $_GET['productbird_bulk_error'] === 'unauthorized') { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
             echo '<div class="error notice is-dismissible"><p>' . esc_html__(
-                'Productbird API returned Unauthorized. Please check your API key.',
+                __('Productbird API returned Unauthorized. Please check your API key.', 'productbird'),
+                'productbird'
+            ) . '</p></div>';
+            return;
+        }
+
+        // Check for insufficient credits error
+        if (isset($_GET['productbird_bulk_error']) && $_GET['productbird_bulk_error'] === 'insufficient_credits') { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            echo '<div class="error notice is-dismissible"><p>' . esc_html__(
+                __('Insufficient credits available. Please purchase more credits to continue using Productbird.', 'productbird'),
                 'productbird'
             ) . '</p></div>';
             return;
@@ -259,8 +272,8 @@ class ProductDescriptionBulkAction
                 esc_html(
                     sprintf(
                         _n(
-                            'Productbird has queued description generation for %d product. Status will update in the "AI Desc." column.',
-                            'Productbird has queued description generation for %d products. Status will update in the "AI Desc." column.',
+                            __('Productbird has queued description generation for %d product. Status will update in the "AI Desc." column.', 'productbird'),
+                            __('Productbird has queued description generation for %d products. Status will update in the "AI Desc." column.', 'productbird'),
                             $generated,
                             'productbird'
                         ),
@@ -270,7 +283,7 @@ class ProductDescriptionBulkAction
             );
         } else {
             echo '<div class="error notice is-dismissible"><p>' . esc_html__(
-                'Productbird could not generate descriptions for the selected products.',
+                __('Productbird could not generate descriptions for the selected products.', 'productbird'),
                 'productbird'
             ) . '</p></div>';
         }
@@ -300,121 +313,6 @@ class ProductDescriptionBulkAction
     }
 
     // ---------------------------------------------------------------------
-    // Helpers to map WooCommerce product data to the API schema.
-    // ---------------------------------------------------------------------
-
-    /**
-     * Returns the product's primary brand (if any) based on a `brand` or
-     * `pa_brand` attribute/taxonomy.
-     * @since 0.1.0
-     */
-    private function get_product_brand(\WC_Product $product): ?string
-    {
-        $brand_taxonomies = ['product_brand', 'pa_brand', 'brand'];
-
-        foreach ($brand_taxonomies as $tax) {
-            $terms = wp_get_post_terms($product->get_id(), $tax);
-            if (!is_wp_error($terms) && !empty($terms)) {
-                return $terms[0]->name;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Gets the product categories as simple objects with name properties.
-     *
-     * @since 0.1.0
-     * @param int $product_id
-     * @return array<int,array{name:string}>
-     */
-    private function get_product_category_paths(int $product_id): array
-    {
-        $cat_ids = \wc_get_product_cat_ids($product_id);
-        $categories = [];
-
-        foreach ($cat_ids as $cat_id) {
-            $term = get_term($cat_id, 'product_cat');
-            if (!$term || is_wp_error($term)) {
-                continue;
-            }
-
-            $categories[] = [
-                'name' => $term->name,
-            ];
-        }
-
-        return $categories;
-    }
-
-    /**
-     * Collects visible product attributes (non-variation) as name/value pairs.
-     *
-     * @since 0.1.0
-     * @return array<int,array{ name:string, value:string }>
-     */
-    private function get_product_attributes(\WC_Product $product): array
-    {
-        $result = [];
-
-        foreach ($product->get_attributes() as $attribute) {
-            // Skip hidden or variation attributes.
-            if ($attribute->get_visible() === false || $attribute->get_variation()) {
-                continue;
-            }
-
-            $name = wc_attribute_label($attribute->get_name());
-
-            if ($attribute->is_taxonomy()) {
-                $terms = wp_get_post_terms($product->get_id(), $attribute->get_name(), ['fields' => 'names']);
-                if (is_wp_error($terms) || empty($terms)) {
-                    continue;
-                }
-                $value = implode(', ', $terms);
-            } else {
-                $value = $attribute->get_options() ? implode(', ', $attribute->get_options()) : '';
-            }
-
-            if ($value !== '') {
-                $result[] = [
-                    'name'  => $name,
-                    'value' => $value,
-                ];
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * Returns up to one image URL (featured image) for the product as required
-     * by the API schema.
-     *
-     * @since 0.1.0
-     * @return string[]
-     */
-    private function get_product_image_urls(\WC_Product $product): array
-    {
-        // When the site runs locally, image URLs are often inaccessible from
-        // the cloud API. Skip sending them to avoid broken links and to keep
-        // the payload small.
-        if (Client::is_local_site()) {
-            return [];
-        }
-
-        $image_id = $product->get_image_id();
-        if ($image_id) {
-            $url = wp_get_attachment_image_url($image_id, 'full');
-            if ($url) {
-                return [$url];
-            }
-        }
-
-        return [];
-    }
-
-    // ---------------------------------------------------------------------
     // Asset Enqueuing
     // ---------------------------------------------------------------------
 
@@ -428,6 +326,10 @@ class ProductDescriptionBulkAction
     {
         // Only load on the products list table (edit.php for post_type=product).
         if ($hook_suffix !== 'edit.php') {
+            return;
+        }
+
+        if (!FeatureFlags::is_enabled('product_description_bulk_modal')) {
             return;
         }
 
@@ -452,12 +354,12 @@ class ProductDescriptionBulkAction
         wp_localize_script(
             'productbird-product-description',
             'productbird_bulk',
-            [
-                'nonce'         => wp_create_nonce('wp_rest'),
-                'api_root_url'  => get_rest_url(),
-                'admin_url'     => admin_url(),
-                'max_batch'     => self::MAX_BULK_ITEMS,
-            ]
+            array_merge(
+                $this->get_common_localization_data(),
+                [
+                    'max_batch' => self::MAX_BULK_ITEMS,
+                ]
+            )
         );
     }
 }

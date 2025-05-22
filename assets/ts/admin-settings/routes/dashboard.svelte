@@ -4,7 +4,7 @@
   import { adminSettings } from "$admin-settings/admin-state.svelte.js";
   import { __, sprintf } from "@wordpress/i18n";
   import ConnectFlowButton from "$admin-settings/components/connect-flow-button.svelte";
-  import { useGetOrganizations, useGetSettings } from "$lib/hooks/queries";
+  import { useGetOrganizations, useGetSettings, useClearProductMeta } from "$lib/hooks/queries";
   import QueryWrapper from "$lib/components/query-wrapper.svelte";
   import type { AdminSettingsFormComponenProps } from "$admin-settings/form-schema";
   import * as Form from "$lib/components/ui/form/index.js";
@@ -19,6 +19,7 @@
 
   const organizationsQuery = useGetOrganizations();
   const settingsQuery = useGetSettings();
+  const clearMetaMutation = useClearProductMeta();
 
   function getOrganizationName(id: string) {
     const organization = organizationsQuery.data?.find((organization) => organization.id.toString() === id);
@@ -134,7 +135,7 @@
     </Card.Header>
 
     <Card.Content>
-      <Form.Field {form} name="api_key">
+      <Form.Field {form} name="webhook_secret">
         <Form.Control>
           {#snippet children({ props })}
             <Form.Label>Webhook Secret</Form.Label>
@@ -144,7 +145,7 @@
               autocomplete="off"
               data-lpignore="true"
               data-1p-ignore="true"
-              bind:value={$formData.api_key}
+              bind:value={$formData.webhook_secret}
               enableToggle
             />
           {/snippet}
@@ -213,4 +214,45 @@
       </Card.Footer>
     </Card.Root>
   {/if}
+
+  <!-- Advanced Settings -->
+  <Card.Root class="max-w-md">
+    <Card.Header>
+      <Card.Title class="text-lg font-semibold flex items-center gap-2">
+        {__("Advanced Settings", "productbird")}
+      </Card.Title>
+      <Card.Description>
+        {__("Advanced settings and troubleshooting options", "productbird")}
+      </Card.Description>
+    </Card.Header>
+
+    <Card.Content>
+      <div class="space-y-4">
+        <div>
+          <h4 class="font-medium mb-2">{__("Troubleshooting", "productbird")}</h4>
+          <p class="text-sm text-muted-foreground mb-4">
+            {__(
+              "If you're experiencing issues with product descriptions, you can clear all Productbird meta data from your products.",
+              "productbird"
+            )}
+          </p>
+          <Button.Root
+            variant="destructive"
+            onclick={() => {
+              if (
+                confirm(
+                  __("Are you sure you want to clear all Productbird meta data? This cannot be undone.", "productbird")
+                )
+              ) {
+                clearMetaMutation.mutate();
+              }
+            }}
+            disabled={clearMetaMutation.isPending}
+          >
+            {clearMetaMutation.isPending ? __("Clearing...", "productbird") : __("Clear Product Meta", "productbird")}
+          </Button.Root>
+        </div>
+      </div>
+    </Card.Content>
+  </Card.Root>
 </div>

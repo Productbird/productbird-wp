@@ -1,5 +1,4 @@
 <script lang="ts">
-  import "$lib/styles/app.pcss";
   import { Toaster } from "$lib/components/ui/sonner/index.js";
   import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/svelte-query";
   import { toast } from "svelte-sonner";

@@ -3,7 +3,9 @@
 namespace Productbird\Rest;
 
 use Productbird\Admin\ProductGenerationStatusColumn;
+use Productbird\FeatureFlags;
 use WP_REST_Request;
+use WP_REST_Server;
 use WP_Error;
 use WP_REST_Response;
 
@@ -47,23 +49,11 @@ class WebhookCallbackEndpoint
     {
         register_rest_route(
             'productbird/v1',
-            '/description-completed',
+            '/webhooks',
             [
-                'methods'             => \WP_REST_Server::CREATABLE, // POST, PUT, etc.
+                'methods'             => WP_REST_Server::CREATABLE, // POST
                 'callback'            => [$this, 'handle_callback'],
-                'permission_callback' => function(WP_REST_Request $request) {
-                    $expected_secret = get_option('productbird_settings')['webhook_secret'];
-                    $provided_secret = $request->get_header('X-Productbird-Secret');
-
-                    if (empty($provided_secret) || !hash_equals($expected_secret, $provided_secret)) {
-                        return new WP_Error(
-                            'rest_forbidden',
-                            __('Invalid secret.', 'productbird'),
-                            ['status' => 401]
-                        );
-                    }
-                    return true;
-                },
+                'permission_callback' => [$this, 'verify_webhook_signature'],
             ]
         );
     }
@@ -74,7 +64,7 @@ class WebhookCallbackEndpoint
      * @param WP_REST_Request $request Incoming REST request.
      * @return bool|WP_Error True if authenticated, WP_Error otherwise.
      */
-    public function verify_webhook_signature(\WP_REST_Request $request)
+    public function verify_webhook_signature(WP_REST_Request $request)
     {
         $body = $request->get_body();
         $timestamp = $request->get_header('X-Productbird-Timestamp');
@@ -82,12 +72,12 @@ class WebhookCallbackEndpoint
 
         // Check headers exist
         if (!$timestamp || !$signature_header) {
-            return new \WP_Error('missing_headers', 'Missing required headers', ['status' => 401]);
+            return new WP_Error('missing_headers', 'Missing required headers', ['status' => 401]);
         }
 
         // Extract signature from header
         if (strpos($signature_header, 'sha256=') !== 0) {
-            return new \WP_Error('invalid_signature_format', 'Invalid signature format', ['status' => 401]);
+            return new WP_Error('invalid_signature_format', 'Invalid signature format', ['status' => 401]);
         }
 
         // Extract the signature from the header
@@ -95,11 +85,14 @@ class WebhookCallbackEndpoint
 
         // Recompute signature
         $secret = get_option('productbird_settings')['webhook_secret'];
+
+        // Ensure we're working with the exact same string representation
+        // The body should already be the raw JSON string from the request
         $signed_payload = $timestamp . '.' . $body;
         $expected_signature = hash_hmac('sha256', $signed_payload, $secret);
 
         if (!hash_equals($expected_signature, $provided_signature)) {
-            return new \WP_Error('invalid_signature', 'Signature mismatch', ['status' => 401]);
+            return new WP_Error('invalid_signature', 'Signature mismatch', ['status' => 401]);
         }
 
         return true;
@@ -149,11 +142,28 @@ class WebhookCallbackEndpoint
             return new WP_Error('productbird_empty_description', __('Empty description content.', 'productbird'), ['status' => 400]);
         }
 
-        $product->set_description(implode("\n", $html_parts));
-        $product->save();
-
         update_post_meta($product_id, ProductGenerationStatusColumn::META_KEY_GENERATION_STATUS, 'completed');
         delete_post_meta($product_id, ProductGenerationStatusColumn::META_KEY_STATUS_ID);
+
+        if (FeatureFlags::is_enabled('product_description_bulk_modal')) {
+            // Store the generated description as a draft first
+            $description_html = implode("\n", $html_parts);
+            update_post_meta($product_id, '_productbird_description_draft', $description_html);
+
+            // Get the batch mode to determine if we should auto-apply
+            $batch_mode = get_user_meta(get_current_user_id(), 'productbird_last_batch_mode', true);
+            if ($batch_mode === 'auto-apply') {
+                // Auto-apply the description
+                $product->set_description($description_html);
+                $product->save();
+            }
+        } else {
+            $product->set_description(implode("\n", $html_parts));
+            $product->save();
+
+            update_post_meta($product_id, '_productbird_generation_status', 'completed');
+            delete_post_meta($product_id, '_productbird_status_id');
+        }
 
         return new WP_REST_Response([
             'success'   => true,

@@ -69,7 +69,17 @@ class SettingsEndpoint {
      * @param WP_REST_Request $request The request object.
      */
     public function get_settings( WP_REST_Request $request ) {
-        $settings = get_option( 'productbird_settings', [] );
+        $default_settings = [
+            'api_key'       => '',
+            'webhook_secret' => '',
+            'tone'          => 'expert',
+            'formality'     => 'informal',
+            'selected_org_id' => '',
+        ];
+        $saved_settings = get_option( 'productbird_settings', [] );
+
+        // Merge with default settings.
+        $settings = array_merge( $default_settings, $saved_settings );
 
         return new WP_REST_Response( $settings );
     }

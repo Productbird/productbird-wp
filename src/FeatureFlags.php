@@ -18,6 +18,9 @@ class FeatureFlags
     private const DEFAULT_FLAGS = [
         // OpenID-Connect
         'oidc' => false,
+
+        // Product description bulk modal
+        'product_description_bulk_modal' => false,
     ];
 
     /**

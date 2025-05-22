@@ -1,7 +1,6 @@
 import App from "./root.svelte";
 import { createComponentMounter } from "$lib/utils/component-mounter";
 import type { ComponentMounter } from "$lib/utils/component-mounter";
-import "$lib/styles/global.css";
 
 // -----------------------------------------------------------------------------
 // 1. Create the mounter (but it will only mount once the placeholder element

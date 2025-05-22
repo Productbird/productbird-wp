@@ -6,16 +6,22 @@ use Productbird\Admin\Admin;
 use Productbird\Admin\ProductDescriptionBulkAction;
 use Productbird\Admin\ProductGenerationStatusColumn;
 use Productbird\Admin\NoDescriptionFilter;
+use Productbird\Admin\GlobalAdminScript;
+use Productbird\Admin\ProductDescriptionRowAction;
 use Productbird\Rest\WebhookCallbackEndpoint;
 use Productbird\Rest\ProductStatusCheckEndpoint;
 use Productbird\Rest\OidcCallbackEndpoint;
 use Productbird\Auth\OidcClient;
 use Productbird\Rest\OrganizationsEndpoint;
 use Productbird\Rest\SettingsEndpoint;
+use Productbird\Rest\GenerateProductDescriptionBulkEndpoint;
+use Productbird\Rest\ApplyProductDescriptionEndpoint;
+use Productbird\Rest\RegenerateEndpoint;
+use Productbird\Rest\ClearProductMetaEndpoint;
 use Productbird\FeatureFlags;
 
 /**
- * Core plugin class.
+ * Main plugin class.
  *
  * @package Productbird
  * @since 0.1.0
@@ -23,12 +29,52 @@ use Productbird\FeatureFlags;
 class Plugin
 {
     /**
-     * Initialize plugin parts.
+     * Initialize the plugin.
      *
-     * @since 0.1.0
      * @return void
      */
     public function init(): void
+    {
+        // Check if WooCommerce is active
+        if (!$this->is_woocommerce_active()) {
+            add_action('admin_notices', [$this, 'woocommerce_missing_notice']);
+            return;
+        }
+
+        // Initialize plugin components
+        $this->init_components();
+    }
+
+    /**
+     * Check if WooCommerce is active.
+     *
+     * @return bool
+     */
+    private function is_woocommerce_active(): bool
+    {
+        return class_exists('WooCommerce') && function_exists('wc_get_product');
+    }
+
+    /**
+     * Display admin notice if WooCommerce is not active.
+     *
+     * @return void
+     */
+    public function woocommerce_missing_notice(): void
+    {
+        ?>
+        <div class="error notice is-dismissible">
+            <p><?php esc_html_e('Productbird requires WooCommerce to be installed and active.', 'productbird'); ?></p>
+        </div>
+        <?php
+    }
+
+    /**
+     * Initialize plugin components.
+     *
+     * @return void
+     */
+    private function init_components(): void
     {
         load_plugin_textdomain(
             'productbird',
@@ -37,16 +83,22 @@ class Plugin
         );
 
         if (is_admin()) {
+            (new GlobalAdminScript())->init();
             (new Admin())->init();
             (new ProductDescriptionBulkAction())->init();
             (new ProductGenerationStatusColumn())->init();
             (new NoDescriptionFilter())->init();
+            (new ProductDescriptionRowAction())->init();
         }
 
         (new WebhookCallbackEndpoint())->init();
         (new ProductStatusCheckEndpoint())->init();
         (new OrganizationsEndpoint())->init();
         (new SettingsEndpoint())->init();
+        (new GenerateProductDescriptionBulkEndpoint())->init();
+        (new ApplyProductDescriptionEndpoint())->init();
+        (new RegenerateEndpoint())->init();
+        (new ClearProductMetaEndpoint())->init();
 
         // Only bootstrap OIDC-related functionality if the feature flag is enabled.
         if (FeatureFlags::is_enabled('oidc')) {
