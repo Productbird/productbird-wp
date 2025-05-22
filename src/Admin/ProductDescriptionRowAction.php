@@ -74,6 +74,13 @@ class ProductDescriptionRowAction
             return;
         }
 
+        // Skip if this is a bulk action request (handled by ProductDescriptionBulkAction)
+        if (isset($_GET['bulk_action']) || isset($_POST['bulk_action']) ||
+            (isset($_GET['post']) && is_array($_GET['post'])) ||
+            (isset($_POST['post']) && is_array($_POST['post']))) {
+            return;
+        }
+
         if (!isset($_GET['post']) || !isset($_GET['_wpnonce'])) {
             wp_die(__('Invalid request.', 'productbird'));
         }
@@ -115,9 +122,12 @@ class ProductDescriptionRowAction
 
         $response = $client->generate_product_description($payload);
 
+
         if (is_wp_error($response)) {
             $error_data = $response->get_error_data();
             $status = $error_data['status'] ?? 0;
+
+            error_log(print_r($response, true));
 
             if ($status === 401) {
                 wp_redirect(add_query_arg('productbird_error', 'unauthorized', wp_get_referer()));
