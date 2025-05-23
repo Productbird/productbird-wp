@@ -58,6 +58,7 @@ class MagicDescriptionsBulkAction
     {
         add_filter('bulk_actions-edit-product', [$this, 'add_bulk_actions'], 1);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_assets']);
+        add_action('admin_footer', [$this, 'output_app_container']);
     }
 
     // ---------------------------------------------------------------------
@@ -135,5 +136,25 @@ class MagicDescriptionsBulkAction
                 ]
             )
         );
+    }
+
+    /**
+     * Outputs a hidden div container for the magic descriptions app.
+     *
+     * @since 0.1.0
+     */
+    public function output_app_container(): void
+    {
+        // Only output on the products list table
+        $screen = get_current_screen();
+        if (!$screen || $screen->post_type !== 'product' || $screen->base !== 'edit') {
+            return;
+        }
+
+        if (!FeatureFlags::is_enabled('product_description_bulk_modal')) {
+            return;
+        }
+
+        echo '<div id="productbird-magic-descriptions-app" data-productbird-app="true" style="display: none;"></div>';
     }
 }

@@ -160,7 +160,7 @@ class ToolMagicDescriptionsEndpoints
                 'id' => $product_id,
                 'name' => $product->get_name(),
                 'html' => $draft,
-                'current_html' => $product->get_description()
+                'current_html' => wpautop( $product->get_description() )
             ];
         }
 

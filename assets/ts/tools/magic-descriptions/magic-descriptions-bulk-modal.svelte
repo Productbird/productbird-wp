@@ -4,19 +4,18 @@
     open: boolean;
   };
 
-  export const PRODUCT_DESCRIPTION_BULK_MODAL_STEPS = {
+  export const STEPS = {
     confirm: "confirm",
     review: "review",
   } as const;
 
-  export const PRODUCT_DESCRIPTION_BULK_MODAL_MODE = {
+  export const MODE = {
     autoApply: "auto-apply",
     review: "review",
   } as const;
-  export type ProductDescriptionBulkModalSteps =
-    (typeof PRODUCT_DESCRIPTION_BULK_MODAL_STEPS)[keyof typeof PRODUCT_DESCRIPTION_BULK_MODAL_STEPS];
-  export type ProductDescriptionBulkModalMode =
-    (typeof PRODUCT_DESCRIPTION_BULK_MODAL_MODE)[keyof typeof PRODUCT_DESCRIPTION_BULK_MODAL_MODE];
+
+  export type Steps = (typeof STEPS)[keyof typeof STEPS];
+  export type Mode = (typeof MODE)[keyof typeof MODE];
 </script>
 
 <script lang="ts">
@@ -38,19 +37,20 @@
   import { rawRequest } from "$lib/utils/api";
   import { createQuery } from "@tanstack/svelte-query";
   import { Badge } from "$lib/components/ui/badge";
-  import { Check, X, RotateCcw, Clock, CheckCircle2, ChevronLeft, ChevronRight } from "@lucide/svelte";
+  import { Check, X, RotateCcw, Clock, CheckCircle2, ChevronLeft, ChevronRight, ExternalLink } from "@lucide/svelte";
   import type {
     MagicDescriptionsBulkWpJsonResponse,
     MagicDescriptionsStatusCheckWpJsonResponse,
     ProductId,
   } from "$lib/utils/types";
   import { cn } from "$lib/utils/ui";
+  import LogoIcon from "$lib/components/logo-icon.svelte";
 
   // Props
   let { selectedIds = [], open = $bindable() }: ProductDescriptionBulkModalProps = $props();
 
-  let currentStep = $state<ProductDescriptionBulkModalSteps>(PRODUCT_DESCRIPTION_BULK_MODAL_STEPS.confirm);
-  let mode = $state<ProductDescriptionBulkModalMode>(PRODUCT_DESCRIPTION_BULK_MODAL_MODE.review);
+  let currentStep = $state<Steps>(STEPS.confirm);
+  let mode = $state<Mode>(MODE.review);
   let currentReviewIndex = $state(0);
   let session = $state<{
     scheduledItems: MagicDescriptionsBulkWpJsonResponse["scheduled_items"];
@@ -81,7 +81,7 @@
   const textAreaClasses = "prose prose-p:text-lg prose-ul:text-lg prose-li:text-lg";
 
   const enablePolling = $derived.by((): boolean => {
-    const isInReviewStep = currentStep === PRODUCT_DESCRIPTION_BULK_MODAL_STEPS.review;
+    const isInReviewStep = currentStep === STEPS.review;
     const hasScheduledItems = session.scheduledItems.length > 0;
 
     // Stop polling if we're not in review step or have no scheduled items
@@ -102,7 +102,7 @@
   const statusCheckQuery = createQuery<MagicDescriptionsStatusCheckWpJsonResponse>(() => ({
     queryKey: ["magic-descriptions-status", selectedIds, currentStep],
     queryFn: async () => {
-      if (!selectedIds.length || currentStep !== PRODUCT_DESCRIPTION_BULK_MODAL_STEPS.review) {
+      if (!selectedIds.length || currentStep !== STEPS.review) {
         return { completed_items: [], remaining_count: 0 };
       }
 
@@ -193,7 +193,7 @@
       }
 
       // Force update the step
-      currentStep = PRODUCT_DESCRIPTION_BULK_MODAL_STEPS.review;
+      currentStep = STEPS.review;
     } catch (error) {
       console.error("Failed to start generation:", error);
 
@@ -205,7 +205,7 @@
       // You might want to show a toast notification here
       // But don't prevent moving to review if we have some items
       if (session.scheduledItems.length > 0 || session.pendingItems.length > 0) {
-        currentStep = PRODUCT_DESCRIPTION_BULK_MODAL_STEPS.review;
+        currentStep = STEPS.review;
       }
     }
   }
@@ -233,7 +233,7 @@
   $effect(() => {
     if (!open) {
       // Reset all state when modal is closed
-      currentStep = PRODUCT_DESCRIPTION_BULK_MODAL_STEPS.confirm;
+      currentStep = STEPS.confirm;
       currentReviewIndex = 0;
       session = {
         scheduledItems: [],
@@ -249,7 +249,7 @@
 
   // Reset review index when modal opens
   $effect(() => {
-    if (open && currentStep === PRODUCT_DESCRIPTION_BULK_MODAL_STEPS.review) {
+    if (open && currentStep === STEPS.review) {
       currentReviewIndex = 0;
     }
   });
@@ -271,8 +271,8 @@
   // Debug template rendering
   $effect(() => {
     console.log("Template check - currentStep:", currentStep);
-    console.log("Template check - is confirm?", currentStep === PRODUCT_DESCRIPTION_BULK_MODAL_STEPS.confirm);
-    console.log("Template check - is review?", currentStep === PRODUCT_DESCRIPTION_BULK_MODAL_STEPS.review);
+    console.log("Template check - is confirm?", currentStep === STEPS.confirm);
+    console.log("Template check - is review?", currentStep === STEPS.review);
   });
 
   // Navigation functions
@@ -359,17 +359,25 @@
   </div>
 {/snippet}
 
+{#snippet stepTitle(title: string)}
+  <div class="flex items-center gap-2">
+    <LogoIcon class="h-6 w-6 text-primary" />
+    <h2 class="text-xl font-bold">{title}</h2>
+  </div>
+{/snippet}
+
 <Dialog.Root bind:open>
   <Dialog.Content
     interactOutsideBehavior="ignore"
-    escapeKeydownBehavior="ignore"
-    class="max-w-screen-xl min-h-0 max-h-[85vh] overflow-hidden flex flex-col"
+    class={cn(
+      "max-w-screen-xl max-h-[700px] overflow-hidden flex flex-col",
+      currentStep === STEPS.confirm && "max-w-screen-sm"
+    )}
   >
-    {#if currentStep === PRODUCT_DESCRIPTION_BULK_MODAL_STEPS.confirm}
+    {#if currentStep === STEPS.confirm}
       <Dialog.Header>
-        <Dialog.Title>
-          {__("Generate Descriptions with AI", "productbird")}
-        </Dialog.Title>
+        <Dialog.Title>{@render stepTitle(__("Generate Descriptions with AI", "productbird"))}</Dialog.Title>
+
         <Dialog.Description>
           {__("You are about to generate descriptions for", "productbird")}
           {selectedIds.length}
@@ -377,7 +385,7 @@
         </Dialog.Description>
       </Dialog.Header>
 
-      <div class="mt-4 space-y-4">
+      <div class="space-y-4 py-4">
         <RadioGroup.Root bind:value={mode}>
           <div class="space-y-6">
             <div class="flex gap-2">
@@ -425,10 +433,10 @@
             : __("Start Generation", "productbird")}
         </Button>
       </Dialog.Footer>
-    {:else if currentStep === PRODUCT_DESCRIPTION_BULK_MODAL_STEPS.review}
+    {:else if currentStep === STEPS.review}
       <Dialog.Header class="flex-shrink-0">
         <Dialog.Title class="flex items-center justify-between">
-          <span>{__("Review Generated Descriptions", "productbird")}</span>
+          {@render stepTitle(__("Review Generated Descriptions", "productbird"))}
 
           <!-- Information bar-->
           <div class="flex items-center justify-end gap-2">
@@ -474,7 +482,7 @@
           </div>
         {:else if currentReviewItem}
           <!-- Navigation Header -->
-          <div class="flex items-center justify-between p-4 border-b bg-muted/30 flex-shrink-0">
+          <div class="flex items-center justify-between p-4 flex-shrink-0">
             <div class="flex items-center gap-4">
               <Badge variant="outline" class="text-sm">
                 {__("Item", "productbird")}
@@ -513,16 +521,24 @@
 
           <!-- Content Area -->
           <div class="flex-1 min-h-0">
-            <ScrollArea class="p-6">
+            <ScrollArea class="p-0 h-[460px]">
               <Card.Root class="overflow-hidden">
                 <Card.Content class="space-y-6">
                   <Tabs.Root value="preview" class="w-full">
                     <div class="flex justify-between items-center gap-4">
                       <div class="flex-shrink-0 items-start justify-between">
-                        <div>
-                          <h3 class="text-xl font-bold">{currentReviewItem.name}</h3>
-                          <p class="text-sm text-muted-foreground">Product ID: {currentReviewItem.id}</p>
-                        </div>
+                        <h3 class="text-lg font-bold">{currentReviewItem.name}</h3>
+                        <p class="text-sm text-muted-foreground flex items-center gap-1">
+                          {__("Product ID", "productbird")}: {currentReviewItem.id}
+                          <a
+                            href={`${window.productbird.admin_url}/post.php?post=${currentReviewItem.id}&action=edit`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-primary hover:text-primary/80 inline-flex"
+                          >
+                            <ExternalLink class="h-4 w-4" />
+                          </a>
+                        </p>
                       </div>
 
                       <div class="max-w-[200px]">
