@@ -7,6 +7,7 @@
   export const STEPS = {
     confirm: "confirm",
     review: "review",
+    finished: "finished",
   } as const;
 
   export const MODE = {
@@ -155,6 +156,18 @@
   const remainingCount = $derived(
     apiRemainingCount !== undefined ? apiRemainingCount : Math.max(0, totalItems - reviewableItems.length)
   );
+
+  // Review completion checker
+  const isReviewComplete = $derived(
+    totalItems > 0 && acceptedCount + declinedCount === totalItems && remainingCount === 0
+  );
+
+  // Automatically move to the finished step when everything is processed
+  $effect(() => {
+    if (currentStep === STEPS.review && isReviewComplete) {
+      currentStep = STEPS.finished;
+    }
+  });
 
   // Current item being reviewed
   const currentReviewItem = $derived(reviewableItems[currentReviewIndex]);
@@ -518,7 +531,7 @@
         </Dialog.Title>
 
         <Dialog.Description class="space-y-3">
-          <p>{__("Review and approve the AI-generated descriptions for your products.", "productbird")}</p>
+          <p>{__("Review and approve the descriptions for your products.", "productbird")}</p>
 
           {#if remainingCount > 0}
             <div class="flex items-center gap-2 text-sm text-muted-foreground">
@@ -754,6 +767,56 @@
             {/if}
           </div>
         </div>
+      </Dialog.Footer>
+    {:else if currentStep === STEPS.finished}
+      <Dialog.Header>
+        <Dialog.Title>{@render stepTitle(__("All descriptions processed", "productbird"))}</Dialog.Title>
+
+        <Dialog.Description>
+          {__("Here is a quick summary of the descriptions.", "productbird")}
+        </Dialog.Description>
+      </Dialog.Header>
+
+      <div class="flex-1 overflow-hidden p-4">
+        <Card.Root class="h-full">
+          <Card.Content class="flex flex-col items-center justify-center h-full py-12 space-y-8">
+            <div class="flex flex-col items-center space-y-4">
+              <CheckCircle2 class="h-16 w-16 text-emerald-600" />
+
+              <h3 class="text-2xl font-bold text-center">
+                {__("You're all set!", "productbird")}
+              </h3>
+
+              <p class="text-muted-foreground text-center max-w-md">
+                {__("All product descriptions have been processed successfully.", "productbird")}
+              </p>
+            </div>
+
+            <div class="flex gap-12 text-center">
+              <div class="flex flex-col items-center space-y-2">
+                <div
+                  class="flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30"
+                >
+                  <span class="text-2xl font-bold text-emerald-600">{acceptedCount}</span>
+                </div>
+                <span class="text-sm font-medium">{__("Accepted", "productbird")}</span>
+                <span class="text-xs text-muted-foreground">{__("Applied to products", "productbird")}</span>
+              </div>
+
+              <div class="flex flex-col items-center space-y-2">
+                <div class="flex items-center justify-center w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30">
+                  <span class="text-2xl font-bold text-red-600">{declinedCount}</span>
+                </div>
+                <span class="text-sm font-medium">{__("Declined", "productbird")}</span>
+                <span class="text-xs text-muted-foreground">{__("Not applied", "productbird")}</span>
+              </div>
+            </div>
+          </Card.Content>
+        </Card.Root>
+      </div>
+
+      <Dialog.Footer>
+        <Button onclick={() => (open = false)}>{__("Close", "productbird")}</Button>
       </Dialog.Footer>
     {/if}
   </Dialog.Content>
