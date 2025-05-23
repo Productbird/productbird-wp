@@ -110,7 +110,7 @@ class Admin
     public function render_settings_page(): void
     {
         ?>
-            <div id="productbird-admin-settings"></div>
+            <div id="productbird-admin-settings" data-productbird-app="true"></div>
         <?php
     }
 

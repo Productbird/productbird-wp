@@ -1,8 +1,8 @@
+import "$lib/styles/global.pcss";
 import App, { type RootProps } from "./root.svelte";
 import { createComponentMounter } from "$lib/utils/component-mounter";
 import type { ComponentMounter } from "$lib/utils/component-mounter";
 import { PRODUCT_DESCRIPTION_GLOBALS } from "./utils";
-
 // -----------------------------------------------------------------------------
 // 1. Create the mounter (but it will only mount once the placeholder element
 //    appears in the DOM).
@@ -11,7 +11,7 @@ import { PRODUCT_DESCRIPTION_GLOBALS } from "./utils";
 const mounter: ComponentMounter<RootProps> = createComponentMounter<RootProps>({
 	component: App,
 	mountDelay: 0,
-	selector: ".productbird-product-description-modal",
+	selector: ".productbird-magic-descriptions-modal",
 	getPropsFromElement: (element) => {
 		const idsJson = element.dataset.selectedIds ?? "[]";
 		let selectedIds: number[] = [];
@@ -47,7 +47,7 @@ function interceptBulkAction(): void {
 		);
 		const action = actionSelector?.value;
 
-		if (action !== "productbird_generate_description") {
+		if (action !== "productbird_magic_descriptions") {
 			return; // Let WordPress handle other actions normally.
 		}
 
@@ -81,11 +81,14 @@ function interceptBulkAction(): void {
 
 		// Create (or reuse) the modal container.
 		let container = document.querySelector<HTMLDivElement>(
-			".productbird-product-description-modal",
+			".productbird-magic-descriptions-modal",
 		);
+		console.log("container", container);
 		if (!container) {
 			container = document.createElement("div");
-			container.className = "productbird-product-description-modal";
+			// add [data-productbird-app]
+			container.dataset.productbirdApp = "true";
+			container.className = "productbird-magic-descriptions-modal";
 			document.body.appendChild(container);
 		}
 
@@ -108,10 +111,17 @@ function disableBulkActionGroupOption(): void {
 	for (const selector of selectors) {
 		const selectElements =
 			document.querySelectorAll<HTMLSelectElement>(selector);
+
+		console.log(selectElements);
+
 		for (const selectElement of selectElements) {
+			console.log(`${selector} ${labelToDisable}`);
 			const optionToDisable = selectElement.querySelector<HTMLOptionElement>(
 				`option[value="${labelToDisable}"]`,
 			);
+
+			console.log(optionToDisable);
+
 			if (optionToDisable) {
 				optionToDisable.disabled = true;
 				optionToDisable.style.color = "#999";

@@ -29,7 +29,7 @@ export default defineConfig({
 			//
 			input: [
 				"assets/ts/admin-settings/index.ts",
-				"assets/ts/tools/product-description/index.ts",
+				"assets/ts/tools/magic-descriptions/index.ts",
 			],
 			outDir: "assets/dist",
 		}),

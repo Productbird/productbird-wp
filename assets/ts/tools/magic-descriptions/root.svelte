@@ -8,9 +8,12 @@
   import { Toaster } from "$lib/components/ui/sonner/index.js";
   import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/svelte-query";
   import { toast } from "svelte-sonner";
-  import ProductDescriptionBulkModal from "./product-description-bulk-modal.svelte";
+  import ProductDescriptionBulkModal from "./magic-descriptions-bulk-modal.svelte";
+  import "$lib/styles/app.pcss";
 
   let { selectedIds = [] }: RootProps = $props();
+
+  let open = $state(true);
 
   const queryClient = new QueryClient({
     queryCache: new QueryCache({
@@ -41,5 +44,5 @@
 <Toaster position="top-center" offset={36} />
 
 <QueryClientProvider client={queryClient}>
-  <ProductDescriptionBulkModal {selectedIds} />
+  <ProductDescriptionBulkModal {selectedIds} bind:open />
 </QueryClientProvider>

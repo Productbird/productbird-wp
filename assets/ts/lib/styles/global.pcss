@@ -1,0 +1,55 @@
+/**
+ * Any global styles go here.
+ */
+
+#wpcontent {
+	padding-left: 0 !important;
+	position: relative;
+}
+
+dd,
+li {
+	margin-bottom: 0;
+}
+
+#productbird-admin-settings {
+	@apply relative h-full bg-gray-50;
+}
+
+
+/* For Webkit-based browsers (Chrome, Safari and Opera) */
+.productbird-scrollbar-hide::-webkit-scrollbar {
+	display: none;
+}
+
+/* For IE, Edge and Firefox */
+.productbird-scrollbar-hide {
+	-ms-overflow-style: none; /* IE and Edge */
+	scrollbar-width: none; /* Firefox */
+}
+
+/**
+** Overrides for WooCommerce and WordPRess
+*/
+
+/* Fix WooCommerce table scrolling by targeting only table.fixed elements */
+table.fixed,
+.woocommerce table.fixed,
+.wp-list-table.fixed {
+	table-layout: fixed !important;
+	position: static !important;
+}
+
+/* Restore proper fixed positioning inside our app scope */
+body [data-productbird-app] .fixed {
+	position: fixed !important;
+	table-layout: auto !important;
+}
+
+[data-dialog-content] {
+z-index: 99999 !important;
+}
+
+[data-dialog-overlay] {
+z-index: 99998 !important;
+}

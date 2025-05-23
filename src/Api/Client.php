@@ -2,6 +2,7 @@
 
 namespace Productbird\Api;
 
+use Productbird\Utils;
 use WP_Error;
 
 /**
@@ -237,20 +238,7 @@ class Client
      */
     public static function determine_base_url(): string
     {
-        return self::is_local_site() ? self::LOCAL_BASE_URL : self::PROD_BASE_URL;
+        return Utils::is_local_site() ? self::LOCAL_BASE_URL : self::PROD_BASE_URL;
     }
 
-    /**
-     * Detects whether the site is running on a localhost-style domain.
-     * @since 0.1.0
-     * @return bool True if the site URL matches local patterns, false otherwise.
-     */
-    public static function is_local_site(): bool
-    {
-        $site_url = home_url();
-
-        return strpos($site_url, 'localhost') !== false
-            || strpos($site_url, '127.0.0.1') !== false
-            || strpos($site_url, '.local') !== false;
-    }
 }

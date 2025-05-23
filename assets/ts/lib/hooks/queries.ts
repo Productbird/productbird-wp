@@ -5,6 +5,11 @@ import {
 	rawRequest,
 	clearProductMeta,
 } from "$lib/utils/api";
+import type {
+	MagicDescriptionsBulkWpJsonResponse,
+	MagicDescriptionsStatusCheckWpJsonResponse,
+	ProductId,
+} from "$lib/utils/types";
 import { createQuery, createMutation } from "@tanstack/svelte-query";
 import { toast } from "svelte-sonner";
 
@@ -23,15 +28,14 @@ export function useGetSettings() {
 	}));
 }
 
-// Generate product descriptions in bulk
-export function useGenerateProductDescriptionsBulk() {
+export function useGenerateMagicDescriptionsBulk() {
 	return createMutation(() => ({
 		mutationFn: async ({
 			productIds,
 			mode,
 		}: { productIds: number[]; mode: "auto-apply" | "review" }) => {
-			return await rawRequest(
-				"productbird/v1/generate-product-description/bulk",
+			return await rawRequest<MagicDescriptionsBulkWpJsonResponse>(
+				"productbird/v1/magic-descriptions/bulk",
 				{
 					method: "POST",
 					body: { productIds, mode },
@@ -45,18 +49,25 @@ export function useGenerateProductDescriptionsBulk() {
 }
 
 // Poll for completed descriptions
-export function useGetCompletedDescriptions(productIds: number[]) {
-	return createQuery(() => ({
-		queryKey: ["completed-descriptions", productIds],
+export function usePollMagicDescriptionStatus(
+	productIds: number[],
+	enabled: boolean,
+) {
+	return createQuery<MagicDescriptionsStatusCheckWpJsonResponse>(() => ({
+		queryKey: ["magic-descriptions-status", productIds],
 		queryFn: async () => {
-			if (!productIds.length) return { completed: [], remaining: 0 };
+			if (!productIds.length)
+				return { completed_items: [], remaining_count: 0 };
 
-			return await rawRequest(
-				`productbird/v1/description-completed?productIds=${productIds.join(",")}`,
+			// Ensure product IDs are properly formatted
+			const formattedIds = productIds.map((id) => String(id));
+
+			return await rawRequest<MagicDescriptionsStatusCheckWpJsonResponse>(
+				`productbird/v1/magic-descriptions/status?product_ids=${formattedIds.join(",")}`,
 			);
 		},
-		refetchInterval: 5000, // Poll every 5 seconds
-		enabled: productIds.length > 0,
+		refetchInterval: enabled ? 5000 : false, // Poll every 5 seconds when enabled
+		enabled,
 	}));
 }
 

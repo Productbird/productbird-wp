@@ -3,7 +3,7 @@
 namespace Productbird;
 
 use Productbird\Admin\Admin;
-use Productbird\Admin\ProductDescriptionBulkAction;
+use Productbird\Admin\MagicDescriptionsBulkAction;
 use Productbird\Admin\ProductGenerationStatusColumn;
 use Productbird\Admin\NoDescriptionFilter;
 use Productbird\Admin\GlobalAdminScript;
@@ -14,7 +14,7 @@ use Productbird\Rest\OidcCallbackEndpoint;
 use Productbird\Auth\OidcClient;
 use Productbird\Rest\OrganizationsEndpoint;
 use Productbird\Rest\SettingsEndpoint;
-use Productbird\Rest\GenerateProductDescriptionBulkEndpoint;
+use Productbird\Rest\ToolMagicDescriptionsEndpoints;
 use Productbird\Rest\ApplyProductDescriptionEndpoint;
 use Productbird\Rest\RegenerateEndpoint;
 use Productbird\Rest\ClearProductMetaEndpoint;
@@ -40,6 +40,9 @@ class Plugin
             add_action('admin_notices', [$this, 'woocommerce_missing_notice']);
             return;
         }
+
+        // Hook text domain loading to the init action
+        add_action('init', [$this, 'load_text_domain']);
 
         // Initialize plugin components
         $this->init_components();
@@ -70,22 +73,30 @@ class Plugin
     }
 
     /**
-     * Initialize plugin components.
+     * Load plugin text domain for translations.
      *
      * @return void
      */
-    private function init_components(): void
+    public function load_text_domain(): void
     {
         load_plugin_textdomain(
             'productbird',
             false,
             dirname(plugin_basename(__FILE__), 2) . '/languages'
         );
+    }
 
+    /**
+     * Initialize plugin components.
+     *
+     * @return void
+     */
+    private function init_components(): void
+    {
         if (is_admin()) {
             (new GlobalAdminScript())->init();
             (new Admin())->init();
-            (new ProductDescriptionBulkAction())->init();
+            (new MagicDescriptionsBulkAction())->init();
             (new ProductGenerationStatusColumn())->init();
             (new NoDescriptionFilter())->init();
             (new ProductDescriptionRowAction())->init();
@@ -95,10 +106,14 @@ class Plugin
         (new ProductStatusCheckEndpoint())->init();
         (new OrganizationsEndpoint())->init();
         (new SettingsEndpoint())->init();
-        (new GenerateProductDescriptionBulkEndpoint())->init();
         (new ApplyProductDescriptionEndpoint())->init();
         (new RegenerateEndpoint())->init();
         (new ClearProductMetaEndpoint())->init();
+
+        /**
+         * Tool endpoints
+         */
+        (new ToolMagicDescriptionsEndpoints())->init();
 
         // Only bootstrap OIDC-related functionality if the feature flag is enabled.
         if (FeatureFlags::is_enabled('oidc')) {

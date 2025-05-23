@@ -22,7 +22,7 @@ class ProductDescriptionRowAction
     /**
      * Row action identifier for generating product descriptions.
      */
-    private const ROW_ACTION_GENERATE_DESCRIPTION = 'productbird_generate_description';
+    private const ROW_ACTION_GENERATE_DESCRIPTION = 'productbird_magic_descriptions';
 
     /**
      * Initialize hooks for the row action.
@@ -54,7 +54,7 @@ class ProductDescriptionRowAction
             '<a href="%s">%s</a>',
             wp_nonce_url(
                 admin_url(sprintf('edit.php?post_type=product&action=%s&post=%d', self::ROW_ACTION_GENERATE_DESCRIPTION, $post->ID)),
-                'productbird_generate_description_' . $post->ID
+                'productbird_magic_descriptions_' . $post->ID
             ),
             __('Generate AI Description', 'productbird')
         );
@@ -86,7 +86,7 @@ class ProductDescriptionRowAction
         }
 
         $post_id = absint($_GET['post']);
-        if (!wp_verify_nonce($_GET['_wpnonce'], 'productbird_generate_description_' . $post_id)) {
+        if (!wp_verify_nonce($_GET['_wpnonce'], 'productbird_magic_descriptions_' . $post_id)) {
             wp_die(__('Security check failed.', 'productbird'));
         }
 
@@ -109,7 +109,8 @@ class ProductDescriptionRowAction
         // Build the payload for this product
         $payload = $this->build_product_payload($product, [
             'tone' => $options['tone'] ?? null,
-            'formality' => $options['formality'] ?? null
+            'formality' => $options['formality'] ?? null,
+            'callback_url' => rest_url('productbird/v1/webhooks') . '?tool=magic-descriptions',
         ]);
 
         // Remove empty/null entries to keep the payload concise

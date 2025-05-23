@@ -2,8 +2,9 @@
 
 namespace Productbird\Rest;
 
-use Productbird\Admin\ProductGenerationStatusColumn;
 use Productbird\Api\Client;
+use Productbird\Traits\ToolsConfig;
+use Productbird\Admin\ProductGenerationStatusColumn;
 
 use WP_REST_Server;
 use WP_REST_Request;
@@ -19,6 +20,8 @@ use WP_Error;
  */
 class ProductStatusCheckEndpoint
 {
+    use ToolsConfig;
+
     /**
      * Initialize the REST route registration.
      * @since 0.1.0
@@ -36,7 +39,7 @@ class ProductStatusCheckEndpoint
     {
         register_rest_route(
             'productbird/v1',
-            '/check-generation-status',
+            '/xxxx',
             [
                 'methods'             => WP_REST_Server::CREATABLE, // POST
                 'callback'            => [$this, 'handle_status_check'],
@@ -59,7 +62,7 @@ class ProductStatusCheckEndpoint
         // Add a new endpoint for polling completed descriptions (for bulk feature)
         register_rest_route(
             'productbird/v1',
-            '/description-completed',
+            '/xx',
             [
                 'methods'             => WP_REST_Server::READABLE, // GET
                 'callback'            => [$this, 'get_completed_descriptions'],
@@ -234,18 +237,22 @@ class ProductStatusCheckEndpoint
         $completed_items = [];
         $remaining_count = 0;
 
+        $meta_status      = ToolsConfig::MAGIC_DESCRIPTIONS_META_KEY_STATUS;
+        $meta_draft       = ToolsConfig::MAGIC_DESCRIPTIONS_META_KEY_DRAFT;
+        $meta_delivered   = ToolsConfig::MAGIC_DESCRIPTIONS_META_KEY_DELIVERED;
+
         foreach ($product_ids as $product_id) {
-            $status = get_post_meta($product_id, ProductGenerationStatusColumn::META_KEY_GENERATION_STATUS, true);
+            $status = get_post_meta($product_id, $meta_status, true);
 
             if ($status === 'completed') {
                 // Skip if we've already delivered this description
-                $already_delivered = (bool) get_post_meta($product_id, '_productbird_delivered', true);
+                $already_delivered = (bool) get_post_meta($product_id, $meta_delivered, true);
                 if ($already_delivered) {
                     continue;
                 }
 
                 // Only include products that have been marked as completed
-                $description_draft = get_post_meta($product_id, '_productbird_description_draft', true);
+                $description_draft = get_post_meta($product_id, $meta_draft, true);
 
                 if (!empty($description_draft)) {
                     $product = \wc_get_product($product_id);
@@ -256,9 +263,9 @@ class ProductStatusCheckEndpoint
                     ];
 
                     // Mark this as delivered so we don't send it again
-                    update_post_meta($product_id, '_productbird_delivered', true);
+                    update_post_meta($product_id, $meta_delivered, true);
                 }
-            } else if ($status === 'queued' || $status === 'running') {
+            } elseif ($status === 'queued' || $status === 'running') {
                 // Count how many are still in progress
                 $remaining_count++;
             }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import "$lib/styles/app.pcss";
+  import "$lib/styles/app-scoped.pcss";
   import { onMount, onDestroy } from "svelte";
   import * as Dialog from "$lib/components/ui/dialog/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
@@ -7,7 +7,7 @@
   import { Progress } from "$lib/components/ui/progress/index.js";
   import { __ } from "@wordpress/i18n";
   import {
-    useGenerateProductDescriptionsBulk,
+    useGenerateMagicDescriptionsBulk,
     useApplyProductDescription,
     useRegenerateProductDescription,
   } from "$lib/hooks/queries";
@@ -63,7 +63,7 @@
   });
 
   // Set up mutations
-  const generateMutation = useGenerateProductDescriptionsBulk();
+  const generateMutation = useGenerateMagicDescriptionsBulk();
   const applyMutation = useApplyProductDescription();
   const regenerateMutation = useRegenerateProductDescription();
 

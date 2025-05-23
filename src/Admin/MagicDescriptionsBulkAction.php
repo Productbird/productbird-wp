@@ -2,21 +2,24 @@
 
 namespace Productbird\Admin;
 
-use Productbird\Api\Client;
 use Kucrut\Vite;
 use Productbird\Traits\ScriptLocalization;
 use Productbird\Traits\ProductDataHelpers;
 use Productbird\FeatureFlags;
+use Productbird\Traits\ToolsConfig;
 
 /**
  * Handles WooCommerce product bulk actions that rely on Productbird AI.
  *
  * @since 0.1.0
  */
-class ProductDescriptionBulkAction
+class MagicDescriptionsBulkAction
 {
     use ScriptLocalization;
     use ProductDataHelpers;
+    use ToolsConfig;
+
+    private $tool_config;
 
     /**
      * Option name used to store Productbird settings.
@@ -26,17 +29,25 @@ class ProductDescriptionBulkAction
     /**
      * Bulk action identifier for generating product descriptions.
      */
-    private const BULK_ACTION_GENERATE_DESCRIPTION = 'productbird_generate_description';
-
-    /**
-     * Non-selectable group label to visually separate Productbird actions.
-     */
-    private const BULK_ACTION_GROUP_LABEL = 'productbird_ai_options';
+    private const BULK_ACTION_GENERATE_DESCRIPTION = 'productbird_magic_descriptions';
 
     /**
      * Maximum number of products that can be processed in a single bulk action.
      */
     private const MAX_BULK_ITEMS = 250;
+
+    /**
+     * Get tool config (lazy-loaded to avoid early translation loading).
+     *
+     * @return array
+     */
+    private function get_tool_config_lazy(): array
+    {
+        if ($this->tool_config === null) {
+            $this->tool_config = $this->get_tool_config('MAGIC_DESCRIPTIONS');
+        }
+        return $this->tool_config;
+    }
 
     /**
      * Initializes hooks for the bulk action.
@@ -46,7 +57,7 @@ class ProductDescriptionBulkAction
     public function init(): void
     {
         add_filter('bulk_actions-edit-product', [$this, 'add_bulk_actions'], 1);
-        // add_action('admin_enqueue_scripts', [$this, 'enqueue_assets']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_assets']);
     }
 
     // ---------------------------------------------------------------------
@@ -66,7 +77,7 @@ class ProductDescriptionBulkAction
 
         // Add an opt-group-like label that we later disable
         // in JS so that the user cannot actually select it.
-        $new_actions[self::BULK_ACTION_GROUP_LABEL] = '↓ ' . __('Productbird', 'productbird');
+        $new_actions[$this->get_tool_config_lazy()['bulk_action_group_label']] = '↓ ' . __('Productbird', 'productbird');
 
         // The real actionable item.
         $new_actions[self::BULK_ACTION_GENERATE_DESCRIPTION] = __('Generate description with AI', 'productbird');
@@ -79,7 +90,7 @@ class ProductDescriptionBulkAction
     // ---------------------------------------------------------------------
 
     /**
-     * Enqueues the compiled Vite asset that mounts the product-description modal.
+     * Enqueues the compiled Vite asset that mounts the magic-descriptions modal.
      *
      * @since 0.1.0
      * @param string $hook_suffix The current admin page hook suffix.
@@ -101,26 +112,26 @@ class ProductDescriptionBulkAction
         }
 
         $dist_path    = PRODUCTBIRD_PLUGIN_DIR . '/assets/dist';
-        $source_entry = 'assets/ts/tools/product-description/index.ts';
+        $source_entry = 'assets/ts/tools/magic-descriptions/index.ts';
 
         Vite\enqueue_asset(
             $dist_path,
             $source_entry,
             [
-                'handle'       => 'productbird-product-description',
+                'handle'       => 'productbird-magic-descriptions',
                 'dependencies' => ['jquery', 'wp-api-fetch', 'wp-i18n'],
                 'in-footer'    => true,
             ]
         );
 
         wp_localize_script(
-            'productbird-product-description',
-            'productbird_bulk',
+            'productbird-magic-descriptions',
+            'productbird_tool_magic_descriptions',
             array_merge(
                 $this->get_common_localization_data(),
                 [
                     'max_batch' => self::MAX_BULK_ITEMS,
-                    'bulk_action_group_label' => self::BULK_ACTION_GROUP_LABEL,
+                    'config' => $this->get_tool_config_lazy(),
                 ]
             )
         );
