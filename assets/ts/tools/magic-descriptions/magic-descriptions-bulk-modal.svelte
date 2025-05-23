@@ -54,6 +54,7 @@
     ChevronRight,
     ExternalLink,
     Loader2,
+    Search,
   } from "@lucide/svelte";
   import type {
     MagicDescriptionsBulkWpJsonResponse,
@@ -64,6 +65,7 @@
   import { cn } from "$lib/utils/ui";
   import LogoIcon from "$lib/components/logo-icon.svelte";
   import * as Checkbox from "$lib/components/ui/checkbox/index.js";
+  import { Input } from "$lib/components/ui/input/index.js";
 
   // Props
   let { selectedIds = [], open = $bindable() }: ProductDescriptionBulkModalProps = $props();
@@ -92,6 +94,7 @@
 
   // Local state used when user decides to exclude some products that would be overridden
   let deselectedIds = $state<Set<ProductId>>(new Set());
+  let overrideSearchQuery = $state("");
 
   // Preflight query to fetch current status of selected products
   const preflightQuery = $derived.by(() =>
@@ -102,6 +105,22 @@
   const overrideCandidates = $derived.by(() => {
     if (!preflightQuery.data) return [] as MagicDescriptionsPreflightWpJsonResponse["items"];
     return preflightQuery.data.items.filter((item) => item.status === "accepted" || item.status === "declined");
+  });
+
+  const filteredOverrideCandidates = $derived.by(() => {
+    if (!overrideSearchQuery.trim()) return overrideCandidates;
+
+    const query = overrideSearchQuery.toLowerCase();
+    return overrideCandidates.filter(
+      (item) => item.name.toLowerCase().includes(query) || item.id.toString().includes(query)
+    );
+  });
+
+  const overrideStats = $derived.by(() => {
+    const accepted = overrideCandidates.filter((item) => item.status === "accepted").length;
+    const declined = overrideCandidates.filter((item) => item.status === "declined").length;
+    const selected = overrideCandidates.filter((item) => !deselectedIds.has(item.id)).length;
+    return { accepted, declined, selected, total: overrideCandidates.length };
   });
 
   const idsToProcess = $derived.by(() => {
@@ -476,48 +495,6 @@
       </Dialog.Header>
 
       <div class="space-y-4 py-4">
-        {#if overrideCandidates.length > 0}
-          <Card.Root
-            class="border border-orange-300 bg-orange-50 dark:border-orange-800 dark:bg-orange-900/20 p-4 space-y-3"
-          >
-            <p class="text-sm font-medium text-orange-800 dark:text-orange-200">
-              {__(
-                "The following products already have AI-generated descriptions. Generating again will overwrite them.",
-                "productbird"
-              )}
-            </p>
-
-            <div class="space-y-2 max-h-40 overflow-y-auto pr-2">
-              {#each overrideCandidates as item}
-                <div class="flex items-center gap-2 text-sm">
-                  <Checkbox.Root
-                    checked={!deselectedIds.has(item.id)}
-                    onCheckedChange={(newChecked) => {
-                      if (newChecked) {
-                        // Checkbox checked – keep product selected
-                        deselectedIds.delete(item.id);
-                      } else {
-                        // Checkbox unchecked – exclude product
-                        deselectedIds.add(item.id);
-                      }
-                      // Force reactivity by creating new Set instance
-                      deselectedIds = new Set(deselectedIds);
-                    }}
-                  />
-                  <a
-                    href={`${window.productbird.admin_url}/post.php?post=${item.id}&action=edit`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="underline hover:text-primary"
-                  >
-                    {item.name}
-                  </a>
-                  <Badge variant="outline" class="capitalize">{item.status}</Badge>
-                </div>
-              {/each}
-            </div>
-          </Card.Root>
-        {/if}
         <RadioGroup.Root bind:value={mode}>
           <div class="space-y-6">
             <div class="flex gap-2">
@@ -552,6 +529,138 @@
             </div>
           </div>
         </RadioGroup.Root>
+
+        {#if overrideCandidates.length > 0}
+          <Card.Root class="border border-orange-300 bg-orange-50 dark:border-orange-800 dark:bg-orange-900/20">
+            <Card.Header class="pb-3">
+              <div class="flex items-start justify-between gap-4">
+                <div class="space-y-1">
+                  <p class="text-sm font-medium text-orange-800 dark:text-orange-200">
+                    {__("Products with existing AI descriptions", "productbird")}
+                  </p>
+                  <p class="text-xs text-orange-700 dark:text-orange-300">
+                    {__("Generating again will overwrite their current descriptions.", "productbird")}
+                  </p>
+                </div>
+                <div class="flex gap-2 text-xs">
+                  <Badge
+                    variant="secondary"
+                    class="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
+                  >
+                    {overrideStats.accepted}
+                    {__("accepted", "productbird")}
+                  </Badge>
+                  <Badge variant="secondary" class="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">
+                    {overrideStats.declined}
+                    {__("declined", "productbird")}
+                  </Badge>
+                </div>
+              </div>
+            </Card.Header>
+
+            <Card.Content class="space-y-3 pt-3">
+              {#if overrideCandidates.length > 10}
+                <div class="flex items-center gap-2">
+                  <div class="relative flex-1">
+                    <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="search"
+                      placeholder={__("Search by name or ID...", "productbird")}
+                      class="pl-8 h-9"
+                      bind:value={overrideSearchQuery}
+                    />
+                  </div>
+                  <div class="flex gap-1">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      class="h-9 px-2 text-xs"
+                      onclick={() => {
+                        overrideCandidates.forEach((item) => deselectedIds.delete(item.id));
+                        deselectedIds = new Set(deselectedIds);
+                      }}
+                      disabled={overrideStats.selected === overrideStats.total}
+                    >
+                      {__("Select all", "productbird")}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      class="h-9 px-2 text-xs"
+                      onclick={() => {
+                        overrideCandidates.forEach((item) => deselectedIds.add(item.id));
+                        deselectedIds = new Set(deselectedIds);
+                      }}
+                      disabled={overrideStats.selected === 0}
+                    >
+                      {__("Deselect all", "productbird")}
+                    </Button>
+                  </div>
+                </div>
+              {/if}
+
+              <div class="rounded-md border border-orange-200 dark:border-orange-800">
+                <div class="max-h-48 overflow-y-auto">
+                  {#if filteredOverrideCandidates.length === 0}
+                    <div class="p-4 text-center text-sm text-muted-foreground">
+                      {__("No products match your search.", "productbird")}
+                    </div>
+                  {:else}
+                    {#each filteredOverrideCandidates as item, index}
+                      <div
+                        class="flex items-center gap-3 px-3 py-2 text-sm {index !== 0
+                          ? 'border-t border-orange-100 dark:border-orange-900'
+                          : ''}"
+                      >
+                        <Checkbox.Root
+                          checked={!deselectedIds.has(item.id)}
+                          onCheckedChange={(newChecked) => {
+                            if (newChecked) {
+                              deselectedIds.delete(item.id);
+                            } else {
+                              deselectedIds.add(item.id);
+                            }
+                            deselectedIds = new Set(deselectedIds);
+                          }}
+                        />
+                        <div class="flex-1 min-w-0">
+                          <a
+                            href={`${window.productbird.admin_url}/post.php?post=${item.id}&action=edit`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="underline hover:text-primary truncate block"
+                          >
+                            {item.name}
+                          </a>
+                        </div>
+                        <Badge
+                          variant="outline"
+                          class={cn(
+                            "capitalize flex-shrink-0",
+                            item.status === "accepted"
+                              ? "text-emerald-700 border-emerald-300 dark:text-emerald-300 dark:border-emerald-700"
+                              : "text-red-700 border-red-300 dark:text-red-300 dark:border-red-700"
+                          )}
+                        >
+                          {item.status}
+                        </Badge>
+                      </div>
+                    {/each}
+                  {/if}
+                </div>
+              </div>
+
+              {#if overrideCandidates.length > 10}
+                <p class="text-xs text-muted-foreground text-center">
+                  {overrideStats.selected}
+                  {__("of", "productbird")}
+                  {overrideStats.total}
+                  {__("selected for regeneration", "productbird")}
+                </p>
+              {/if}
+            </Card.Content>
+          </Card.Root>
+        {/if}
       </div>
 
       <Dialog.Footer>
