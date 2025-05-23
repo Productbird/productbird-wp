@@ -39,9 +39,6 @@ declare global {
 			};
 			features: FeatureFlags;
 		};
-		productbird_product_description: GlobalAdminData & {
-			max_batch: number;
-		};
 	}
 }
 

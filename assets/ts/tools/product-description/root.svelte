@@ -1,10 +1,16 @@
+<script lang="ts" module>
+  export type RootProps = {
+    selectedIds: number[];
+  };
+</script>
+
 <script lang="ts">
   import { Toaster } from "$lib/components/ui/sonner/index.js";
   import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/svelte-query";
   import { toast } from "svelte-sonner";
   import ProductDescriptionBulkModal from "./product-description-bulk-modal.svelte";
 
-  let { selectedIds = [] }: { selectedIds: number[] } = $props();
+  let { selectedIds = [] }: RootProps = $props();
 
   const queryClient = new QueryClient({
     queryCache: new QueryCache({

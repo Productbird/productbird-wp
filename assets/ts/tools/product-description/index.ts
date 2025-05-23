@@ -1,15 +1,12 @@
-import App from "./root.svelte";
+import App, { type RootProps } from "./root.svelte";
 import { createComponentMounter } from "$lib/utils/component-mounter";
 import type { ComponentMounter } from "$lib/utils/component-mounter";
+import { PRODUCT_DESCRIPTION_GLOBALS } from "./utils";
 
 // -----------------------------------------------------------------------------
 // 1. Create the mounter (but it will only mount once the placeholder element
 //    appears in the DOM).
 // -----------------------------------------------------------------------------
-
-type RootProps = {
-	selectedIds: number[];
-};
 
 const mounter: ComponentMounter<RootProps> = createComponentMounter<RootProps>({
 	component: App,
@@ -72,19 +69,13 @@ function interceptBulkAction(): void {
 			return;
 		}
 
-		// Enforce the 250-item backend limit.
-		interface ProductbirdGlobals {
-			productbird_bulk?: {
-				max_batch: number;
-			};
-		}
-		const globals = window as unknown as ProductbirdGlobals;
-		const maxBatch = globals.productbird_bulk?.max_batch ?? 250;
+		const maxBatch = PRODUCT_DESCRIPTION_GLOBALS.max_batch;
 
 		if (selectedIds.length > maxBatch) {
 			alert(
 				`Productbird can only process up to ${maxBatch} products at once. Please select fewer products and try again.`,
 			);
+
 			return;
 		}
 
@@ -107,11 +98,37 @@ function interceptBulkAction(): void {
 	});
 }
 
-// Wait for DOM ready in case this script is loaded in footer.
+// -----------------------------------------------------------------------------
+// 3. Disable the bulk action group label in the dropdown.
+// -----------------------------------------------------------------------------
+function disableBulkActionGroupOption(): void {
+	const labelToDisable = PRODUCT_DESCRIPTION_GLOBALS.bulk_action_group_label;
+
+	const selectors = ['select[name="action"]', 'select[name="action2"]'];
+	for (const selector of selectors) {
+		const selectElements =
+			document.querySelectorAll<HTMLSelectElement>(selector);
+		for (const selectElement of selectElements) {
+			const optionToDisable = selectElement.querySelector<HTMLOptionElement>(
+				`option[value="${labelToDisable}"]`,
+			);
+			if (optionToDisable) {
+				optionToDisable.disabled = true;
+				optionToDisable.style.color = "#999";
+				optionToDisable.style.fontStyle = "italic";
+			}
+		}
+	}
+}
+
 if (document.readyState === "loading") {
-	document.addEventListener("DOMContentLoaded", interceptBulkAction);
+	document.addEventListener("DOMContentLoaded", () => {
+		interceptBulkAction();
+		disableBulkActionGroupOption();
+	});
 } else {
 	interceptBulkAction();
+	disableBulkActionGroupOption();
 }
 
 // Expose for debugging/tests

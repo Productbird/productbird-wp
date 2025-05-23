@@ -20,7 +20,7 @@ class FeatureFlags
         'oidc' => false,
 
         // Product description bulk modal
-        'product_description_bulk_modal' => false,
+        'product_description_bulk_modal' => true,
     ];
 
     /**

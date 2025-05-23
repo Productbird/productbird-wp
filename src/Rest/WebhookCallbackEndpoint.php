@@ -127,15 +127,27 @@ class WebhookCallbackEndpoint
                 continue;
             }
 
-            $tag = isset($block['tag']) && preg_match('/^h[1-6]$/', $block['tag']) ? $block['tag'] : 'p';
-            if ($tag === 'p') {
-                // Allow only <p> to keep formatting simple and safe.
-                $tag = 'p';
+            // Define allowed tags
+            $allowed_tags = ['p', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'strong', 'em', 'a', 'span'];
+
+            // Check if tag is allowed, default to 'p' if not
+            $tag = isset($block['tag']) && in_array($block['tag'], $allowed_tags) ? $block['tag'] : 'p';
+
+            // Sanitize text
+            $text = wp_kses_post($block['text']);
+
+            // Handle attributes if provided
+            $attributes = '';
+            if (isset($block['attributes']) && is_array($block['attributes'])) {
+                foreach ($block['attributes'] as $attr_name => $attr_value) {
+                    // Sanitize attribute name and value
+                    $attr_name = sanitize_key($attr_name);
+                    $attr_value = esc_attr($attr_value);
+                    $attributes .= sprintf(' %s="%s"', $attr_name, $attr_value);
+                }
             }
 
-            // Sanitize text.
-            $text = wp_kses_post($block['text']);
-            $html_parts[] = sprintf('<%1$s>%2$s</%1$s>', $tag, $text);
+            $html_parts[] = sprintf('<%1$s%2$s>%3$s</%1$s>', $tag, $attributes, $text);
         }
 
         if (empty($html_parts)) {
