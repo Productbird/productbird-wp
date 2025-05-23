@@ -83,3 +83,12 @@ export type MagicDescriptionsStatusCheckWpJsonResponse = {
 	}[];
 	remaining_count: number;
 };
+
+// Response from /magic-descriptions/preflight endpoint
+export type MagicDescriptionsPreflightWpJsonResponse = {
+	items: {
+		id: ProductId;
+		name: string;
+		status: "accepted" | "declined" | "pending" | "never_generated";
+	}[];
+};

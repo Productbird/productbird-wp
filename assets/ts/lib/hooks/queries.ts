@@ -8,6 +8,7 @@ import {
 import type {
 	MagicDescriptionsBulkWpJsonResponse,
 	MagicDescriptionsStatusCheckWpJsonResponse,
+	MagicDescriptionsPreflightWpJsonResponse,
 	ProductId,
 } from "$lib/utils/types";
 import { createQuery, createMutation } from "@tanstack/svelte-query";
@@ -137,5 +138,25 @@ export function useClearProductMeta() {
 		onSuccess: (data) => {
 			toast.success(`${data.cleared} meta fields cleared`);
 		},
+	}));
+}
+
+// Pre-flight status for selected products before generation starts
+export function usePreflightMagicDescriptions(
+	productIds: number[],
+	enabled = true,
+) {
+	return createQuery<MagicDescriptionsPreflightWpJsonResponse>(() => ({
+		queryKey: ["magic-descriptions-preflight", productIds],
+		queryFn: async () => {
+			if (!productIds.length) return { items: [] };
+
+			const formatted = productIds.map((id) => String(id));
+			return await rawRequest<MagicDescriptionsPreflightWpJsonResponse>(
+				`productbird/v1/magic-descriptions/preflight?product_ids=${formatted.join(",")}`,
+			);
+		},
+		enabled,
+		staleTime: 0,
 	}));
 }

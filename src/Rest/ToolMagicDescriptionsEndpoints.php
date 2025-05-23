@@ -12,6 +12,7 @@ use WP_REST_Response;
 use WP_Error;
 use Productbird\Traits\ToolsConfig;
 use Productbird\Rest\RestUtils;
+use function \wc_get_product;
 
 /**
  * REST API endpoint for bulk generating product descriptions.
@@ -188,6 +189,26 @@ class ToolMagicDescriptionsEndpoints
                 ],
             ],
         ]);
+
+        // NEW: Pre-flight read-only check used by the UI to warn merchants that some products have been processed
+        register_rest_route('productbird/v1', '/magic-descriptions/preflight', [
+            'methods'             => WP_REST_Server::READABLE,
+            'callback'            => [$this, 'handle_preflight_check'],
+            'permission_callback' => [RestUtils::class, 'can_manage_woocommerce_permission'],
+            'args'                => [
+                'product_ids' => [
+                    'required'          => true,
+                    'type'              => 'string', // comma-separated IDs – we sanitise to array below
+                    'validate_callback' => function ( $param ) {
+                        return ! empty( $param );
+                    },
+                    'sanitize_callback' => function ( $param ) {
+                        $ids = explode( ',', $param );
+                        return array_map( 'absint', $ids );
+                    },
+                ],
+            ],
+        ]);
     }
 
     /**
@@ -203,7 +224,7 @@ class ToolMagicDescriptionsEndpoints
         $status = get_post_meta($product_id, $this->meta_status_key, true);
 
         if (!empty($draft) && !$delivered && $status === 'completed') {
-            $product = wc_get_product($product_id);
+            $product = \wc_get_product($product_id);
             if (!$product) {
                 return false;
             }
@@ -273,7 +294,7 @@ class ToolMagicDescriptionsEndpoints
 
         // Build payloads for all products first
         foreach ($product_ids as $product_id) {
-            $product = wc_get_product($product_id);
+            $product = \wc_get_product($product_id);
             if (!$product) {
                 Logger::warning('Product not found during bulk generation', [
                     'product_id' => $product_id
@@ -285,24 +306,24 @@ class ToolMagicDescriptionsEndpoints
             $delivered_flag = get_post_meta($product_id, $this->meta_delivered_key, true);
             $declined_flag  = get_post_meta($product_id, $this->meta_declined_key, true);
 
-            if ($delivered_flag === 'yes') {
-                Logger::info('Product skipped - description already delivered', [
+            /*
+             * Starting from v0.2.0 we allow merchants to regenerate product descriptions at any time, even if a
+             * description was previously delivered (accepted) or explicitly declined.  When this happens we clear all
+             * Productbird-related meta data so the product can be processed as if it was never generated before.  We
+             * still preserve the existing review workflow: if a product currently has a draft that hasn't been
+             * accepted/declined yet we continue to offer it for review and skip scheduling a new generation run.
+             */
+
+            if ($delivered_flag === 'yes' || $declined_flag === 'yes') {
+                Logger::info('Product marked as delivered/declined – clearing metadata to allow regeneration', [
                     'product_id'   => $product_id,
                     'product_name' => $product->get_name(),
+                    'was_delivered' => $delivered_flag === 'yes',
+                    'was_declined'  => $declined_flag === 'yes',
                 ]);
 
-                // No further processing required for already delivered products.
-                continue;
-            }
-
-            if ($declined_flag === 'yes') {
-                Logger::info('Product skipped - description previously declined', [
-                    'product_id'   => $product_id,
-                    'product_name' => $product->get_name(),
-                ]);
-
-                // No further processing required for declined products.
-                continue;
+                // Reset all tool-specific meta so the product can be processed again.
+                $this->clear_metadata($product_id);
             }
 
             // Check if product has a pending draft that needs review
@@ -320,16 +341,7 @@ class ToolMagicDescriptionsEndpoints
             // Clear delivered flag from any previous generation run so the product can be processed again
             delete_post_meta($product_id, $this->meta_delivered_key);
 
-            if (!$this->set_generation_status($product_id, 'queued')) {
-                Logger::error('Failed to set queued status for product', [
-                    'product_id' => $product_id
-                ]);
-                return new \WP_REST_Response([
-                    'error' => __('Failed to set queued status for product', 'productbird'),
-                    'code' => 'failed_to_set_queued_status',
-                    'data' => ['status' => 400]
-                ], 400);
-            }
+            $this->set_generation_status($product_id, 'queued');
 
             Logger::log_product_processing($product_id, 'bulk_generation', 'queued');
 
@@ -351,7 +363,7 @@ class ToolMagicDescriptionsEndpoints
                 'error' => __('No valid products found to process.', 'productbird'),
                 'code' => 'no_valid_products',
                 'data' => ['status' => 400]
-            ]);
+            ], 400);
         }
 
         // Only make API call if we have products to schedule
@@ -809,7 +821,7 @@ class ToolMagicDescriptionsEndpoints
             'has_description' => !empty($description)
         ]);
 
-        $product = wc_get_product($product_id);
+        $product = \wc_get_product($product_id);
         if (!$product) {
             Logger::error('Product not found when applying description', [
                 'product_id' => $product_id
@@ -873,7 +885,7 @@ class ToolMagicDescriptionsEndpoints
             'product_id' => $product_id
         ]);
 
-        $product = wc_get_product($product_id);
+        $product = \wc_get_product($product_id);
         if (!$product) {
             Logger::error('Product not found when declining description', [
                 'product_id' => $product_id
@@ -916,7 +928,7 @@ class ToolMagicDescriptionsEndpoints
             'product_id' => $product_id
         ]);
 
-        $product = wc_get_product($product_id);
+        $product = \wc_get_product($product_id);
         if (!$product) {
             Logger::error('Product not found when undoing declined description', [
                 'product_id' => $product_id
@@ -942,5 +954,64 @@ class ToolMagicDescriptionsEndpoints
             'success' => true,
             'message' => __('Description declined undone.', 'productbird')
         ]);
+    }
+
+    /**
+     * Pre-flight endpoint – returns current processing status for the supplied products but performs **no** mutations.
+     *
+     * This allows the UI to warn the merchant when some selected products already have an accepted or declined
+     * description that will be overridden.
+     *
+     * Response shape:
+     * [
+     *   {
+     *     id: 123,
+     *     name: "My product",
+     *     status: "accepted"|"declined"|"pending"|"never_generated"
+     *   },
+     *   ...
+     * ]
+     *
+     * @param WP_REST_Request $request
+     * @return WP_REST_Response|WP_Error
+     */
+    public function handle_preflight_check( WP_REST_Request $request ) {
+        $product_ids = $request->get_param( 'product_ids' );
+
+        if ( empty( $product_ids ) || ! is_array( $product_ids ) ) {
+            return new WP_Error( 'missing_product_ids', __( 'No product IDs provided.', 'productbird' ), [ 'status' => 400 ] );
+        }
+
+        $results = [];
+
+        foreach ( $product_ids as $product_id ) {
+            $product = \wc_get_product( $product_id );
+            if ( ! $product ) {
+                continue; // silently skip invalid ids – the UI already filters by selected posts.
+            }
+
+            // Determine current status.
+            $delivered = get_post_meta( $product_id, $this->meta_delivered_key, true );
+            $declined  = get_post_meta( $product_id, $this->meta_declined_key, true );
+            $draft     = get_post_meta( $product_id, $this->meta_draft_key, true );
+
+            if ( 'yes' === $delivered ) {
+                $status = 'accepted';
+            } elseif ( 'yes' === $declined ) {
+                $status = 'declined';
+            } elseif ( ! empty( $draft ) ) {
+                $status = 'pending';
+            } else {
+                $status = 'never_generated';
+            }
+
+            $results[] = [
+                'id'     => $product_id,
+                'name'   => $product->get_name(),
+                'status' => $status,
+            ];
+        }
+
+        return rest_ensure_response( [ 'items' => $results ] );
     }
 }

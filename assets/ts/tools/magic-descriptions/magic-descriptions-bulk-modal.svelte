@@ -37,6 +37,7 @@
     useDeclineProductDescription,
     useUndoDeclineProductDescription,
     useRegenerateProductDescription,
+    usePreflightMagicDescriptions,
   } from "$lib/hooks/queries";
   import { Label } from "$lib/components/ui/label";
   import { rawRequest } from "$lib/utils/api";
@@ -58,9 +59,11 @@
     MagicDescriptionsBulkWpJsonResponse,
     MagicDescriptionsStatusCheckWpJsonResponse,
     ProductId,
+    MagicDescriptionsPreflightWpJsonResponse,
   } from "$lib/utils/types";
   import { cn } from "$lib/utils/ui";
   import LogoIcon from "$lib/components/logo-icon.svelte";
+  import * as Checkbox from "$lib/components/ui/checkbox/index.js";
 
   // Props
   let { selectedIds = [], open = $bindable() }: ProductDescriptionBulkModalProps = $props();
@@ -86,6 +89,24 @@
 
   // Create a separate state for remaining count to break the circular dependency
   let apiRemainingCount = $state<number | undefined>(undefined);
+
+  // Local state used when user decides to exclude some products that would be overridden
+  let deselectedIds = $state<Set<ProductId>>(new Set());
+
+  // Preflight query to fetch current status of selected products
+  const preflightQuery = $derived.by(() =>
+    usePreflightMagicDescriptions(selectedIds, open && currentStep === STEPS.confirm)
+  );
+
+  // Helper derived arrays
+  const overrideCandidates = $derived.by(() => {
+    if (!preflightQuery.data) return [] as MagicDescriptionsPreflightWpJsonResponse["items"];
+    return preflightQuery.data.items.filter((item) => item.status === "accepted" || item.status === "declined");
+  });
+
+  const idsToProcess = $derived.by(() => {
+    return selectedIds.filter((id) => !deselectedIds.has(id));
+  });
 
   const textAreaClasses = "prose prose-p:text-lg prose-ul:text-lg prose-li:text-lg";
 
@@ -152,7 +173,7 @@
   });
 
   // Calculate progress
-  const totalItems = $derived(selectedIds.length);
+  const totalItems = $derived(idsToProcess.length);
   const acceptedCount = $derived(reviewableItems.filter((item) => item.status === "accepted").length);
 
   // Count declined items from server status
@@ -210,7 +231,7 @@
       }
 
       const data = await generateMagicDescriptionsBulkMutation.mutateAsync({
-        productIds: selectedIds,
+        productIds: idsToProcess,
         mode,
       });
 
@@ -231,6 +252,9 @@
       if (hasNextItem) {
         goToNextItem();
       }
+
+      // Update internal selectedIds to reflect any deselection before generation
+      selectedIds = [...idsToProcess];
     } catch (error) {
       console.error("Failed to start generation:", error);
 
@@ -246,69 +270,6 @@
       }
     }
   }
-
-  // Update session when polling data changes
-  $effect(() => {
-    if (statusCheckQuery.data?.completed_items) {
-      // Only add new items, don't replace existing ones
-      const existingIds = new Set(session.completedItems.map((item) => item.id));
-      const newItems = statusCheckQuery.data.completed_items.filter((item) => !existingIds.has(item.id));
-
-      if (newItems.length > 0) {
-        console.log(`Adding ${newItems.length} new completed items`);
-        session.completedItems = [...session.completedItems, ...newItems];
-      }
-
-      // Update the remaining count
-      if (statusCheckQuery.data.remaining_count !== undefined) {
-        apiRemainingCount = statusCheckQuery.data.remaining_count;
-      }
-    }
-  });
-
-  // Reset modal state when closed
-  $effect(() => {
-    if (!open) {
-      // Reset all state when modal is closed
-      currentStep = STEPS.confirm;
-      currentReviewIndex = 0;
-      session = {
-        scheduledItems: [],
-        completedItems: [],
-        pendingItems: [],
-      };
-      apiRemainingCount = undefined;
-      console.log("Modal closed - state reset");
-    }
-  });
-
-  // Reset review index when modal opens
-  $effect(() => {
-    if (open && currentStep === STEPS.review) {
-      currentReviewIndex = 0;
-    }
-  });
-
-  // Debug current step changes
-  $effect(() => {
-    if (open) {
-      console.log("Modal state:", {
-        currentStep,
-        scheduledItems: session.scheduledItems.length,
-        completedItems: session.completedItems.length,
-        pendingItems: session.pendingItems.length,
-        enablePolling,
-        apiRemainingCount,
-      });
-    }
-  });
-
-  // Debug template rendering
-  $effect(() => {
-    console.log("Template check - currentStep:", currentStep);
-    console.log("Template check - is confirm?", currentStep === STEPS.confirm);
-    console.log("Template check - is review?", currentStep === STEPS.review);
-  });
 
   // Navigation functions
   function goToNextItem() {
@@ -416,6 +377,47 @@
   function handleRegenerateDescription(_productId: ProductId) {
     alert(__("Unfortunately regenerate is not available yet. Please try again later.", "productbird"));
   }
+
+  // Update session when polling data changes
+  $effect(() => {
+    if (statusCheckQuery.data?.completed_items) {
+      // Only add new items, don't replace existing ones
+      const existingIds = new Set(session.completedItems.map((item) => item.id));
+      const newItems = statusCheckQuery.data.completed_items.filter((item) => !existingIds.has(item.id));
+
+      if (newItems.length > 0) {
+        console.log(`Adding ${newItems.length} new completed items`);
+        session.completedItems = [...session.completedItems, ...newItems];
+      }
+
+      // Update the remaining count
+      if (statusCheckQuery.data.remaining_count !== undefined) {
+        apiRemainingCount = statusCheckQuery.data.remaining_count;
+      }
+    }
+  });
+
+  // Reset modal state when closed
+  $effect(() => {
+    if (!open) {
+      // Reset all state when modal is closed
+      currentStep = STEPS.confirm;
+      currentReviewIndex = 0;
+      session = {
+        scheduledItems: [],
+        completedItems: [],
+        pendingItems: [],
+      };
+      apiRemainingCount = undefined;
+    }
+  });
+
+  // Reset review index when modal opens
+  $effect(() => {
+    if (open && currentStep === STEPS.review) {
+      currentReviewIndex = 0;
+    }
+  });
 </script>
 
 {#snippet htmlTextArea(label: string, description: string, color?: "emerald" | "gray")}
@@ -464,7 +466,7 @@
   >
     {#if currentStep === STEPS.confirm}
       <Dialog.Header>
-        <Dialog.Title>{@render stepTitle(__("Generate Descriptions with AI", "productbird"))}</Dialog.Title>
+        <Dialog.Title>{@render stepTitle(__("Generate Product Descriptions with AI", "productbird"))}</Dialog.Title>
 
         <Dialog.Description>
           {__("You are about to generate descriptions for", "productbird")}
@@ -474,6 +476,48 @@
       </Dialog.Header>
 
       <div class="space-y-4 py-4">
+        {#if overrideCandidates.length > 0}
+          <Card.Root
+            class="border border-orange-300 bg-orange-50 dark:border-orange-800 dark:bg-orange-900/20 p-4 space-y-3"
+          >
+            <p class="text-sm font-medium text-orange-800 dark:text-orange-200">
+              {__(
+                "The following products already have AI-generated descriptions. Generating again will overwrite them.",
+                "productbird"
+              )}
+            </p>
+
+            <div class="space-y-2 max-h-40 overflow-y-auto pr-2">
+              {#each overrideCandidates as item}
+                <div class="flex items-center gap-2 text-sm">
+                  <Checkbox.Root
+                    checked={!deselectedIds.has(item.id)}
+                    onCheckedChange={(newChecked) => {
+                      if (newChecked) {
+                        // Checkbox checked – keep product selected
+                        deselectedIds.delete(item.id);
+                      } else {
+                        // Checkbox unchecked – exclude product
+                        deselectedIds.add(item.id);
+                      }
+                      // Force reactivity by creating new Set instance
+                      deselectedIds = new Set(deselectedIds);
+                    }}
+                  />
+                  <a
+                    href={`${window.productbird.admin_url}/post.php?post=${item.id}&action=edit`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="underline hover:text-primary"
+                  >
+                    {item.name}
+                  </a>
+                  <Badge variant="outline" class="capitalize">{item.status}</Badge>
+                </div>
+              {/each}
+            </div>
+          </Card.Root>
+        {/if}
         <RadioGroup.Root bind:value={mode}>
           <div class="space-y-6">
             <div class="flex gap-2">
@@ -515,7 +559,10 @@
           {__("Cancel", "productbird")}
         </Button>
 
-        <Button onclick={handleStartGeneration} disabled={generateMagicDescriptionsBulkMutation.isPending}>
+        <Button
+          onclick={handleStartGeneration}
+          disabled={generateMagicDescriptionsBulkMutation.isPending || idsToProcess.length === 0}
+        >
           {generateMagicDescriptionsBulkMutation.isPending
             ? __("Starting...", "productbird")
             : __("Start Generation", "productbird")}
@@ -800,7 +847,9 @@
       </Dialog.Footer>
     {:else if currentStep === STEPS.finished}
       <Dialog.Header>
-        <Dialog.Title>{@render stepTitle(__("All descriptions processed", "productbird"))}</Dialog.Title>
+        <Dialog.Title class="text-center items-center"
+          >{@render stepTitle(__("All descriptions processed", "productbird"))}</Dialog.Title
+        >
 
         <Dialog.Description>
           {__("Here is a quick summary of the descriptions.", "productbird")}
