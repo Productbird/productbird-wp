@@ -159,7 +159,8 @@ class ToolMagicDescriptionsEndpoints
             return [
                 'id' => $product_id,
                 'name' => $product->get_name(),
-                'html' => $draft
+                'html' => $draft,
+                'current_html' => $product->get_description()
             ];
         }
 

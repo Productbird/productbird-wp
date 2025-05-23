@@ -60,6 +60,10 @@ export type MagicDescriptionsBulkWpJsonResponse = {
 		id: ProductId;
 		name: string;
 		html?: string;
+		/**
+		 * The product's current saved description (HTML) returned from the API so the UI can show a side-by-side comparison.
+		 */
+		current_html?: string;
 	}[];
 };
 
@@ -68,6 +72,10 @@ export type MagicDescriptionsStatusCheckWpJsonResponse = {
 		id: ProductId;
 		name: string;
 		html?: string;
+		/**
+		 * The product's current saved description (HTML) returned from the API so the UI can show a side-by-side comparison.
+		 */
+		current_html?: string;
 	}[];
 	remaining_count: number;
 };

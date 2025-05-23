@@ -20,15 +20,14 @@
 </script>
 
 <script lang="ts">
-  import { onMount, onDestroy } from "svelte";
   import * as Dialog from "$lib/components/ui/dialog/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
   import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Tabs from "$lib/components/ui/tabs/index.js";
   import { Progress } from "$lib/components/ui/progress/index.js";
-  import { Separator } from "$lib/components/ui/separator/index.js";
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
+
   import { __ } from "@wordpress/i18n";
   import {
     useGenerateMagicDescriptionsBulk,
@@ -45,6 +44,7 @@
     MagicDescriptionsStatusCheckWpJsonResponse,
     ProductId,
   } from "$lib/utils/types";
+  import { cn } from "$lib/utils/ui";
 
   // Props
   let { selectedIds = [], open = $bindable() }: ProductDescriptionBulkModalProps = $props();
@@ -77,6 +77,8 @@
 
   // Create a separate state for remaining count to break the circular dependency
   let apiRemainingCount = $state<number | undefined>(undefined);
+
+  const textAreaClasses = "prose prose-p:text-lg prose-ul:text-lg prose-li:text-lg";
 
   const enablePolling = $derived.by((): boolean => {
     const isInReviewStep = currentStep === PRODUCT_DESCRIPTION_BULK_MODAL_STEPS.review;
@@ -329,6 +331,34 @@
   }
 </script>
 
+{#snippet htmlTextArea(label: string, description: string, color?: "emerald" | "gray")}
+  <div class="space-y-3">
+    <Label
+      class={cn(
+        "text-sm font-medium",
+        color === "emerald" ? "text-emerald-600 dark:text-emerald-400" : "text-gray-600 dark:text-gray-400"
+      )}
+    >
+      {label}
+    </Label>
+
+    <div
+      class={cn(
+        "border rounded-lg",
+        color === "emerald"
+          ? "border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/30"
+          : "border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-950/30"
+      )}
+    >
+      <ScrollArea class="h-[300px] p-4">
+        <div class={cn(textAreaClasses)}>
+          {@html description}
+        </div>
+      </ScrollArea>
+    </div>
+  </div>
+{/snippet}
+
 <Dialog.Root bind:open>
   <Dialog.Content
     interactOutsideBehavior="ignore"
@@ -399,21 +429,26 @@
       <Dialog.Header class="flex-shrink-0">
         <Dialog.Title class="flex items-center justify-between">
           <span>{__("Review Generated Descriptions", "productbird")}</span>
-          <Badge variant="secondary" class="ml-auto">
-            {acceptedCount} / {totalItems}
-            {__("accepted", "productbird")}
-          </Badge>
+
+          <!-- Information bar-->
+          <div class="flex items-center justify-end gap-2">
+            <div class="w-full max-w-[12rem] flex-shrink-0 flex-row items-center">
+              <div class="flex sr-only items-center justify-between text-sm text-muted-foreground">
+                <span>{__("Progress", "productbird")}</span>
+                <span>{Math.round(progressPercentage)}%</span>
+              </div>
+              <Progress value={progressPercentage} class="h-2" />
+            </div>
+
+            <Badge variant="secondary" class="flex-shrink-0">
+              {acceptedCount} / {totalItems}
+              {__("accepted", "productbird")}
+            </Badge>
+          </div>
         </Dialog.Title>
+
         <Dialog.Description class="space-y-3">
           <p>{__("Review and approve the AI-generated descriptions for your products.", "productbird")}</p>
-
-          <div class="space-y-2">
-            <div class="flex items-center justify-between text-sm text-muted-foreground">
-              <span>{__("Progress", "productbird")}</span>
-              <span>{Math.round(progressPercentage)}%</span>
-            </div>
-            <Progress value={progressPercentage} class="h-2" />
-          </div>
 
           {#if remainingCount > 0}
             <div class="flex items-center gap-2 text-sm text-muted-foreground">
@@ -438,144 +473,95 @@
             </Card.Root>
           </div>
         {:else if currentReviewItem}
-          <div class="h-full flex flex-col">
-            <!-- Navigation Header -->
-            <div class="flex items-center justify-between p-4 border-b bg-muted/30">
-              <div class="flex items-center gap-4">
-                <Badge variant="outline" class="text-sm">
-                  {__("Item", "productbird")}
-                  {currentReviewIndex + 1}
-                  {__("of", "productbird")}
-                  {reviewableItems.length}
-                </Badge>
-                <div class="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onclick={goToPreviousItem}
-                    disabled={!hasPreviousItem}
-                    class="flex items-center gap-1"
-                  >
-                    <ChevronLeft class="h-4 w-4" />
-                    {__("Previous", "productbird")}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onclick={goToNextItem}
-                    disabled={!hasNextItem}
-                    class="flex items-center gap-1"
-                  >
-                    {__("Next", "productbird")}
-                    <ChevronRight class="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-              <Badge variant="outline" class="flex items-center gap-1">
-                <CheckCircle2 class="h-3 w-3" />
-                {__("Ready for review", "productbird")}
+          <!-- Navigation Header -->
+          <div class="flex items-center justify-between p-4 border-b bg-muted/30 flex-shrink-0">
+            <div class="flex items-center gap-4">
+              <Badge variant="outline" class="text-sm">
+                {__("Item", "productbird")}
+                {currentReviewIndex + 1}
+                {__("of", "productbird")}
+                {reviewableItems.length}
               </Badge>
+              <div class="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="default"
+                  onclick={goToPreviousItem}
+                  disabled={!hasPreviousItem}
+                  class="flex items-center gap-1"
+                >
+                  <ChevronLeft class="h-4 w-4" />
+                  {__("Previous", "productbird")}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="default"
+                  onclick={goToNextItem}
+                  disabled={!hasNextItem}
+                  class="flex items-center gap-1"
+                >
+                  {__("Next", "productbird")}
+                  <ChevronRight class="h-4 w-4" />
+                </Button>
+              </div>
             </div>
+            <Badge variant="outline" class="flex items-center gap-1">
+              <CheckCircle2 class="h-3 w-3" />
+              {__("Ready for review", "productbird")}
+            </Badge>
+          </div>
 
-            <!-- Content Area -->
-            <ScrollArea class="flex-1">
-              <div class="p-6">
-                <Card.Root class="overflow-hidden">
-                  <Card.Header class="pb-3">
-                    <div class="flex items-start justify-between">
-                      <div>
-                        <Card.Title class="text-xl">{currentReviewItem.name}</Card.Title>
-                        <p class="text-sm text-muted-foreground">Product ID: {currentReviewItem.id}</p>
+          <!-- Content Area -->
+          <div class="flex-1 min-h-0">
+            <ScrollArea class="p-6">
+              <Card.Root class="overflow-hidden">
+                <Card.Content class="space-y-6">
+                  <Tabs.Root value="preview" class="w-full">
+                    <div class="flex justify-between items-center gap-4">
+                      <div class="flex-shrink-0 items-start justify-between">
+                        <div>
+                          <h3 class="text-xl font-bold">{currentReviewItem.name}</h3>
+                          <p class="text-sm text-muted-foreground">Product ID: {currentReviewItem.id}</p>
+                        </div>
+                      </div>
+
+                      <div class="max-w-[200px]">
+                        <Tabs.List class="grid w-full grid-cols-2 flex-1">
+                          <Tabs.Trigger value="preview">{__("Preview", "productbird")}</Tabs.Trigger>
+                          <Tabs.Trigger value="comparison">{__("Compare", "productbird")}</Tabs.Trigger>
+                        </Tabs.List>
                       </div>
                     </div>
-                  </Card.Header>
 
-                  <Card.Content class="space-y-6">
-                    <Tabs.Root value="preview" class="w-full">
-                      <Tabs.List class="grid w-full grid-cols-2">
-                        <Tabs.Trigger value="preview">{__("Preview", "productbird")}</Tabs.Trigger>
-                        <Tabs.Trigger value="comparison">{__("Compare", "productbird")}</Tabs.Trigger>
-                      </Tabs.List>
+                    <Tabs.Content value="comparison" class="mt-6">
+                      <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <!-- Current Description -->
+                        {@render htmlTextArea(
+                          __("Current Description", "productbird"),
+                          currentReviewItem.current_html ?? "",
+                          "gray"
+                        )}
 
-                      <Tabs.Content value="comparison" class="mt-6">
-                        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                          <!-- Current Description -->
-                          <div class="space-y-3">
-                            <Label class="text-sm font-medium text-muted-foreground">
-                              {__("Current Description", "productbird")}
-                            </Label>
-                            <div class="border rounded-lg p-4 bg-muted/30 min-h-[200px]">
-                              <p class="text-sm text-muted-foreground italic">
-                                {__("Loading current description...", "productbird")}
-                              </p>
-                            </div>
-                          </div>
+                        <!-- Generated Description -->
+                        {@render htmlTextArea(
+                          __("Generated Description", "productbird"),
+                          currentReviewItem.html ?? "",
+                          "emerald"
+                        )}
+                      </div>
+                    </Tabs.Content>
 
-                          <!-- Generated Description -->
-                          <div class="space-y-3">
-                            <Label class="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                              {__("AI Generated Description", "productbird")}
-                            </Label>
-                            <div
-                              class="border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 bg-emerald-50/50 dark:bg-emerald-950/30 min-h-[200px]"
-                            >
-                              <div class="prose prose-sm max-w-none">
-                                {@html currentReviewItem.html}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </Tabs.Content>
-
-                      <Tabs.Content value="preview" class="mt-6">
-                        <div class="border rounded-lg p-6 bg-background min-h-[200px]">
-                          <div class="prose prose-sm max-w-none">
-                            {@html currentReviewItem.html}
-                          </div>
-                        </div>
-                      </Tabs.Content>
-                    </Tabs.Root>
-                  </Card.Content>
-                </Card.Root>
-              </div>
+                    <Tabs.Content value="preview" class="mt-6">
+                      {@render htmlTextArea(
+                        __("Generated Description", "productbird"),
+                        currentReviewItem.html ?? "",
+                        "emerald"
+                      )}
+                    </Tabs.Content>
+                  </Tabs.Root>
+                </Card.Content>
+              </Card.Root>
             </ScrollArea>
-
-            <!-- Action Bar -->
-            <div class="border-t bg-background p-4">
-              <div class="flex items-center justify-between">
-                <div class="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onclick={() => handleRegenerateDescription(currentReviewItem.id)}
-                    class="flex items-center gap-2"
-                  >
-                    <RotateCcw class="h-4 w-4" />
-                    {__("Regenerate", "productbird")}
-                  </Button>
-                </div>
-
-                <div class="flex gap-3">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onclick={() => handleDeclineDescription(currentReviewItem.id)}
-                    class="flex items-center gap-2 text-destructive hover:text-destructive-foreground hover:bg-destructive"
-                  >
-                    <X class="h-4 w-4" />
-                    {__("Decline", "productbird")}
-                  </Button>
-                  <Button
-                    size="default"
-                    onclick={() => handleAcceptDescription(currentReviewItem.id)}
-                    class="flex items-center gap-2"
-                  >
-                    <Check class="h-4 w-4" />
-                    {__("Accept & Apply", "productbird")}
-                  </Button>
-                </div>
-              </div>
-            </div>
           </div>
         {/if}
       </div>
@@ -587,35 +573,68 @@
           </Button>
 
           <div class="flex gap-2">
-            {#if acceptedCount > 0}
-              <Button
-                variant="outline"
-                onclick={() => {
-                  // Accept all remaining reviewable items in bulk
-                  reviewableItems.forEach((item) => {
-                    if (!session.acceptedIds.includes(item.id)) {
-                      handleAcceptDescription(item.id as ProductId);
-                    }
-                  });
-                }}
-                disabled={reviewableItems.length === 0}
-              >
-                {__("Accept All", "productbird")} ({totalItems - remainingToReview})
-              </Button>
-              <Button
-                variant="outline"
-                onclick={() => {
-                  // Decline all remaining reviewable items in bulk
-                  reviewableItems.forEach((item) => {
-                    if (!session.declinedIds.includes(item.id)) {
-                      handleDeclineDescription(item.id as ProductId);
-                    }
-                  });
-                }}
-                disabled={reviewableItems.length === 0}
-              >
-                {__("Decline All", "productbird")} ({totalItems - remainingToReview})
-              </Button>
+            {#if currentReviewItem}
+              <!-- Individual item actions -->
+              <div class="flex gap-2">
+                <Button
+                  size="default"
+                  variant="outline"
+                  onclick={() => handleRegenerateDescription(currentReviewItem.id)}
+                  class="flex items-center gap-2"
+                >
+                  <RotateCcw class="h-4 w-4" />
+                  {__("Regenerate", "productbird")}
+                </Button>
+                <Button
+                  size="default"
+                  variant="outline"
+                  onclick={() => handleDeclineDescription(currentReviewItem.id)}
+                  class="flex items-center gap-2 text-destructive hover:text-destructive/75 hover:bg-destructive/10"
+                >
+                  <X class="h-4 w-4" />
+                  {__("Decline", "productbird")}
+                </Button>
+                <Button
+                  size="default"
+                  onclick={() => handleAcceptDescription(currentReviewItem.id)}
+                  class="flex items-center gap-2"
+                >
+                  <Check class="h-4 w-4" />
+                  {__("Accept & Apply", "productbird")}
+                </Button>
+              </div>
+            {:else if acceptedCount > 0}
+              <!-- Bulk actions when no current item -->
+              <div class="flex gap-2">
+                <Button
+                  variant="outline"
+                  onclick={() => {
+                    // Accept all remaining reviewable items in bulk
+                    reviewableItems.forEach((item) => {
+                      if (!session.acceptedIds.includes(item.id)) {
+                        handleAcceptDescription(item.id as ProductId);
+                      }
+                    });
+                  }}
+                  disabled={reviewableItems.length === 0}
+                >
+                  {__("Accept All", "productbird")} ({totalItems - remainingToReview})
+                </Button>
+                <Button
+                  variant="outline"
+                  onclick={() => {
+                    // Decline all remaining reviewable items in bulk
+                    reviewableItems.forEach((item) => {
+                      if (!session.declinedIds.includes(item.id)) {
+                        handleDeclineDescription(item.id as ProductId);
+                      }
+                    });
+                  }}
+                  disabled={reviewableItems.length === 0}
+                >
+                  {__("Decline All", "productbird")} ({totalItems - remainingToReview})
+                </Button>
+              </div>
             {/if}
           </div>
         </div>
