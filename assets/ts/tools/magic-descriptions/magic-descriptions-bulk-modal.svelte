@@ -334,8 +334,8 @@
     }
   }
 
-  function handleRegenerateDescription(productId: ProductId) {
-    console.log("Regenerate description for product:", productId);
+  function handleRegenerateDescription(_productId: ProductId) {
+    alert(__("Unfortunately regenerate is not available yet. Please try again later.", "productbird"));
   }
 </script>
 
@@ -662,6 +662,7 @@
                     }}
                     class="flex items-center gap-2 text-emerald-600 hover:text-emerald-500 border-emerald-200 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-800 dark:hover:bg-emerald-950/30"
                     variant="outline"
+                    disabled
                   >
                     <Check class="h-4 w-4" />
                     {__("Accepted ✓", "productbird")}
@@ -670,6 +671,7 @@
                   <Button
                     size="default"
                     onclick={() => handleAcceptDescription(currentReviewItem.id)}
+                    loading={applyProductDescriptionMutation.isPending}
                     class="flex items-center gap-2"
                     disabled={currentItemStatus === "declined"}
                   >

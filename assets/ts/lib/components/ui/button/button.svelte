@@ -34,6 +34,7 @@
 
   export type ButtonProps = WithElementRef<HTMLButtonAttributes> &
     WithElementRef<HTMLAnchorAttributes> & {
+      loading?: boolean;
       variant?: ButtonVariant;
       size?: ButtonSize;
     };
@@ -41,6 +42,7 @@
 
 <script lang="ts">
   import { cn } from "$lib/utils/ui.js";
+  import { Pulse } from "../pulse";
 
   let {
     class: className,
@@ -50,6 +52,7 @@
     href = undefined,
     type = "button",
     children,
+    loading = false,
     ...restProps
   }: ButtonProps = $props();
 </script>
@@ -57,9 +60,17 @@
 {#if href}
   <a bind:this={ref} class={cn(buttonVariants({ variant, size }), className)} {href} {...restProps}>
     {@render children?.()}
+
+    {#if loading}
+      <Pulse class="ml-2" />
+    {/if}
   </a>
 {:else}
   <button bind:this={ref} class={cn(buttonVariants({ variant, size }), className)} {type} {...restProps}>
     {@render children?.()}
+
+    {#if loading}
+      <Pulse class="ml-2" />
+    {/if}
   </button>
 {/if}
