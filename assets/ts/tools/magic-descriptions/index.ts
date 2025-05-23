@@ -1,4 +1,3 @@
-import "$lib/styles/global.pcss";
 import App from "./root.svelte";
 import { createComponentMounter } from "$lib/utils/component-mounter";
 

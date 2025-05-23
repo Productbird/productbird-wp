@@ -27,6 +27,8 @@
   import * as Tabs from "$lib/components/ui/tabs/index.js";
   import { Progress } from "$lib/components/ui/progress/index.js";
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
+  import "$lib/styles/global.pcss";
+  import "$lib/styles/app.pcss";
 
   import { __ } from "@wordpress/i18n";
   import {
@@ -41,7 +43,17 @@
   import { createQuery, useQueryClient } from "@tanstack/svelte-query";
 
   import { Badge } from "$lib/components/ui/badge";
-  import { Check, X, RotateCcw, Clock, CheckCircle2, ChevronLeft, ChevronRight, ExternalLink } from "@lucide/svelte";
+  import {
+    Check,
+    X,
+    RotateCcw,
+    Clock,
+    CheckCircle2,
+    ChevronLeft,
+    ChevronRight,
+    ExternalLink,
+    Loader2,
+  } from "@lucide/svelte";
   import type {
     MagicDescriptionsBulkWpJsonResponse,
     MagicDescriptionsStatusCheckWpJsonResponse,
@@ -446,7 +458,8 @@
     interactOutsideBehavior="ignore"
     class={cn(
       "max-w-screen-xl max-h-[700px] overflow-hidden flex flex-col",
-      currentStep === STEPS.confirm && "max-w-screen-sm"
+      currentStep === STEPS.confirm && "max-w-screen-sm",
+      reviewableItems.length === 0 && "max-w-screen-md"
     )}
   >
     {#if currentStep === STEPS.confirm}
@@ -530,7 +543,7 @@
           </div>
         </Dialog.Title>
 
-        <Dialog.Description class="space-y-3">
+        <Dialog.Description class="space-y-3 text-left">
           <p>{__("Review and approve the descriptions for your products.", "productbird")}</p>
 
           {#if remainingCount > 0}
@@ -544,13 +557,30 @@
 
       <div class="flex-1 overflow-hidden">
         {#if reviewableItems.length === 0}
-          <div class="flex items-center justify-center h-full">
+          <div class="flex items-center justify-start h-full">
             <Card.Root class="max-w-md w-full">
-              <Card.Content class="flex items-center justify-center py-12">
-                <div class="text-center space-y-2">
-                  <p class="text-muted-foreground">
-                    {__("No descriptions available yet.", "productbird")}
-                  </p>
+              <Card.Content class="flex items-start justify-center py-12">
+                <div class="text-center space-y-4">
+                  <div class="flex justify-center">
+                    <Loader2 class="h-8 w-8 text-primary animate-spin" />
+                  </div>
+                  <div class="space-y-2">
+                    <p class="font-medium">
+                      {__("Generating descriptions...", "productbird")}
+                    </p>
+                    <p class="text-sm text-muted-foreground">
+                      {__(
+                        "Please wait while AI creates product descriptions for your selected items. You can close this window and continue with other tasks.",
+                        "productbird"
+                      )}
+                    </p>
+                    {#if remainingCount > 0}
+                      <p class="text-xs text-muted-foreground">
+                        {remainingCount}
+                        {__("items remaining", "productbird")}
+                      </p>
+                    {/if}
+                  </div>
                 </div>
               </Card.Content>
             </Card.Root>

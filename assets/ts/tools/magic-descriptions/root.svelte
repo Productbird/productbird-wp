@@ -3,7 +3,7 @@
   import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/svelte-query";
   import { toast } from "svelte-sonner";
   import ProductDescriptionBulkModal from "./magic-descriptions-bulk-modal.svelte";
-  import "$lib/styles/app.pcss";
+
   import { onMount } from "svelte";
   import { PRODUCT_DESCRIPTION_GLOBALS } from "./utils";
   import type { ProductId } from "$lib/utils/types";
@@ -77,7 +77,7 @@
   }
 
   function disableBulkActionGroupOption(): void {
-    const labelToDisable = PRODUCT_DESCRIPTION_GLOBALS.config?.bulk_action_group_label;
+    const labelToDisable = PRODUCT_DESCRIPTION_GLOBALS.bulk_action_group_label;
     if (!labelToDisable) return;
 
     const selectors = ['select[name="action"]', 'select[name="action2"]'];
