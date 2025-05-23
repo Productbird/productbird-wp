@@ -281,6 +281,30 @@ class ToolMagicDescriptionsEndpoints
                 continue;
             }
 
+            // Skip products that have already had their description delivered or explicitly declined
+            $delivered_flag = get_post_meta($product_id, $this->meta_delivered_key, true);
+            $declined_flag  = get_post_meta($product_id, $this->meta_declined_key, true);
+
+            if ($delivered_flag === 'yes') {
+                Logger::info('Product skipped - description already delivered', [
+                    'product_id'   => $product_id,
+                    'product_name' => $product->get_name(),
+                ]);
+
+                // No further processing required for already delivered products.
+                continue;
+            }
+
+            if ($declined_flag === 'yes') {
+                Logger::info('Product skipped - description previously declined', [
+                    'product_id'   => $product_id,
+                    'product_name' => $product->get_name(),
+                ]);
+
+                // No further processing required for declined products.
+                continue;
+            }
+
             // Check if product has a pending draft that needs review
             $product_review_data = $this->get_product_needing_review($product_id);
             if ($product_review_data !== false) {

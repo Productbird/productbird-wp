@@ -298,6 +298,18 @@
     }
   }
 
+  /**
+   * Update the status of a specific item locally so the UI immediately reflects the new state
+   * without having to wait for the next polling cycle.
+   */
+  function updateSessionItemStatus(productId: ProductId, status: "accepted" | "declined" | "pending") {
+    // Update in pendingItems
+    session.pendingItems = session.pendingItems.map((item) => (item.id === productId ? { ...item, status } : item));
+
+    // Update in completedItems
+    session.completedItems = session.completedItems.map((item) => (item.id === productId ? { ...item, status } : item));
+  }
+
   // Placeholder functions for actions (not hooked up as requested)
   function handleAcceptDescription(productId: ProductId) {
     // Guard against duplicate accept
@@ -313,7 +325,10 @@
     applyProductDescriptionMutation
       .mutateAsync({ productId, description: descriptionToApply })
       .then(() => {
-        // Invalidate and refetch the status query
+        // Immediately reflect the change in the local state
+        updateSessionItemStatus(productId, "accepted");
+
+        // Invalidate and refetch the status query (keeps server state in sync)
         queryClient.invalidateQueries({ queryKey: ["magic-descriptions-status"] });
 
         // Auto-advance to next item with a small delay to allow UI to update
@@ -335,6 +350,9 @@
     declineProductDescriptionMutation
       .mutateAsync({ productId })
       .then(() => {
+        // Immediately reflect the change in the local state
+        updateSessionItemStatus(productId, "declined");
+
         // Invalidate and refetch the status query
         queryClient.invalidateQueries({ queryKey: ["magic-descriptions-status"] });
 
@@ -357,6 +375,9 @@
     undoDeclineProductDescriptionMutation
       .mutateAsync({ productId })
       .then(() => {
+        // Immediately reflect the change in the local state back to pending
+        updateSessionItemStatus(productId, "pending");
+
         // Invalidate and refetch the status query
         queryClient.invalidateQueries({ queryKey: ["magic-descriptions-status"] });
 
