@@ -4,10 +4,8 @@ namespace Productbird;
 
 use Productbird\Admin\Admin;
 use Productbird\Admin\MagicDescriptionsBulkAction;
-use Productbird\Admin\ProductGenerationStatusColumn;
 use Productbird\Admin\NoDescriptionFilter;
 use Productbird\Admin\GlobalAdminScript;
-use Productbird\Admin\ProductDescriptionRowAction;
 use Productbird\Rest\WebhookCallbackEndpoint;
 use Productbird\Rest\ProductStatusCheckEndpoint;
 use Productbird\Rest\OidcCallbackEndpoint;
@@ -15,7 +13,6 @@ use Productbird\Auth\OidcClient;
 use Productbird\Rest\OrganizationsEndpoint;
 use Productbird\Rest\SettingsEndpoint;
 use Productbird\Rest\ToolMagicDescriptionsEndpoints;
-use Productbird\Rest\ApplyProductDescriptionEndpoint;
 use Productbird\Rest\RegenerateEndpoint;
 use Productbird\Rest\ClearProductMetaEndpoint;
 use Productbird\FeatureFlags;
@@ -97,17 +94,14 @@ class Plugin
             (new GlobalAdminScript())->init();
             (new Admin())->init();
             (new MagicDescriptionsBulkAction())->init();
-            (new ProductGenerationStatusColumn())->init();
+            // (new ProductGenerationStatusColumn())->init();
             (new NoDescriptionFilter())->init();
-            (new ProductDescriptionRowAction())->init();
+            // (new ProductDescriptionRowAction())->init();
         }
 
         (new WebhookCallbackEndpoint())->init();
-        (new ProductStatusCheckEndpoint())->init();
         (new OrganizationsEndpoint())->init();
         (new SettingsEndpoint())->init();
-        (new ApplyProductDescriptionEndpoint())->init();
-        (new RegenerateEndpoint())->init();
         (new ClearProductMetaEndpoint())->init();
 
         /**
