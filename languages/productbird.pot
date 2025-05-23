@@ -1,0 +1,585 @@
+# Copyright (C) 2025 Productbird
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Productbird 0.6.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/productbird\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-05-23T21:11:02+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.11.0\n"
+"X-Domain: productbird\n"
+
+#. Plugin Name of the plugin
+#. Author of the plugin
+#: productbird.php
+#: src/Admin/Admin.php:75
+#: src/Admin/Admin.php:76
+#: src/Admin/MagicDescriptionsBulkAction.php:81
+msgid "Productbird"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: productbird.php
+msgid "https://productbird.ai"
+msgstr ""
+
+#. Description of the plugin
+#: productbird.php
+msgid "Productbird helps ecommerce owners get more done by providing various AI tools."
+msgstr ""
+
+#: src/Admin/MagicDescriptionsBulkAction.php:84
+msgid "Generate description with AI"
+msgstr ""
+
+#: src/Admin/NoDescriptionFilter.php:40
+msgid "Filter by description"
+msgstr ""
+
+#: src/Admin/NoDescriptionFilter.php:41
+msgid "No description"
+msgstr ""
+
+#: src/Admin/NoDescriptionFilter.php:42
+msgid "AI generated"
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:59
+msgid "Generate AI Description"
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:85
+msgid "Invalid request."
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:90
+msgid "Security check failed."
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:171
+msgid "Productbird API key is missing. Please configure it in the settings."
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:174
+msgid "Invalid product selected."
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:177
+msgid "Productbird API returned Unauthorized. Please check your API key."
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:180
+msgid "Insufficient credits available. Please purchase more credits to continue using Productbird."
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:183
+msgid "Failed to generate product description. Please try again."
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:186
+msgid "An unknown error occurred."
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:199
+msgid "Productbird has queued description generation. Status will update in the \"AI Desc.\" column."
+msgstr ""
+
+#: src/Admin/ProductGenerationStatusColumn.php:51
+msgid "AI Desc."
+msgstr ""
+
+#: src/Admin/ProductGenerationStatusColumn.php:78
+msgid "No AI description requested"
+msgstr ""
+
+#: src/Admin/ProductGenerationStatusColumn.php:80
+msgid "Description generated successfully"
+msgstr ""
+
+#: src/Admin/ProductGenerationStatusColumn.php:82
+msgid "Error generating description"
+msgstr ""
+
+#: src/Admin/ProductGenerationStatusColumn.php:84
+msgid "Description generation queued"
+msgstr ""
+
+#: src/Admin/ProductGenerationStatusColumn.php:87
+msgid "Description generation in progress"
+msgstr ""
+
+#. Translators: %d is the HTTP status code.
+#: src/Api/Client.php:176
+#: src/Api/Client.php:224
+msgid "Productbird API request failed with status %d."
+msgstr ""
+
+#: src/Auth/OidcClient.php:489
+msgid "Failed to retrieve organization"
+msgstr ""
+
+#: src/Auth/OidcClient.php:494
+msgid "Not connected to Productbird"
+msgstr ""
+
+#: src/Plugin.php:67
+msgid "Productbird requires WooCommerce to be installed and active."
+msgstr ""
+
+#: src/Rest/RestUtils.php:73
+msgid "You do not have permission to use this endpoint."
+msgstr ""
+
+#. translators: %s: tool name, %d: max batch size
+#: src/Rest/RestUtils.php:96
+msgid "You can only generate %s for up to %d products at a time."
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:284
+msgid "API key not configured"
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:363
+msgid "No valid products found to process."
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:443
+#: src/Rest/WebhookCallbackEndpoint.php:115
+msgid "Missing productId or description."
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:451
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:831
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:895
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:938
+#: src/Rest/WebhookCallbackEndpoint.php:120
+msgid "Product not found."
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:494
+#: src/Rest/WebhookCallbackEndpoint.php:154
+msgid "Empty description content."
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:562
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:982
+msgid "No product IDs provided."
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:847
+msgid "No description available to apply."
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:869
+msgid "Description applied successfully."
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:912
+msgid "Description declined."
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:955
+msgid "Description declined undone."
+msgstr ""
+
+#: src/Traits/ToolsConfig.php:36
+msgid "Magic Descriptions"
+msgstr ""
+
+#: src/Traits/ToolsConfig.php:37
+msgid "Generate product descriptions with AI"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:4773
+msgid "Unfortunately regenerate is not available yet. Please try again later."
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:4848
+msgid "Generate Product Descriptions with AI"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:4864
+msgid "You are about to generate descriptions for"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:4865
+msgid "products"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:4910
+msgid "Review & Approve"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:4911
+msgid "Review each description before applying it to the product."
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:4937
+msgid "YOLO mode"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:4950
+msgid "Auto Apply"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:4951
+msgid "With YOLO mode, all generated descriptions will be applied to products without review."
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:4994
+#: assets/dist/js/index-BPSWpm-5.js:5341
+msgid "accepted"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5009
+msgid "declined"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5021
+msgid "Review products with existing AI descriptions"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5022
+msgid "Uncheck products you want to skip. Checked products will have their descriptions regenerated."
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5046
+msgid "Search by name or ID..."
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5076
+msgid "Check all"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5096
+msgid "Uncheck all"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5139
+msgid "= Regenerate description"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5140
+msgid "= Skip this product"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5156
+msgid "No products match your search."
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5227
+msgid "will be skipped"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5236
+msgid "products will be regenerated"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5271
+msgid "Cancel"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5286
+msgid "Starting..."
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5286
+msgid "Start Generation"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5316
+msgid "Review Generated Descriptions"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5353
+msgid "Progress"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5379
+msgid "descriptions still being generated..."
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5388
+msgid "Review and approve the descriptions for your products."
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5433
+msgid "items remaining"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5447
+msgid "Generating descriptions..."
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5448
+msgid "Please wait while AI creates product descriptions for your selected items. You can close this window and continue with other tasks."
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5481
+msgid "Item"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5482
+msgid "of"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5505
+msgid "Previous"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5525
+msgid "Next"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5541
+#: assets/dist/js/index-BPSWpm-5.js:6010
+msgid "Accepted"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5558
+#: assets/dist/js/index-BPSWpm-5.js:6012
+msgid "Declined"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5574
+msgid "Ready for review"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5643
+msgid "Preview"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5655
+msgid "Compare"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5674
+msgid "Current Description"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5677
+#: assets/dist/js/index-BPSWpm-5.js:5690
+msgid "Generated Description"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5702
+msgid "Product ID"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5751
+#: assets/dist/js/index-BPSWpm-5.js:6034
+msgid "Close"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5776
+msgid "Regenerate"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5794
+msgid "Undo Decline"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5815
+msgid "Decline"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5844
+msgid "Accepted ✓"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5844
+msgid "Accept & Apply"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5872
+msgid "Accept All"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5893
+msgid "Decline All"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5935
+msgid "All descriptions processed"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:5947
+msgid "Here is a quick summary of the descriptions."
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:6008
+msgid "You're all set!"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:6009
+msgid "All product descriptions have been processed successfully."
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:6011
+msgid "Applied to products"
+msgstr ""
+
+#: assets/dist/js/index-BPSWpm-5.js:6013
+msgid "Not applied"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:1209
+msgid "Connect with Productbird"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:1248
+msgid "Disconnect"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:1261
+msgid "Connected to Productbird"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:1283
+msgid "Unable to create connect URL. Please try again later."
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:7792
+msgid "Hello %s 👋"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:7833
+msgid "Your current credit balance"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:7852
+msgid "You are not connected to Productbird. Please enter your API key to continue."
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:7898
+msgid "View activity"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:7922
+msgid "Get started"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:7972
+msgid "API Key"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:7984
+msgid "Your API key is used to authenticate your requests to the Productbird API."
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8059
+msgid "You can manage your API key in the Productbird dashboard."
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8061
+msgid "Manage API key"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8105
+msgid "Webhook Secret"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8117
+msgid "Your webhook secret is used to verify webhook requests from Productbird."
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8192
+msgid "You can manage your webhook secret in the Productbird dashboard."
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8194
+msgid "Manage webhook secret"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8249
+msgid "Beta"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8255
+msgid "Connection Status"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8268
+msgid "Your connected Productbird account"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8393
+msgid "You can manage your organization in the Productbird dashboard."
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8394
+msgid "Manage organization"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8462
+msgid "Advanced Settings"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8475
+msgid "Advanced settings and troubleshooting options"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8502
+msgid "Are you sure you want to clear all Productbird meta data? This cannot be undone."
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8512
+msgid "Clearing..."
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8512
+msgid "Clear Product Meta"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8525
+msgid "Troubleshooting"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8526
+msgid "If you're experiencing issues with product descriptions, you can clear all Productbird meta data from your products."
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8588
+msgid "Global Settings"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8600
+msgid "These global settings will be used for all your tools."
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8638
+msgid "Tone"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8714
+msgid "Select the tone of the generated content."
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8750
+msgid "Formality"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8826
+msgid "Select the formality of the generated content."
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:8863
+msgid "Onboarding"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:13195
+msgid "Settings saved"
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:13269
+msgid "Saving..."
+msgstr ""
+
+#: assets/dist/js/index-Do-VpLez.js:13269
+msgid "Save settings"
+msgstr ""
