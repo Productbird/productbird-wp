@@ -536,10 +536,13 @@
               <div class="flex items-start justify-between gap-4">
                 <div class="space-y-1">
                   <p class="text-sm font-medium text-orange-800 dark:text-orange-200">
-                    {__("Products with existing AI descriptions", "productbird")}
+                    {__("Review products with existing AI descriptions", "productbird")}
                   </p>
                   <p class="text-xs text-orange-700 dark:text-orange-300">
-                    {__("Generating again will overwrite their current descriptions.", "productbird")}
+                    {__(
+                      "Uncheck products you want to skip. Checked products will have their descriptions regenerated.",
+                      "productbird"
+                    )}
                   </p>
                 </div>
                 <div class="flex gap-2 text-xs">
@@ -579,9 +582,9 @@
                         overrideCandidates.forEach((item) => deselectedIds.delete(item.id));
                         deselectedIds = new Set(deselectedIds);
                       }}
-                      disabled={overrideStats.selected === overrideStats.total}
+                      disabled={deselectedIds.size === 0}
                     >
-                      {__("Select all", "productbird")}
+                      {__("Check all", "productbird")}
                     </Button>
                     <Button
                       size="sm"
@@ -591,15 +594,28 @@
                         overrideCandidates.forEach((item) => deselectedIds.add(item.id));
                         deselectedIds = new Set(deselectedIds);
                       }}
-                      disabled={overrideStats.selected === 0}
+                      disabled={deselectedIds.size === overrideCandidates.length}
                     >
-                      {__("Deselect all", "productbird")}
+                      {__("Uncheck all", "productbird")}
                     </Button>
                   </div>
                 </div>
               {/if}
 
               <div class="rounded-md border border-orange-200 dark:border-orange-800">
+                {#if overrideCandidates.length <= 10}
+                  <div
+                    class="px-3 py-2 bg-orange-100/50 dark:bg-orange-900/20 border-b border-orange-200 dark:border-orange-800"
+                  >
+                    <p class="text-xs text-orange-700 dark:text-orange-300 flex items-center gap-1">
+                      <Checkbox.Root checked={true} disabled class="h-3 w-3" />
+                      <span>{__("= Regenerate description", "productbird")}</span>
+                      <span class="mx-2">•</span>
+                      <Checkbox.Root checked={false} disabled class="h-3 w-3" />
+                      <span>{__("= Skip this product", "productbird")}</span>
+                    </p>
+                  </div>
+                {/if}
                 <div class="max-h-48 overflow-y-auto">
                   {#if filteredOverrideCandidates.length === 0}
                     <div class="p-4 text-center text-sm text-muted-foreground">
@@ -652,10 +668,13 @@
 
               {#if overrideCandidates.length > 10}
                 <p class="text-xs text-muted-foreground text-center">
-                  {overrideStats.selected}
-                  {__("of", "productbird")}
-                  {overrideStats.total}
-                  {__("selected for regeneration", "productbird")}
+                  <strong>{overrideStats.selected} {__("products will be regenerated", "productbird")}</strong>
+                  {#if deselectedIds.size > 0}
+                    <span class="text-orange-600 dark:text-orange-400">
+                      ({deselectedIds.size}
+                      {__("will be skipped", "productbird")})
+                    </span>
+                  {/if}
                 </p>
               {/if}
             </Card.Content>
