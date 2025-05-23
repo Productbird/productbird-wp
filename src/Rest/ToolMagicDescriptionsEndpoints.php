@@ -177,6 +177,12 @@ class ToolMagicDescriptionsEndpoints
         $product_ids = $request->get_param('productIds');
         $mode = $request->get_param('mode');
 
+        // Ensure the list contains unique product IDs to avoid redundant processing and duplicate
+        // entries in both `scheduled_items` and `pending_items` responses.
+        if ( is_array( $product_ids ) ) {
+            $product_ids = array_values( array_unique( array_map( 'absint', $product_ids ) ) );
+        }
+
         Logger::info('Bulk generation request started', [
             'product_count' => count($product_ids),
             'mode' => $mode,

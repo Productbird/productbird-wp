@@ -121,11 +121,23 @@
     staleTime: 0, // Always fetch fresh data
   }));
 
+  // Combine pending & completed items but ensure uniqueness by product ID to avoid duplicates
   const reviewableItems = $derived.by(() => {
-    const pendingItems = session.pendingItems.filter((item: any) => item.html);
-    const completedItems = session.completedItems.filter((item: any) => item.html);
+    // Only keep items that actually contain generated HTML
+    const merged = [
+      ...session.pendingItems.filter((item: any) => item.html),
+      ...session.completedItems.filter((item: any) => item.html),
+    ];
 
-    return [...pendingItems, ...completedItems];
+    // Deduplicate by `id` – later occurrences are ignored to preserve the first version we received
+    const uniqueMap = new Map<string | number, any>();
+    for (const item of merged) {
+      if (!uniqueMap.has(item.id)) {
+        uniqueMap.set(item.id, item);
+      }
+    }
+
+    return Array.from(uniqueMap.values());
   });
 
   // Calculate progress
