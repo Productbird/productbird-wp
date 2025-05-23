@@ -162,6 +162,14 @@
   const hasNextItem = $derived(currentReviewIndex < reviewableItems.length - 1);
   const hasPreviousItem = $derived(currentReviewIndex > 0);
 
+  // Add derived state for current item status
+  const currentItemStatus = $derived.by(() => {
+    if (!currentReviewItem) return "pending";
+    if (session.acceptedIds.includes(currentReviewItem.id)) return "accepted";
+    if (session.declinedIds.includes(currentReviewItem.id)) return "declined";
+    return "pending";
+  });
+
   const generateMagicDescriptionsBulkMutation = useGenerateMagicDescriptionsBulk();
   const applyProductDescriptionMutation = useApplyProductDescription();
   /**
@@ -513,10 +521,28 @@
                 </Button>
               </div>
             </div>
-            <Badge variant="outline" class="flex items-center gap-1">
-              <CheckCircle2 class="h-3 w-3" />
-              {__("Ready for review", "productbird")}
-            </Badge>
+            {#if currentItemStatus === "accepted"}
+              <Badge
+                variant="outline"
+                class="flex items-center gap-1 text-emerald-600 border-emerald-200 bg-emerald-50 dark:text-emerald-400 dark:border-emerald-800 dark:bg-emerald-950/30"
+              >
+                <Check class="h-3 w-3" />
+                {__("Accepted", "productbird")}
+              </Badge>
+            {:else if currentItemStatus === "declined"}
+              <Badge
+                variant="outline"
+                class="flex items-center gap-1 text-red-600 border-red-200 bg-red-50 dark:text-red-400 dark:border-red-800 dark:bg-red-950/30"
+              >
+                <X class="h-3 w-3" />
+                {__("Declined", "productbird")}
+              </Badge>
+            {:else}
+              <Badge variant="outline" class="flex items-center gap-1">
+                <CheckCircle2 class="h-3 w-3" />
+                {__("Ready for review", "productbird")}
+              </Badge>
+            {/if}
           </div>
 
           <!-- Content Area -->
@@ -597,27 +623,60 @@
                   variant="outline"
                   onclick={() => handleRegenerateDescription(currentReviewItem.id)}
                   class="flex items-center gap-2"
+                  disabled={currentItemStatus === "accepted"}
                 >
                   <RotateCcw class="h-4 w-4" />
                   {__("Regenerate", "productbird")}
                 </Button>
-                <Button
-                  size="default"
-                  variant="outline"
-                  onclick={() => handleDeclineDescription(currentReviewItem.id)}
-                  class="flex items-center gap-2 text-destructive hover:text-destructive/75 hover:bg-destructive/10"
-                >
-                  <X class="h-4 w-4" />
-                  {__("Decline", "productbird")}
-                </Button>
-                <Button
-                  size="default"
-                  onclick={() => handleAcceptDescription(currentReviewItem.id)}
-                  class="flex items-center gap-2"
-                >
-                  <Check class="h-4 w-4" />
-                  {__("Accept & Apply", "productbird")}
-                </Button>
+                {#if currentItemStatus === "declined"}
+                  <Button
+                    size="default"
+                    variant="outline"
+                    onclick={() => {
+                      // Remove from declined list and allow re-review
+                      session.declinedIds = session.declinedIds.filter((id) => id !== currentReviewItem.id);
+                    }}
+                    class="flex items-center gap-2 text-orange-600 hover:text-orange-500 border-orange-200 hover:bg-orange-50 dark:text-orange-400 dark:border-orange-800 dark:hover:bg-orange-950/30"
+                  >
+                    <RotateCcw class="h-4 w-4" />
+                    {__("Undo Decline", "productbird")}
+                  </Button>
+                {:else}
+                  <Button
+                    size="default"
+                    variant="outline"
+                    onclick={() => handleDeclineDescription(currentReviewItem.id)}
+                    class="flex items-center gap-2 text-destructive hover:text-destructive/75 hover:bg-destructive/10"
+                    disabled={currentItemStatus === "accepted"}
+                  >
+                    <X class="h-4 w-4" />
+                    {__("Decline", "productbird")}
+                  </Button>
+                {/if}
+                {#if currentItemStatus === "accepted"}
+                  <Button
+                    size="default"
+                    onclick={() => {
+                      // Remove from accepted list and allow re-review
+                      session.acceptedIds = session.acceptedIds.filter((id) => id !== currentReviewItem.id);
+                    }}
+                    class="flex items-center gap-2 text-emerald-600 hover:text-emerald-500 border-emerald-200 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-800 dark:hover:bg-emerald-950/30"
+                    variant="outline"
+                  >
+                    <Check class="h-4 w-4" />
+                    {__("Accepted ✓", "productbird")}
+                  </Button>
+                {:else}
+                  <Button
+                    size="default"
+                    onclick={() => handleAcceptDescription(currentReviewItem.id)}
+                    class="flex items-center gap-2"
+                    disabled={currentItemStatus === "declined"}
+                  >
+                    <Check class="h-4 w-4" />
+                    {__("Accept & Apply", "productbird")}
+                  </Button>
+                {/if}
               </div>
             {:else if acceptedCount > 0}
               <!-- Bulk actions when no current item -->
