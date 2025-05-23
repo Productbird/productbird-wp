@@ -113,6 +113,21 @@ export function useDeclineProductDescription() {
 	}));
 }
 
+// Undo decline for a generated description
+export function useUndoDeclineProductDescription() {
+	return createMutation(() => ({
+		mutationFn: async ({ productId }: { productId: number }) => {
+			return await rawRequest(
+				"productbird/v1/magic-descriptions/undo-decline",
+				{
+					method: "POST",
+					body: { productId },
+				},
+			);
+		},
+	}));
+}
+
 // Clear all Productbird post meta
 export function useClearProductMeta() {
 	return createMutation(() => ({

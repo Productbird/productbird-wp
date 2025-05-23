@@ -175,6 +175,19 @@ class ToolMagicDescriptionsEndpoints
                 ],
             ],
         ]);
+
+        register_rest_route('productbird/v1', '/magic-descriptions/undo-decline', [
+            'methods'             => WP_REST_Server::CREATABLE,
+            'callback'            => [$this, 'handle_undo_decline_description'],
+            'permission_callback' => [RestUtils::class, 'can_manage_woocommerce_permission'],
+            'args'                => [
+                'productId' => [
+                    'required'          => true,
+                    'type'              => 'integer',
+                    'sanitize_callback' => 'absint',
+                ],
+            ],
+        ]);
     }
 
     /**
@@ -591,16 +604,6 @@ class ToolMagicDescriptionsEndpoints
      */
     private function set_generation_status(int $product_id, string $status): bool
     {
-        if (!in_array($status, ['queued', 'processing', 'completed', 'error'], true)) {
-            Logger::error('Invalid generation status provided', [
-                'product_id' => $product_id,
-                'status' => $status,
-                'valid_statuses' => ['queued', 'processing', 'completed', 'error']
-            ]);
-            error_log("Invalid generation status: {$status} for product {$product_id}");
-            return false;
-        }
-
         $result = update_post_meta($product_id, $this->meta_status_key, $status);
 
         return $result;
@@ -871,6 +874,49 @@ class ToolMagicDescriptionsEndpoints
         return new WP_REST_Response([
             'success' => true,
             'message' => __('Description declined.', 'productbird')
+        ]);
+    }
+
+    /**
+     * Handle undoing a declined description for a product.
+     *
+     * @since 0.1.0
+     * @param WP_REST_Request $request Incoming REST request.
+     * @return WP_REST_Response|WP_Error
+     */
+    public function handle_undo_decline_description(WP_REST_Request $request)
+    {
+        $product_id = $request->get_param('productId');
+
+        Logger::info('Undoing declined description for product', [
+            'product_id' => $product_id
+        ]);
+
+        $product = wc_get_product($product_id);
+        if (!$product) {
+            Logger::error('Product not found when undoing declined description', [
+                'product_id' => $product_id
+            ]);
+            return new WP_Error(
+                'product_not_found',
+                __('Product not found.', 'productbird'),
+                ['status' => 404]
+            );
+        }
+
+        // Mark as not declined
+        $this->set_declined($product_id, false);
+
+        Logger::log_product_processing($product_id, 'description_declined_undone', 'completed');
+
+        Logger::info('Description declined undone successfully', [
+            'product_id' => $product_id,
+            'product_name' => $product->get_name()
+        ]);
+
+        return new WP_REST_Response([
+            'success' => true,
+            'message' => __('Description declined undone.', 'productbird')
         ]);
     }
 }

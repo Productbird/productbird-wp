@@ -32,12 +32,13 @@
     useGenerateMagicDescriptionsBulk,
     useApplyProductDescription,
     useDeclineProductDescription,
+    useUndoDeclineProductDescription,
     useRegenerateProductDescription,
   } from "$lib/hooks/queries";
   import { Label } from "$lib/components/ui/label";
   import { rawRequest } from "$lib/utils/api";
-  import { createQuery } from "@tanstack/svelte-query";
-  import type { QueryClient } from "@tanstack/svelte-query";
+  import { createQuery, useQueryClient } from "@tanstack/svelte-query";
+
   import { Badge } from "$lib/components/ui/badge";
   import { Check, X, RotateCcw, Clock, CheckCircle2, ChevronLeft, ChevronRight, ExternalLink } from "@lucide/svelte";
   import type {
@@ -47,13 +48,12 @@
   } from "$lib/utils/types";
   import { cn } from "$lib/utils/ui";
   import LogoIcon from "$lib/components/logo-icon.svelte";
-  import { getContext } from "svelte";
 
   // Props
   let { selectedIds = [], open = $bindable() }: ProductDescriptionBulkModalProps = $props();
 
   // Get query client for cache invalidation
-  const queryClient = getContext("queryClient") as QueryClient;
+  const queryClient = useQueryClient();
 
   let currentStep = $state<Steps>(STEPS.confirm);
   let mode = $state<Mode>(MODE.review);
@@ -170,6 +170,7 @@
   const generateMagicDescriptionsBulkMutation = useGenerateMagicDescriptionsBulk();
   const applyProductDescriptionMutation = useApplyProductDescription();
   const declineProductDescriptionMutation = useDeclineProductDescription();
+  const undoDeclineProductDescriptionMutation = useUndoDeclineProductDescription();
   /**
    * For now we're not using this query, just in here for reference.
    */
@@ -200,6 +201,11 @@
 
       // Force update the step
       currentStep = STEPS.review;
+
+      // Auto-advance to next item
+      if (hasNextItem) {
+        goToNextItem();
+      }
     } catch (error) {
       console.error("Failed to start generation:", error);
 
@@ -310,10 +316,12 @@
         // Invalidate and refetch the status query
         queryClient.invalidateQueries({ queryKey: ["magic-descriptions-status"] });
 
-        // Auto-advance to next item
-        if (hasNextItem) {
-          goToNextItem();
-        }
+        // Auto-advance to next item with a small delay to allow UI to update
+        setTimeout(() => {
+          if (hasNextItem) {
+            goToNextItem();
+          }
+        }, 100);
       })
       .catch((err) => {
         console.error("Failed to apply description", err);
@@ -330,13 +338,32 @@
         // Invalidate and refetch the status query
         queryClient.invalidateQueries({ queryKey: ["magic-descriptions-status"] });
 
-        // Auto-advance to next item after action
-        if (hasNextItem) {
-          goToNextItem();
-        }
+        // Auto-advance to next item after action with a small delay to allow UI to update
+        setTimeout(() => {
+          if (hasNextItem) {
+            goToNextItem();
+          }
+        }, 100);
       })
       .catch((err) => {
         console.error("Failed to decline description", err);
+      });
+  }
+
+  function handleUndoDeclineDescription(productId: ProductId) {
+    if (currentItemStatus !== "declined") return;
+
+    // Undo decline via API
+    undoDeclineProductDescriptionMutation
+      .mutateAsync({ productId })
+      .then(() => {
+        // Invalidate and refetch the status query
+        queryClient.invalidateQueries({ queryKey: ["magic-descriptions-status"] });
+
+        // Don't auto-advance after undo - let user decide what to do next
+      })
+      .catch((err) => {
+        console.error("Failed to undo decline description", err);
       });
   }
 
@@ -635,16 +662,28 @@
                   {__("Regenerate", "productbird")}
                 </Button>
 
-                <Button
-                  size="default"
-                  variant="outline"
-                  onclick={() => handleDeclineDescription(currentReviewItem.id)}
-                  class="flex items-center gap-2 text-destructive hover:text-destructive/75 hover:bg-destructive/10"
-                  disabled={currentItemStatus === "accepted" || currentItemStatus === "declined"}
-                >
-                  <X class="h-4 w-4" />
-                  {currentItemStatus === "declined" ? __("Declined", "productbird") : __("Decline", "productbird")}
-                </Button>
+                {#if currentItemStatus === "declined"}
+                  <Button
+                    size="default"
+                    variant="outline"
+                    onclick={() => handleUndoDeclineDescription(currentReviewItem.id)}
+                    class="flex items-center gap-2 text-orange-600 hover:text-orange-500 border-orange-200 hover:bg-orange-50 dark:text-orange-400 dark:border-orange-800 dark:hover:bg-orange-950/30"
+                  >
+                    <RotateCcw class="h-4 w-4" />
+                    {__("Undo Decline", "productbird")}
+                  </Button>
+                {:else}
+                  <Button
+                    size="default"
+                    variant="outline"
+                    onclick={() => handleDeclineDescription(currentReviewItem.id)}
+                    class="flex items-center gap-2 text-destructive hover:text-destructive/75 hover:bg-destructive/10"
+                    disabled={currentItemStatus === "accepted"}
+                  >
+                    <X class="h-4 w-4" />
+                    {__("Decline", "productbird")}
+                  </Button>
+                {/if}
 
                 <Button
                   size="default"
