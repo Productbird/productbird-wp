@@ -69,6 +69,13 @@ class ToolMagicDescriptionsEndpoints
     private $meta_error_key;
 
     /**
+     * Declined meta key
+     *
+     * @var string
+     */
+    private $meta_declined_key;
+
+    /**
      * Initialize the endpoint.
      *
      * @return void
@@ -80,6 +87,7 @@ class ToolMagicDescriptionsEndpoints
         $this->meta_delivered_key   = self::MAGIC_DESCRIPTIONS_META_KEY_DELIVERED;
         $this->meta_status_id_key   = self::MAGIC_DESCRIPTIONS_META_KEY_STATUS_ID;
         $this->meta_error_key       = self::MAGIC_DESCRIPTIONS_META_KEY_ERROR;
+        $this->meta_declined_key    = self::MAGIC_DESCRIPTIONS_META_KEY_DECLINED;
 
         add_action('rest_api_init', [$this, 'register_routes']);
     }
@@ -136,6 +144,37 @@ class ToolMagicDescriptionsEndpoints
                 ],
             ],
         ]);
+
+        register_rest_route('productbird/v1', '/magic-descriptions/apply', [
+            'methods'             => WP_REST_Server::CREATABLE,
+            'callback'            => [$this, 'handle_apply_description'],
+            'permission_callback' => [RestUtils::class, 'can_manage_woocommerce_permission'],
+            'args'                => [
+                'productId' => [
+                    'required'          => true,
+                    'type'              => 'integer',
+                    'sanitize_callback' => 'absint',
+                ],
+                'description' => [
+                    'required'          => false,
+                    'type'              => 'string',
+                    'sanitize_callback' => 'wp_kses_post',
+                ],
+            ],
+        ]);
+
+        register_rest_route('productbird/v1', '/magic-descriptions/decline', [
+            'methods'             => WP_REST_Server::CREATABLE,
+            'callback'            => [$this, 'handle_decline_description'],
+            'permission_callback' => [RestUtils::class, 'can_manage_woocommerce_permission'],
+            'args'                => [
+                'productId' => [
+                    'required'          => true,
+                    'type'              => 'integer',
+                    'sanitize_callback' => 'absint',
+                ],
+            ],
+        ]);
     }
 
     /**
@@ -160,7 +199,8 @@ class ToolMagicDescriptionsEndpoints
                 'id' => $product_id,
                 'name' => $product->get_name(),
                 'html' => $draft,
-                'current_html' => wpautop( $product->get_description() )
+                'current_html' => wpautop( $product->get_description() ),
+                'status' => $this->get_product_status($product_id),
             ];
         }
 
@@ -510,6 +550,8 @@ class ToolMagicDescriptionsEndpoints
                         'id' => $product_id,
                         'name' => $product ? $product->get_name() : '',
                         'html' => $description_draft,
+                        'current_html' => $product ? wpautop($product->get_description()) : '',
+                        'status' => $this->get_product_status($product_id),
                     ];
 
                     Logger::debug('Description added to completed items', [
@@ -640,6 +682,40 @@ class ToolMagicDescriptionsEndpoints
     }
 
     /**
+     * Mark a product description as declined.
+     *
+     * @param int $product_id The product ID
+     * @param bool $declined Whether the product description was declined
+     * @return bool True on success, false on failure
+     */
+    private function set_declined(int $product_id, bool $declined = true): bool
+    {
+        return update_post_meta($product_id, $this->meta_declined_key, $declined ? 'yes' : 'no') !== false;
+    }
+
+    /**
+     * Get the current status of a product description.
+     *
+     * @param int $product_id The product ID
+     * @return string The status: 'accepted', 'declined', or 'pending'
+     */
+    private function get_product_status(int $product_id): string
+    {
+        $delivered = get_post_meta($product_id, $this->meta_delivered_key, true);
+        $declined = get_post_meta($product_id, $this->meta_declined_key, true);
+
+        if ($delivered === 'yes') {
+            return 'accepted';
+        }
+
+        if ($declined === 'yes') {
+            return 'declined';
+        }
+
+        return 'pending';
+    }
+
+    /**
      * Clear all Magic Descriptions metadata for a product.
      *
      * @param int $product_id The product ID
@@ -657,6 +733,7 @@ class ToolMagicDescriptionsEndpoints
             $this->meta_error_key,
             $this->meta_draft_key,
             $this->meta_delivered_key,
+            $this->meta_declined_key,
         ];
 
         $success = true;
@@ -686,5 +763,114 @@ class ToolMagicDescriptionsEndpoints
         }
 
         return $success;
+    }
+
+    /**
+     * Handle applying a description to a product.
+     *
+     * @since 0.1.0
+     * @param WP_REST_Request $request Incoming REST request.
+     * @return WP_REST_Response|WP_Error
+     */
+    public function handle_apply_description(WP_REST_Request $request)
+    {
+        $product_id = $request->get_param('productId');
+        $description = $request->get_param('description');
+
+        Logger::info('Applying description to product', [
+            'product_id' => $product_id,
+            'has_description' => !empty($description)
+        ]);
+
+        $product = wc_get_product($product_id);
+        if (!$product) {
+            Logger::error('Product not found when applying description', [
+                'product_id' => $product_id
+            ]);
+            return new WP_Error(
+                'product_not_found',
+                __('Product not found.', 'productbird'),
+                ['status' => 404]
+            );
+        }
+
+        // Use provided description or get from draft
+        if (empty($description)) {
+            $description = get_post_meta($product_id, $this->meta_draft_key, true);
+        }
+
+        if (empty($description)) {
+            Logger::error('No description available to apply', [
+                'product_id' => $product_id
+            ]);
+            return new WP_Error(
+                'no_description',
+                __('No description available to apply.', 'productbird'),
+                ['status' => 400]
+            );
+        }
+
+        // Apply the description
+        $product->set_description($description);
+        $product->save();
+
+        // Mark as delivered and clear declined status
+        $this->set_delivered($product_id, true);
+        delete_post_meta($product_id, $this->meta_declined_key);
+
+        Logger::log_product_processing($product_id, 'description_applied_manually', 'completed');
+
+        Logger::info('Description applied successfully', [
+            'product_id' => $product_id,
+            'product_name' => $product->get_name()
+        ]);
+
+        return new WP_REST_Response([
+            'success' => true,
+            'message' => __('Description applied successfully.', 'productbird')
+        ]);
+    }
+
+    /**
+     * Handle declining a description for a product.
+     *
+     * @since 0.1.0
+     * @param WP_REST_Request $request Incoming REST request.
+     * @return WP_REST_Response|WP_Error
+     */
+    public function handle_decline_description(WP_REST_Request $request)
+    {
+        $product_id = $request->get_param('productId');
+
+        Logger::info('Declining description for product', [
+            'product_id' => $product_id
+        ]);
+
+        $product = wc_get_product($product_id);
+        if (!$product) {
+            Logger::error('Product not found when declining description', [
+                'product_id' => $product_id
+            ]);
+            return new WP_Error(
+                'product_not_found',
+                __('Product not found.', 'productbird'),
+                ['status' => 404]
+            );
+        }
+
+        // Mark as declined
+        $this->set_declined($product_id, true);
+
+        Logger::log_product_processing($product_id, 'description_declined', 'completed');
+
+        Logger::info('Description declined successfully', [
+            'product_id' => $product_id,
+            'product_name' => $product->get_name()
+        ]);
+
+        return new WP_REST_Response([
+            'success' => true,
+            'message' => __('Description declined.', 'productbird')
+        ]);
     }
 }

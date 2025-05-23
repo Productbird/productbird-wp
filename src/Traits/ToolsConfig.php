@@ -20,6 +20,7 @@ trait ToolsConfig
     public const MAGIC_DESCRIPTIONS_META_KEY_ERROR = '_productbird_magic_descriptions_error';
     public const MAGIC_DESCRIPTIONS_META_KEY_DRAFT = '_productbird_magic_descriptions_draft';
     public const MAGIC_DESCRIPTIONS_META_KEY_DELIVERED = '_productbird_magic_descriptions_delivered';
+    public const MAGIC_DESCRIPTIONS_META_KEY_DECLINED = '_productbird_magic_descriptions_declined';
 
     /**
      * Get available tools configuration.
@@ -41,6 +42,7 @@ trait ToolsConfig
                     'error' => self::MAGIC_DESCRIPTIONS_META_KEY_ERROR,
                     'description_draft' => self::MAGIC_DESCRIPTIONS_META_KEY_DRAFT,
                     'delivered' => self::MAGIC_DESCRIPTIONS_META_KEY_DELIVERED,
+                    'declined' => self::MAGIC_DESCRIPTIONS_META_KEY_DECLINED,
                 ],
                 'endpoints' => [
                     'bulk' => [

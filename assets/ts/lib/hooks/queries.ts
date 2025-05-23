@@ -93,9 +93,21 @@ export function useApplyProductDescription() {
 			productId,
 			description,
 		}: { productId: number; description: string }) => {
-			return await rawRequest("productbird/v1/apply-product-description", {
+			return await rawRequest("productbird/v1/magic-descriptions/apply", {
 				method: "POST",
 				body: { productId, description },
+			});
+		},
+	}));
+}
+
+// Decline a generated description for a product
+export function useDeclineProductDescription() {
+	return createMutation(() => ({
+		mutationFn: async ({ productId }: { productId: number }) => {
+			return await rawRequest("productbird/v1/magic-descriptions/decline", {
+				method: "POST",
+				body: { productId },
 			});
 		},
 	}));

@@ -76,6 +76,10 @@ export type MagicDescriptionsStatusCheckWpJsonResponse = {
 		 * The product's current saved description (HTML) returned from the API so the UI can show a side-by-side comparison.
 		 */
 		current_html?: string;
+		/**
+		 * The current status of the description: 'pending', 'accepted', or 'declined'
+		 */
+		status?: "pending" | "accepted" | "declined";
 	}[];
 	remaining_count: number;
 };

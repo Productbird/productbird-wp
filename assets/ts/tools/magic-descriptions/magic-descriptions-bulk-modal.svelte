@@ -31,11 +31,13 @@
   import {
     useGenerateMagicDescriptionsBulk,
     useApplyProductDescription,
+    useDeclineProductDescription,
     useRegenerateProductDescription,
   } from "$lib/hooks/queries";
   import { Label } from "$lib/components/ui/label";
   import { rawRequest } from "$lib/utils/api";
   import { createQuery } from "@tanstack/svelte-query";
+  import type { QueryClient } from "@tanstack/svelte-query";
   import { Badge } from "$lib/components/ui/badge";
   import { Check, X, RotateCcw, Clock, CheckCircle2, ChevronLeft, ChevronRight, ExternalLink } from "@lucide/svelte";
   import type {
@@ -45,9 +47,13 @@
   } from "$lib/utils/types";
   import { cn } from "$lib/utils/ui";
   import LogoIcon from "$lib/components/logo-icon.svelte";
+  import { getContext } from "svelte";
 
   // Props
   let { selectedIds = [], open = $bindable() }: ProductDescriptionBulkModalProps = $props();
+
+  // Get query client for cache invalidation
+  const queryClient = getContext("queryClient") as QueryClient;
 
   let currentStep = $state<Steps>(STEPS.confirm);
   let mode = $state<Mode>(MODE.review);
@@ -59,20 +65,10 @@
      */
     completedItems: MagicDescriptionsStatusCheckWpJsonResponse["completed_items"];
     pendingItems: MagicDescriptionsBulkWpJsonResponse["pending_items"];
-    /**
-     * Product IDs the merchant has accepted & applied in this session.
-     */
-    acceptedIds: ProductId[];
-    /**
-     * Product IDs the merchant has declined in this session.
-     */
-    declinedIds: ProductId[];
   }>({
     scheduledItems: [],
     completedItems: [],
     pendingItems: [],
-    acceptedIds: [],
-    declinedIds: [],
   });
 
   // Create a separate state for remaining count to break the circular dependency
@@ -144,10 +140,13 @@
 
   // Calculate progress
   const totalItems = $derived(selectedIds.length);
-  const acceptedCount = $derived(session.acceptedIds.length);
+  const acceptedCount = $derived(reviewableItems.filter((item) => item.status === "accepted").length);
+
+  // Count declined items from server status
+  const declinedCount = $derived(reviewableItems.filter((item) => item.status === "declined").length);
 
   // Remaining to accept (ignores declined for now)
-  const remainingToReview = $derived(Math.max(0, totalItems - (acceptedCount + session.declinedIds.length)));
+  const remainingToReview = $derived(Math.max(0, totalItems - (acceptedCount + declinedCount)));
 
   // Progress is based on accepted items only
   const progressPercentage = $derived(totalItems > 0 ? (acceptedCount / totalItems) * 100 : 0);
@@ -165,13 +164,12 @@
   // Add derived state for current item status
   const currentItemStatus = $derived.by(() => {
     if (!currentReviewItem) return "pending";
-    if (session.acceptedIds.includes(currentReviewItem.id)) return "accepted";
-    if (session.declinedIds.includes(currentReviewItem.id)) return "declined";
-    return "pending";
+    return currentReviewItem.status || "pending";
   });
 
   const generateMagicDescriptionsBulkMutation = useGenerateMagicDescriptionsBulk();
   const applyProductDescriptionMutation = useApplyProductDescription();
+  const declineProductDescriptionMutation = useDeclineProductDescription();
   /**
    * For now we're not using this query, just in here for reference.
    */
@@ -247,8 +245,6 @@
         scheduledItems: [],
         completedItems: [],
         pendingItems: [],
-        acceptedIds: [],
-        declinedIds: [],
       };
       apiRemainingCount = undefined;
       console.log("Modal closed - state reset");
@@ -299,7 +295,7 @@
   // Placeholder functions for actions (not hooked up as requested)
   function handleAcceptDescription(productId: ProductId) {
     // Guard against duplicate accept
-    if (session.acceptedIds.includes(productId)) return;
+    if (currentItemStatus === "accepted") return;
 
     const item = reviewableItems.find((i) => i.id === productId);
     if (!item) return;
@@ -311,7 +307,8 @@
     applyProductDescriptionMutation
       .mutateAsync({ productId, description: descriptionToApply })
       .then(() => {
-        session.acceptedIds = [...session.acceptedIds, productId];
+        // Invalidate and refetch the status query
+        queryClient.invalidateQueries({ queryKey: ["magic-descriptions-status"] });
 
         // Auto-advance to next item
         if (hasNextItem) {
@@ -324,14 +321,23 @@
   }
 
   function handleDeclineDescription(productId: ProductId) {
-    if (session.declinedIds.includes(productId)) return;
+    if (currentItemStatus === "declined") return;
 
-    session.declinedIds = [...session.declinedIds, productId];
+    // Decline description via API
+    declineProductDescriptionMutation
+      .mutateAsync({ productId })
+      .then(() => {
+        // Invalidate and refetch the status query
+        queryClient.invalidateQueries({ queryKey: ["magic-descriptions-status"] });
 
-    // Auto-advance to next item after action
-    if (hasNextItem) {
-      goToNextItem();
-    }
+        // Auto-advance to next item after action
+        if (hasNextItem) {
+          goToNextItem();
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to decline description", err);
+      });
   }
 
   function handleRegenerateDescription(_productId: ProductId) {
@@ -628,57 +634,30 @@
                   <RotateCcw class="h-4 w-4" />
                   {__("Regenerate", "productbird")}
                 </Button>
-                {#if currentItemStatus === "declined"}
-                  <Button
-                    size="default"
-                    variant="outline"
-                    onclick={() => {
-                      // Remove from declined list and allow re-review
-                      session.declinedIds = session.declinedIds.filter((id) => id !== currentReviewItem.id);
-                    }}
-                    class="flex items-center gap-2 text-orange-600 hover:text-orange-500 border-orange-200 hover:bg-orange-50 dark:text-orange-400 dark:border-orange-800 dark:hover:bg-orange-950/30"
-                  >
-                    <RotateCcw class="h-4 w-4" />
-                    {__("Undo Decline", "productbird")}
-                  </Button>
-                {:else}
-                  <Button
-                    size="default"
-                    variant="outline"
-                    onclick={() => handleDeclineDescription(currentReviewItem.id)}
-                    class="flex items-center gap-2 text-destructive hover:text-destructive/75 hover:bg-destructive/10"
-                    disabled={currentItemStatus === "accepted"}
-                  >
-                    <X class="h-4 w-4" />
-                    {__("Decline", "productbird")}
-                  </Button>
-                {/if}
-                {#if currentItemStatus === "accepted"}
-                  <Button
-                    size="default"
-                    onclick={() => {
-                      // Remove from accepted list and allow re-review
-                      session.acceptedIds = session.acceptedIds.filter((id) => id !== currentReviewItem.id);
-                    }}
-                    class="flex items-center gap-2 text-emerald-600 hover:text-emerald-500 border-emerald-200 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-800 dark:hover:bg-emerald-950/30"
-                    variant="outline"
-                    disabled
-                  >
-                    <Check class="h-4 w-4" />
-                    {__("Accepted ✓", "productbird")}
-                  </Button>
-                {:else}
-                  <Button
-                    size="default"
-                    onclick={() => handleAcceptDescription(currentReviewItem.id)}
-                    loading={applyProductDescriptionMutation.isPending}
-                    class="flex items-center gap-2"
-                    disabled={currentItemStatus === "declined"}
-                  >
-                    <Check class="h-4 w-4" />
-                    {__("Accept & Apply", "productbird")}
-                  </Button>
-                {/if}
+
+                <Button
+                  size="default"
+                  variant="outline"
+                  onclick={() => handleDeclineDescription(currentReviewItem.id)}
+                  class="flex items-center gap-2 text-destructive hover:text-destructive/75 hover:bg-destructive/10"
+                  disabled={currentItemStatus === "accepted" || currentItemStatus === "declined"}
+                >
+                  <X class="h-4 w-4" />
+                  {currentItemStatus === "declined" ? __("Declined", "productbird") : __("Decline", "productbird")}
+                </Button>
+
+                <Button
+                  size="default"
+                  onclick={() => handleAcceptDescription(currentReviewItem.id)}
+                  loading={applyProductDescriptionMutation.isPending}
+                  class="flex items-center gap-2"
+                  disabled={currentItemStatus === "declined" || currentItemStatus === "accepted"}
+                >
+                  <Check class="h-4 w-4" />
+                  {currentItemStatus === "accepted"
+                    ? __("Accepted ✓", "productbird")
+                    : __("Accept & Apply", "productbird")}
+                </Button>
               </div>
             {:else if acceptedCount > 0}
               <!-- Bulk actions when no current item -->
@@ -688,7 +667,7 @@
                   onclick={() => {
                     // Accept all remaining reviewable items in bulk
                     reviewableItems.forEach((item) => {
-                      if (!session.acceptedIds.includes(item.id)) {
+                      if (item.status !== "accepted") {
                         handleAcceptDescription(item.id as ProductId);
                       }
                     });
@@ -702,7 +681,7 @@
                   onclick={() => {
                     // Decline all remaining reviewable items in bulk
                     reviewableItems.forEach((item) => {
-                      if (!session.declinedIds.includes(item.id)) {
+                      if (item.status !== "declined") {
                         handleDeclineDescription(item.id as ProductId);
                       }
                     });
