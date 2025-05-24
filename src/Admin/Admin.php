@@ -18,6 +18,11 @@ class Admin {
 	use ScriptLocalization;
 
 	/**
+	 * Script handle.
+	 */
+	private const SCRIPT_HANDLE = 'productbird-admin';
+
+	/**
 	 * The option name used to store all settings.
 	 */
 	private const SETTINGS_OPTION_NAME = 'productbird_settings';
@@ -146,7 +151,7 @@ class Admin {
 			$dist_path,
 			$source_entry,
 			array(
-				'handle'       => 'productbird-admin',
+				'handle'       => self::SCRIPT_HANDLE,
 				'dependencies' => array( 'jquery', 'wp-api-fetch', 'wp-i18n' ),
 				// Load the script in footer to avoid render-blocking.
 				'in-footer'    => true,
@@ -210,8 +215,10 @@ class Admin {
 			);
 		}
 
+		wp_set_script_translations( self::SCRIPT_HANDLE, 'productbird', PRODUCTBIRD_PLUGIN_DIR . '/languages' );
+
 		wp_localize_script(
-			'productbird-admin',
+			self::SCRIPT_HANDLE,
 			'productbird_admin',
 			array_merge(
 				$this->get_common_localization_data(),
