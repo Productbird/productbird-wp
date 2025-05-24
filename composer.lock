@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8047561f7d26c4a7f118a49ed9cd03b2",
+    "content-hash": "97af65aa830c158f5ed0ced1c31b7f42",
     "packages": [
         {
             "name": "composer/installers",
@@ -154,16 +154,16 @@
         },
         {
             "name": "kucrut/vite-for-wp",
-            "version": "v0.11.5",
+            "version": "v0.11.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kucrut/vite-for-wp.git",
-                "reference": "40ae2a7890ad23cafa0f7f028f6628f8cab5fbae"
+                "reference": "69b3b14b94afddc14769d06658bb017f24f97244"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kucrut/vite-for-wp/zipball/40ae2a7890ad23cafa0f7f028f6628f8cab5fbae",
-                "reference": "40ae2a7890ad23cafa0f7f028f6628f8cab5fbae",
+                "url": "https://api.github.com/repos/kucrut/vite-for-wp/zipball/69b3b14b94afddc14769d06658bb017f24f97244",
+                "reference": "69b3b14b94afddc14769d06658bb017f24f97244",
                 "shasum": ""
             },
             "require-dev": {
@@ -187,9 +187,9 @@
             "description": "Vite integration for WordPress plugins and themes development.",
             "support": {
                 "issues": "https://github.com/kucrut/vite-for-wp/issues",
-                "source": "https://github.com/kucrut/vite-for-wp/tree/v0.11.5"
+                "source": "https://github.com/kucrut/vite-for-wp/tree/v0.11.6"
             },
-            "time": "2025-04-23T11:49:08+00:00"
+            "time": "2025-05-21T05:42:46+00:00"
         }
     ],
     "packages-dev": [
@@ -1441,7 +1441,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.4"
+        "php": ">=8.2"
     },
     "platform-dev": {},
     "plugin-api-version": "2.6.0"

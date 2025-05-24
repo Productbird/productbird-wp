@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<ruleset name="Productbird">
+    <description>PHPCS configuration for the Productbird plugin.</description>
+
+    <!-- Scan these files and directories -->
+    <file>./src</file>
+    <file>./productbird.php</file>
+
+    <!-- Exclude patterns -->
+    <exclude-pattern>/vendor/*</exclude-pattern>
+    <exclude-pattern>/node_modules/*</exclude-pattern>
+    <exclude-pattern>/assets/*</exclude-pattern> <!-- Assuming assets are primarily JS/CSS -->
+
+    <!-- Show progress -->
+    <arg value="p"/>
+    <!-- Show sniff codes -->
+    <arg value="s"/>
+    <!-- Use colors in output -->
+    <arg name="colors"/>
+
+    <!-- Set PHP version for PHPCompatibility -->
+    <config name="testVersion" value="8.2-"/>
+
+    <!-- WordPress Coding Standards -->
+    <rule ref="WordPress-Extra">
+        <!-- You can exclude specific sniffs from WordPress-Extra if needed, e.g.: -->
+        <!-- <exclude name="WordPress.Files.FileName.InvalidClassFileName"/> -->
+    </rule>
+
+    <!-- PSR12 Coding Standard -->
+    <rule ref="PSR12"/>
+
+    <!-- PHPCompatibility -->
+    <rule ref="PHPCompatibility"/>
+
+    <!-- WooCommerce Coding Standards -->
+    <rule ref="WooCommerce">
+        <!-- WooCommerce standard requires a text domain. -->
+        <properties>
+            <property name="text_domain" type="array" value="productbird"/>
+        </properties>
+    </rule>
+
+    <!-- Specific WordPress rules configurations -->
+    <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+        <properties>
+            <property name="prefixes" type="array" value="productbird, Productbird"/>
+        </properties>
+    </rule>
+
+    <rule ref="WordPress.WP.I18n">
+        <properties>
+            <property name="text_domain" type="array" value="productbird"/>
+        </properties>
+    </rule>
+
+</ruleset>
