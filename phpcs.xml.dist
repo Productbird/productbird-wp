@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<ruleset name="Productbird">
+    <description>PHPCS configuration for the Productbird plugin.</description>
+
+    <!-- Scan these files and directories -->
+    <file>./src</file>
+    <file>./productbird.php</file>
+
+    <!-- Exclude patterns -->
+    <exclude-pattern>/vendor/*</exclude-pattern>
+    <exclude-pattern>/node_modules/*</exclude-pattern>
+    <exclude-pattern>/assets/*</exclude-pattern>
+    <exclude-pattern>/build/*</exclude-pattern>
+    <exclude-pattern>/dist/*</exclude-pattern>
+
+    <!-- Show progress -->
+    <arg value="p"/>
+    <!-- Show sniff codes -->
+    <arg value="s"/>
+    <!-- Use colors in output -->
+    <arg name="colors"/>
+    <!-- Check 8 files in parallel -->
+    <arg name="parallel" value="8"/>
+    <!-- Only check PHP files -->
+    <arg name="extensions" value="php"/>
+
+    <!-- Set PHP version for PHPCompatibility -->
+    <config name="testVersion" value="8.2-"/>
+
+    <!-- WordPress Coding Standards -->
+    <rule ref="WordPress">
+        <!-- Allow short array syntax -->
+        <exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+        <exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+
+        <!-- Don't force file comments -->
+        <exclude name="Squiz.Commenting.FileComment"/>
+
+        <!-- Allow use of namespaces -->
+        <exclude name="PSR1.Files.SideEffects.FoundWithSymbols"/>
+    </rule>
+
+    <!-- WordPress Extra rules with some exclusions -->
+    <rule ref="WordPress-Extra">
+        <!-- We use a custom autoloader, so filenames don't need to match class names -->
+        <exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+        <exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+    </rule>
+
+    <!-- Configure text domain check -->
+    <rule ref="WordPress.WP.I18n">
+        <properties>
+            <property name="text_domain" type="array">
+                <element value="productbird"/>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- Configure prefix for globals -->
+    <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+        <properties>
+            <property name="prefixes" type="array">
+                <element value="productbird"/>
+                <element value="PRODUCTBIRD"/>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- Configure WordPress capabilities -->
+    <rule ref="WordPress.WP.Capabilities">
+        <properties>
+            <property name="custom_capabilities" type="array">
+                <element value="manage_woocommerce"/>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- PHPCompatibility -->
+    <rule ref="PHPCompatibility"/>
+
+    <!-- WordPress version config for WPCS -->
+    <config name="minimum_supported_wp_version" value="5.0"/>
+
+</ruleset>

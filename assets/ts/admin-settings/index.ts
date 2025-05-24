@@ -1,5 +1,5 @@
+import "$lib/styles/global.pcss";
 import { createComponentMounter } from "$lib/utils/component-mounter";
-import "$lib/styles/global.css";
 import Root from "./root.svelte";
 
 function initializeApp() {

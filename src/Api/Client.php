@@ -2,6 +2,7 @@
 
 namespace Productbird\Api;
 
+use Productbird\Utils;
 use WP_Error;
 
 /**
@@ -18,239 +19,219 @@ use WP_Error;
  * $client = new \Productbird\Api\Client( $api_key );
  * $response = $client->generate_product_description( $payload );
  * ```
+ *
  * @since 0.1.0
  */
-class Client
-{
-    /**
-     * Endpoint path for generating a product description.
-     */
-    private const GENERATE_PRODUCT_DESCRIPTION_ENDPOINT = '/api/v1/generate/product-description';
+class Client {
 
-    /**
-     * Endpoint path for generating a product description in bulk
-     */
-    private const GENERATE_PRODUCT_DESCRIPTION_BULK_ENDPOINT = '/api/v1/generate/product-description/bulk';
+	/**
+	 * Endpoint path for generating a product description.
+	 */
+	private const GENERATE_PRODUCT_DESCRIPTION_ENDPOINT = '/api/v1/generate/product-description';
 
-    /**
-     * Production base URL.
-     */
-    private const PROD_BASE_URL = 'https://app.productbird.ai';
+	/**
+	 * Endpoint path for generating a product description in bulk
+	 */
+	private const GENERATE_PRODUCT_DESCRIPTION_BULK_ENDPOINT = '/api/v1/generate/product-description/bulk';
 
-    /**
-     * Local development base URL.
-     */
-    private const LOCAL_BASE_URL = 'http://localhost:5173';
+	/**
+	 * Production base URL.
+	 */
+	private const PROD_BASE_URL = 'https://app.productbird.ai';
 
-    /**
-     * The API key used for authorization.
-     *
-     * @var string
-     */
-    private string $api_key;
+	/**
+	 * Local development base URL.
+	 */
+	private const LOCAL_BASE_URL = 'http://localhost:5173';
 
-    /**
-     * Base URL for all requests.
-     *
-     * @var string
-     */
-    private string $base_url;
+	/**
+	 * The API key used for authorization.
+	 *
+	 * @var string
+	 */
+	private string $api_key;
 
-    /**
-     * Constructor.
-     *
-     * @since 0.1.0
-     * @param string      $api_key  The secret API key.
-     * @param string|null $base_url Optional base URL override. If omitted, this
-     *                              class will decide automatically based on the
-     *                              current environment.
-     */
-    public function __construct(string $api_key, ?string $base_url = null)
-    {
-        $this->api_key  = $api_key;
-        $this->base_url = $base_url ?? self::determine_base_url();
+	/**
+	 * Base URL for all requests.
+	 *
+	 * @var string
+	 */
+	private string $base_url;
 
-        /**
-         * Filter the API base URL that will be used for subsequent requests.
-         *
-         * @param string $base_url URL that will be used. Either the constructor
-         *                         override, the automatically detected local
-         *                         URL, or the default production URL.
-         */
-        $this->base_url = apply_filters('productbird_api_base_url', $this->base_url);
+	/**
+	 * Constructor.
+	 *
+	 * @since 0.1.0
+	 * @param string      $api_key  The secret API key.
+	 * @param string|null $base_url Optional base URL override. If omitted, this
+	 *                              class will decide automatically based on the
+	 *                              current environment.
+	 */
+	public function __construct( string $api_key, ?string $base_url = null ) {
+		$this->api_key  = $api_key;
+		$this->base_url = $base_url ?? self::determine_base_url();
 
-        // Ensure no trailing slash to keep path concatenation predictable.
-        $this->base_url = rtrim($this->base_url, '/');
-    }
+		/**
+		 * Filter the API base URL that will be used for subsequent requests.
+		 *
+		 * @param string $base_url URL that will be used. Either the constructor
+		 *                         override, the automatically detected local
+		 *                         URL, or the default production URL.
+		 */
+		$this->base_url = apply_filters( 'productbird_api_base_url', $this->base_url );
 
-    /**
-     * Generates a product description via the Productbird workflow API.
-     *
-     * @see WorkflowInput for the expected payload
-     *
-     * @since 0.1.0
-     * @param array<string,mixed> $payload Data matching the WorkflowInput schema.
-     * @return array<string,mixed>|WP_Error The decoded JSON response on success
-     *                                      or a WP_Error on failure.
-     */
-    public function generate_product_description(array $payload)
-    {
-        return $this->post(self::GENERATE_PRODUCT_DESCRIPTION_ENDPOINT, $payload);
-    }
+		// Ensure no trailing slash to keep path concatenation predictable.
+		$this->base_url = rtrim( $this->base_url, '/' );
+	}
 
-    /**
-     * Generates multiple product descriptions via the Productbird workflow API.
-     *
-     * The bulk endpoint accepts an array of the same payload that would be
-     * sent to the single-generation endpoint. Each element in the outer array
-     * represents one product description request.
-     *
-     * @see WorkflowInput for the expected payload structure of each element.
-     *
-     * @since 0.1.0
-     * @param array<int,array<string,mixed>> $payloads Array of WorkflowInput payloads.
-     * @return array<string,mixed>|WP_Error The decoded JSON response on success
-     *                                      or a WP_Error on failure.
-     */
-    public function generate_product_description_bulk(array $payloads)
-    {
-        return $this->post(self::GENERATE_PRODUCT_DESCRIPTION_BULK_ENDPOINT, $payloads);
-    }
+	/**
+	 * Generates a product description via the Productbird workflow API.
+	 *
+	 * @see WorkflowInput for the expected payload
+	 *
+	 * @since 0.1.0
+	 * @param array<string,mixed> $payload Data matching the WorkflowInput schema.
+	 * @return array<string,mixed>|WP_Error The decoded JSON response on success
+	 *                                      or a WP_Error on failure.
+	 */
+	public function generate_product_description( array $payload ) {
+		return $this->post( self::GENERATE_PRODUCT_DESCRIPTION_ENDPOINT, $payload );
+	}
 
-    /**
-     * Polls for the status of a product description generation job.
-     *
-     * This method checks if a previously requested description has been generated
-     * and is ready for retrieval.
-     *
-     * @since 0.1.0
-     * @param string $status_id The status ID returned from the generation request.
-     * @return array<string,mixed>|WP_Error The decoded JSON response on success
-     *                                      or a WP_Error on failure.
-     */
-    public function get_product_description_status(string $status_id)
-    {
-        return $this->get('/api/v1/generate/product-description?statusId=' . $status_id);
-    }
+	/**
+	 * Generates multiple product descriptions via the Productbird workflow API.
+	 *
+	 * The bulk endpoint accepts an array of the same payload that would be
+	 * sent to the single-generation endpoint. Each element in the outer array
+	 * represents one product description request.
+	 *
+	 * @see WorkflowInput for the expected payload structure of each element.
+	 *
+	 * @since 0.1.0
+	 * @param array<int,array<string,mixed>> $payloads Array of WorkflowInput payloads.
+	 * @return array<string,mixed>|WP_Error The decoded JSON response on success
+	 *                                      or a WP_Error on failure.
+	 */
+	public function generate_product_description_bulk( array $payloads ) {
+		return $this->post( self::GENERATE_PRODUCT_DESCRIPTION_BULK_ENDPOINT, $payloads );
+	}
 
-    /**
-     * Perform an authenticated POST request and decode the JSON response.
-     *
-     * @since 0.1.0
-     * @param string               $endpoint An endpoint path starting with '/'.
-     * @param array<string,mixed>  $body     Request body.
-     * @return array<string,mixed>|WP_Error  Decoded JSON on success or WP_Error.
-     */
-    private function post(string $endpoint, array $body)
-    {
-        $url = $this->base_url . $endpoint;
+	/**
+	 * Polls for the status of a product description generation job.
+	 *
+	 * This method checks if a previously requested description has been generated
+	 * and is ready for retrieval.
+	 *
+	 * @since 0.1.0
+	 * @param string $status_id The status ID returned from the generation request.
+	 * @return array<string,mixed>|WP_Error The decoded JSON response on success
+	 *                                      or a WP_Error on failure.
+	 */
+	public function get_product_description_status( string $status_id ) {
+		return $this->get( '/api/v1/generate/product-description?statusId=' . $status_id );
+	}
 
-        $args = [
-            'headers' => [
-                'Content-Type'  => 'application/json',
-                'Authorization' => 'Bearer ' . trim($this->api_key),
-            ],
-            'body'    => wp_json_encode($body),
-            'timeout' => 30,
-        ];
+	/**
+	 * Perform an authenticated POST request and decode the JSON response.
+	 *
+	 * @since 0.1.0
+	 * @param string              $endpoint An endpoint path starting with '/'.
+	 * @param array<string,mixed> $body     Request body.
+	 * @return array<string,mixed>|WP_Error  Decoded JSON on success or WP_Error.
+	 */
+	private function post( string $endpoint, array $body ) {
+		$url = $this->base_url . $endpoint;
 
-        $response = wp_remote_post($url, $args);
+		$args = array(
+			'headers' => array(
+				'Content-Type'  => 'application/json',
+				'Authorization' => 'Bearer ' . trim( $this->api_key ),
+			),
+			'body'    => wp_json_encode( $body ),
+			'timeout' => 30,
+		);
 
-        if (is_wp_error($response)) {
-            return $response;
-        }
+		$response = wp_remote_post( $url, $args );
 
-        $code = wp_remote_retrieve_response_code($response);
-        $raw  = wp_remote_retrieve_body($response);
-        $data = json_decode($raw, true);
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
 
-        if ($code >= 200 && $code < 300) {
-            return is_array($data) ? $data : [];
-        }
+		$code = wp_remote_retrieve_response_code( $response );
+		$raw  = wp_remote_retrieve_body( $response );
+		$data = json_decode( $raw, true );
 
-        return new WP_Error(
-            'productbird_api_error',
-            sprintf(
-                /* Translators: %d is the HTTP status code. */
-                esc_html__('Productbird API request failed with status %d.', 'productbird'),
-                $code
-            ),
-            [
-                'status' => $code,
-                'body'   => $data ?? $raw,
-            ]
-        );
-    }
+		if ( $code >= 200 && $code < 300 ) {
+			return is_array( $data ) ? $data : array();
+		}
 
-    /**
-     * Perform an authenticated GET request and decode the JSON response.
-     *
-     * @since 0.1.0
-     * @param string $endpoint An endpoint path starting with '/'.
-     * @return array<string,mixed>|WP_Error Decoded JSON on success or WP_Error.
-     */
-    private function get(string $endpoint)
-    {
-        $url = $this->base_url . $endpoint;
+		return new WP_Error(
+			'productbird_api_error',
+			sprintf(
+				/* Translators: %d is the HTTP status code. */
+				esc_html__( 'Productbird API request failed with status %d.', 'productbird' ),
+				$code
+			),
+			array(
+				'status' => $code,
+				'body'   => $data ?? $raw,
+			)
+		);
+	}
 
-        $args = [
-            'headers' => [
-                'Accept'        => 'application/json',
-                'Authorization' => 'Bearer ' . trim($this->api_key),
-            ],
-            'timeout' => 30,
-        ];
+	/**
+	 * Perform an authenticated GET request and decode the JSON response.
+	 *
+	 * @since 0.1.0
+	 * @param string $endpoint An endpoint path starting with '/'.
+	 * @return array<string,mixed>|WP_Error Decoded JSON on success or WP_Error.
+	 */
+	private function get( string $endpoint ) {
+		$url = $this->base_url . $endpoint;
 
-        $response = wp_remote_get($url, $args);
+		$args = array(
+			'headers' => array(
+				'Accept'        => 'application/json',
+				'Authorization' => 'Bearer ' . trim( $this->api_key ),
+			),
+			'timeout' => 30,
+		);
 
-        if (is_wp_error($response)) {
-            return $response;
-        }
+		$response = wp_remote_get( $url, $args );
 
-        $code = wp_remote_retrieve_response_code($response);
-        $raw  = wp_remote_retrieve_body($response);
-        $data = json_decode($raw, true);
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
 
+		$code = wp_remote_retrieve_response_code( $response );
+		$raw  = wp_remote_retrieve_body( $response );
+		$data = json_decode( $raw, true );
 
-        if ($code >= 200 && $code < 300) {
-            return is_array($data) ? $data : [];
-        }
+		if ( $code >= 200 && $code < 300 ) {
+			return is_array( $data ) ? $data : array();
+		}
 
-        return new WP_Error(
-            'productbird_api_error',
-            sprintf(
-                /* Translators: %d is the HTTP status code. */
-                esc_html__('Productbird API request failed with status %d.', 'productbird'),
-                $code
-            ),
-            [
-                'status' => $code,
-                'body'   => $data ?? $raw,
-            ]
-        );
-    }
+		return new WP_Error(
+			'productbird_api_error',
+			sprintf(
+				/* Translators: %d is the HTTP status code. */
+				esc_html__( 'Productbird API request failed with status %d.', 'productbird' ),
+				$code
+			),
+			array(
+				'status' => $code,
+				'body'   => $data ?? $raw,
+			)
+		);
+	}
 
-    /**
-     * Decide which base URL should be used by default.
-     * @since 0.1.0
-     * @return string The determined base URL.
-     */
-    public static function determine_base_url(): string
-    {
-        return self::is_local_site() ? self::LOCAL_BASE_URL : self::PROD_BASE_URL;
-    }
-
-    /**
-     * Detects whether the site is running on a localhost-style domain.
-     * @since 0.1.0
-     * @return bool True if the site URL matches local patterns, false otherwise.
-     */
-    public static function is_local_site(): bool
-    {
-        $site_url = home_url();
-
-        return strpos($site_url, 'localhost') !== false
-            || strpos($site_url, '127.0.0.1') !== false
-            || strpos($site_url, '.local') !== false;
-    }
+	/**
+	 * Decide which base URL should be used by default.
+	 *
+	 * @since 0.1.0
+	 * @return string The determined base URL.
+	 */
+	public static function determine_base_url(): string {
+		return Utils::is_local_site() ? self::LOCAL_BASE_URL : self::PROD_BASE_URL;
+	}
 }

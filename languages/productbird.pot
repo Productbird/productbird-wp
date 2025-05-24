@@ -1,0 +1,615 @@
+# Copyright (C) 2025 Productbird
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Productbird 1.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/productbird\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-05-24T12:19:54+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: productbird\n"
+
+#. Plugin Name of the plugin
+#. Author of the plugin
+#: productbird.php
+#: src/Admin/Admin.php:75
+#: src/Admin/Admin.php:76
+#: src/Admin/MagicDescriptionsBulkAction.php:81
+msgid "Productbird"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: productbird.php
+msgid "https://productbird.ai"
+msgstr ""
+
+#. Description of the plugin
+#: productbird.php
+msgid "Productbird helps ecommerce owners get more done by providing various AI tools."
+msgstr ""
+
+#: src/Admin/MagicDescriptionsBulkAction.php:84
+msgid "Generate description with AI"
+msgstr ""
+
+#: src/Admin/NoDescriptionFilter.php:40
+msgid "Filter by description"
+msgstr ""
+
+#: src/Admin/NoDescriptionFilter.php:41
+msgid "No description"
+msgstr ""
+
+#: src/Admin/NoDescriptionFilter.php:42
+msgid "AI generated"
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:59
+msgid "Generate AI Description"
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:85
+msgid "Invalid request."
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:90
+msgid "Security check failed."
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:171
+msgid "Productbird API key is missing. Please configure it in the settings."
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:174
+msgid "Invalid product selected."
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:177
+msgid "Productbird API returned Unauthorized. Please check your API key."
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:180
+msgid "Insufficient credits available. Please purchase more credits to continue using Productbird."
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:183
+msgid "Failed to generate product description. Please try again."
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:186
+msgid "An unknown error occurred."
+msgstr ""
+
+#: src/Admin/ProductDescriptionRowAction.php:199
+msgid "Productbird has queued description generation. Status will update in the \"AI Desc.\" column."
+msgstr ""
+
+#: src/Admin/ProductGenerationStatusColumn.php:51
+msgid "AI Desc."
+msgstr ""
+
+#: src/Admin/ProductGenerationStatusColumn.php:78
+msgid "No AI description requested"
+msgstr ""
+
+#: src/Admin/ProductGenerationStatusColumn.php:80
+msgid "Description generated successfully"
+msgstr ""
+
+#: src/Admin/ProductGenerationStatusColumn.php:82
+msgid "Error generating description"
+msgstr ""
+
+#: src/Admin/ProductGenerationStatusColumn.php:84
+msgid "Description generation queued"
+msgstr ""
+
+#: src/Admin/ProductGenerationStatusColumn.php:87
+msgid "Description generation in progress"
+msgstr ""
+
+#. Translators: %d is the HTTP status code.
+#: src/Api/Client.php:176
+#: src/Api/Client.php:224
+#, php-format
+msgid "Productbird API request failed with status %d."
+msgstr ""
+
+#. translators: %s is the site name and %s is the site URL
+#: src/Auth/OidcClient.php:191
+#, php-format
+msgid "%s (%s)"
+msgstr ""
+
+#: src/Auth/OidcClient.php:494
+msgid "Failed to retrieve organization"
+msgstr ""
+
+#: src/Auth/OidcClient.php:499
+msgid "Not connected to Productbird"
+msgstr ""
+
+#: src/Plugin.php:67
+msgid "Productbird requires WooCommerce to be installed and active."
+msgstr ""
+
+#: src/Rest/RestUtils.php:73
+msgid "You do not have permission to use this endpoint."
+msgstr ""
+
+#. translators: %s: tool name, %d: max batch size
+#: src/Rest/RestUtils.php:96
+#, php-format
+msgid "You can only generate %s for up to %d products at a time."
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:284
+msgid "API key not configured"
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:363
+msgid "No valid products found to process."
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:443
+#: src/Rest/WebhookCallbackEndpoint.php:115
+msgid "Missing productId or description."
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:451
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:831
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:895
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:938
+#: src/Rest/WebhookCallbackEndpoint.php:120
+msgid "Product not found."
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:494
+#: src/Rest/WebhookCallbackEndpoint.php:154
+msgid "Empty description content."
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:562
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:982
+msgid "No product IDs provided."
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:847
+msgid "No description available to apply."
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:869
+msgid "Description applied successfully."
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:912
+msgid "Description declined."
+msgstr ""
+
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:955
+msgid "Description declined undone."
+msgstr ""
+
+#: src/Traits/ToolsConfig.php:36
+msgid "Magic Descriptions"
+msgstr ""
+
+#: src/Traits/ToolsConfig.php:37
+msgid "Generate product descriptions with AI"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:1209
+msgid "Connect with Productbird"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:1248
+msgid "Disconnect"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:1261
+msgid "Connected to Productbird"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:1283
+msgid "Unable to create connect URL. Please try again later."
+msgstr ""
+
+#. translators: %s is the user's display name or email
+#: assets/dist/js/index-BX2p8Kiu.js:7794
+#, js-format
+msgid "Hello %s 👋"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:7837
+msgid "Your current credit balance"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:7856
+msgid "You are not connected to Productbird. Please enter your API key to continue."
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:7902
+msgid "View activity"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:7926
+msgid "Get started"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:7976
+msgid "API Key"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:7988
+msgid "Your API key is used to authenticate your requests to the Productbird API."
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8063
+msgid "You can manage your API key in the Productbird dashboard."
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8065
+msgid "Manage API key"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8109
+msgid "Webhook Secret"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8121
+msgid "Your webhook secret is used to verify webhook requests from Productbird."
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8196
+msgid "You can manage your webhook secret in the Productbird dashboard."
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8198
+msgid "Manage webhook secret"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8253
+msgid "Beta"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8259
+msgid "Connection Status"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8272
+msgid "Your connected Productbird account"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8397
+msgid "You can manage your organization in the Productbird dashboard."
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8398
+msgid "Manage organization"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8466
+msgid "Advanced Settings"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8479
+msgid "Advanced settings and troubleshooting options"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8506
+msgid "Are you sure you want to clear all Productbird meta data? This cannot be undone."
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8516
+msgid "Clearing..."
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8516
+msgid "Clear Product Meta"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8529
+msgid "Troubleshooting"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8530
+msgid "If you're experiencing issues with product descriptions, you can clear all Productbird meta data from your products."
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8592
+msgid "Global Settings"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8604
+msgid "These global settings will be used for all your tools."
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8642
+msgid "Tone"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8718
+msgid "Select the tone of the generated content."
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8754
+msgid "Formality"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8830
+msgid "Select the formality of the generated content."
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:8867
+msgid "Onboarding"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:13085
+#, js-format
+msgid "There is %s error in the form"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:13092
+#, js-format
+msgid "There are %s errors in the form"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:13199
+msgid "Settings saved"
+msgstr ""
+
+#. translators: %s is "..." to indicate that something is in progress
+#: assets/dist/js/index-BX2p8Kiu.js:13275
+#, js-format
+msgid "Saving %s"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:13277
+msgid "Save settings"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:4774
+msgid "Unfortunately regenerate is not available yet. Please try again later."
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:4850
+msgid "Generate AI product descriptions"
+msgstr ""
+
+#. translators: %s is the number of products and %s is the tool name
+#: assets/dist/js/index-DMGziD-B.js:4865
+#, js-format
+msgid "You're about to generate descriptions for %s products using %s."
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:4898
+msgid "Choose how you’d like to proceed:"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:4925
+msgid "Manual Review"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:4926
+msgid "Carefully review each generated description before applying it."
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:4954
+msgid "YOLO Mode"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:4955
+msgid "Skip the review process. All descriptions will be applied automatically."
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:4998
+msgid "accepted"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5013
+msgid "declined"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5025
+msgid "These products already have AI descriptions."
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5026
+msgid "You can choose to regenerate them or skip them."
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5050
+msgid "Search by name or ID..."
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5080
+msgid "Check all"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5100
+msgid "Uncheck all"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5145
+msgid "= Regenerate description"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5146
+msgid "= Skip this product"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5162
+msgid "No products match your search."
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5233
+msgid "will be skipped"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5242
+msgid "products will be regenerated"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5277
+msgid "Cancel"
+msgstr ""
+
+#. translators: %s is "..." to indicate that something is in progress
+#: assets/dist/js/index-DMGziD-B.js:5294
+#, js-format
+msgid "Starting %s"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5296
+msgid "Start Generation"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5326
+msgid "Review descriptions"
+msgstr ""
+
+#. translators: %s is the number of accepted items and %s is the total number of items
+#: assets/dist/js/index-DMGziD-B.js:5351
+#, js-format
+msgid "%s of %s accepted"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5366
+msgid "Progress"
+msgstr ""
+
+#. translators: %s is the number of items remaining
+#: assets/dist/js/index-DMGziD-B.js:5394
+#, js-format
+msgid "%s descriptions still being generated..."
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5405
+msgid "Take a final look at the generated content before applying it to your products."
+msgstr ""
+
+#. translators: %s is the number of items remaining
+#: assets/dist/js/index-DMGziD-B.js:5450
+#, js-format
+msgid "%s items remaining"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5466
+msgid "Generating descriptions..."
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5467
+msgid "Please wait a moment while our AI works its magic. You’re free to close this window and continue with other tasks. Your progress will be saved."
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5500
+msgid "Item"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5501
+msgid "of"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5524
+msgid "Previous"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5544
+msgid "Next"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5560
+#: assets/dist/js/index-DMGziD-B.js:6042
+msgid "Accepted"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5577
+#: assets/dist/js/index-DMGziD-B.js:6043
+msgid "Declined"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5593
+msgid "Ready for review"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5662
+msgid "Preview"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5674
+msgid "Compare"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5693
+msgid "Current Description"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5696
+#: assets/dist/js/index-DMGziD-B.js:5709
+msgid "Generated Description"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5721
+msgid "Product ID"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5770
+msgid "Close"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5795
+msgid "Regenerate"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5813
+msgid "Undo Decline"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5834
+msgid "Decline"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5863
+msgid "Accepted ✓"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5863
+msgid "Accept & Apply"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5891
+msgid "Accept All"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5912
+msgid "Decline All"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5954
+msgid "All descriptions processed"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:5967
+msgid "Here’s a quick summary of what’s been applied."
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:6003
+msgid "Your product catalog is looking better than ever."
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:6010
+msgid "Thanks for using Productbird."
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:6041
+msgid "You're all set!"
+msgstr ""
+
+#: assets/dist/js/index-DMGziD-B.js:6064
+msgid "Continue"
+msgstr ""

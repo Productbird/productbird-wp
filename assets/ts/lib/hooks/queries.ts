@@ -5,6 +5,12 @@ import {
 	rawRequest,
 	clearProductMeta,
 } from "$lib/utils/api";
+import type {
+	MagicDescriptionsBulkWpJsonResponse,
+	MagicDescriptionsStatusCheckWpJsonResponse,
+	MagicDescriptionsPreflightWpJsonResponse,
+	ProductId,
+} from "$lib/utils/types";
 import { createQuery, createMutation } from "@tanstack/svelte-query";
 import { toast } from "svelte-sonner";
 
@@ -23,15 +29,14 @@ export function useGetSettings() {
 	}));
 }
 
-// Generate product descriptions in bulk
-export function useGenerateProductDescriptionsBulk() {
+export function useGenerateMagicDescriptionsBulk() {
 	return createMutation(() => ({
 		mutationFn: async ({
 			productIds,
 			mode,
 		}: { productIds: number[]; mode: "auto-apply" | "review" }) => {
-			return await rawRequest(
-				"productbird/v1/generate-product-description/bulk",
+			return await rawRequest<MagicDescriptionsBulkWpJsonResponse>(
+				"productbird/v1/magic-descriptions/bulk",
 				{
 					method: "POST",
 					body: { productIds, mode },
@@ -45,18 +50,25 @@ export function useGenerateProductDescriptionsBulk() {
 }
 
 // Poll for completed descriptions
-export function useGetCompletedDescriptions(productIds: number[]) {
-	return createQuery(() => ({
-		queryKey: ["completed-descriptions", productIds],
+export function usePollMagicDescriptionStatus(
+	productIds: number[],
+	enabled: boolean,
+) {
+	return createQuery<MagicDescriptionsStatusCheckWpJsonResponse>(() => ({
+		queryKey: ["magic-descriptions-status", productIds],
 		queryFn: async () => {
-			if (!productIds.length) return { completed: [], remaining: 0 };
+			if (!productIds.length)
+				return { completed_items: [], remaining_count: 0 };
 
-			return await rawRequest(
-				`productbird/v1/description-completed?productIds=${productIds.join(",")}`,
+			// Ensure product IDs are properly formatted
+			const formattedIds = productIds.map((id) => String(id));
+
+			return await rawRequest<MagicDescriptionsStatusCheckWpJsonResponse>(
+				`productbird/v1/magic-descriptions/status?product_ids=${formattedIds.join(",")}`,
 			);
 		},
-		refetchInterval: 5000, // Poll every 5 seconds
-		enabled: productIds.length > 0,
+		refetchInterval: enabled ? 5000 : false, // Poll every 5 seconds when enabled
+		enabled,
 	}));
 }
 
@@ -82,10 +94,37 @@ export function useApplyProductDescription() {
 			productId,
 			description,
 		}: { productId: number; description: string }) => {
-			return await rawRequest("productbird/v1/apply-product-description", {
+			return await rawRequest("productbird/v1/magic-descriptions/apply", {
 				method: "POST",
 				body: { productId, description },
 			});
+		},
+	}));
+}
+
+// Decline a generated description for a product
+export function useDeclineProductDescription() {
+	return createMutation(() => ({
+		mutationFn: async ({ productId }: { productId: number }) => {
+			return await rawRequest("productbird/v1/magic-descriptions/decline", {
+				method: "POST",
+				body: { productId },
+			});
+		},
+	}));
+}
+
+// Undo decline for a generated description
+export function useUndoDeclineProductDescription() {
+	return createMutation(() => ({
+		mutationFn: async ({ productId }: { productId: number }) => {
+			return await rawRequest(
+				"productbird/v1/magic-descriptions/undo-decline",
+				{
+					method: "POST",
+					body: { productId },
+				},
+			);
 		},
 	}));
 }
@@ -99,5 +138,25 @@ export function useClearProductMeta() {
 		onSuccess: (data) => {
 			toast.success(`${data.cleared} meta fields cleared`);
 		},
+	}));
+}
+
+// Pre-flight status for selected products before generation starts
+export function usePreflightMagicDescriptions(
+	productIds: number[],
+	enabled = true,
+) {
+	return createQuery<MagicDescriptionsPreflightWpJsonResponse>(() => ({
+		queryKey: ["magic-descriptions-preflight", productIds],
+		queryFn: async () => {
+			if (!productIds.length) return { items: [] };
+
+			const formatted = productIds.map((id) => String(id));
+			return await rawRequest<MagicDescriptionsPreflightWpJsonResponse>(
+				`productbird/v1/magic-descriptions/preflight?product_ids=${formatted.join(",")}`,
+			);
+		},
+		enabled,
+		staleTime: 0,
 	}));
 }

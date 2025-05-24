@@ -3,10 +3,10 @@
  * Plugin Name: Productbird
  * Plugin URI:  https://productbird.ai
  * Description: Productbird helps ecommerce owners get more done by providing various AI tools.
- * Version:     0.6.0
+ * Version:     1.1.0
  * Requires at least: 5.0
  * Tested up to: 6.8
- * Requires PHP: 7.4
+ * Requires PHP: 8.2
  * Author:      Productbird
  * License:     GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,23 +18,23 @@
  */
 
 // Exit if accessed directly.
-if (!defined('ABSPATH')) {
-    exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
-define('PRODUCTBIRD_VERSION', '0.6.0');
-define('PRODUCTBIRD_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define( 'PRODUCTBIRD_VERSION', '1.1.0' );
+define( 'PRODUCTBIRD_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
 // Require Composer autoloader.
 $autoloader = __DIR__ . '/vendor/autoload.php';
 
-if (file_exists($autoloader)) {
-    /** @psalm-suppress UnresolvableInclude */
-    require_once $autoloader;
+if ( file_exists( $autoloader ) ) {
+	/** @psalm-suppress UnresolvableInclude */
+	require_once $autoloader;
 } else {
-    wp_die(
-        esc_html__('You must run `composer install` from the Productbird plugin directory before activating the plugin.', 'productbird')
-    );
+	wp_die(
+		esc_html__( 'You must run `composer install` from the Productbird plugin directory before activating the plugin.', 'productbird' )
+	);
 }
 
 use Productbird\Plugin;
@@ -45,20 +45,22 @@ use Productbird\Plugin;
  * @since 0.1.0
  * @return Plugin
  */
-function productbird(): Plugin
-{
-    static $instance = null;
+function productbird(): Plugin {
+	static $instance = null;
 
-    if ($instance === null) {
-        $instance = new Plugin();
-    }
+	if ( $instance === null ) {
+		$instance = new Plugin();
+	}
 
-    return $instance;
+	return $instance;
 }
 
-add_action('plugins_loaded', static function () {
-    productbird()->init();
-});
+add_action(
+	'plugins_loaded',
+	static function () {
+		productbird()->init();
+	}
+);
 
-register_activation_hook(__FILE__, [productbird(), 'activate']);
-register_deactivation_hook(__FILE__, [productbird(), 'deactivate']);
+register_activation_hook( __FILE__, array( productbird(), 'activate' ) );
+register_deactivation_hook( __FILE__, array( productbird(), 'deactivate' ) );

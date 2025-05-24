@@ -16,89 +16,93 @@ use WP_Error;
  * @package Productbird\Rest
  * @since 0.1.0
  */
-class ClearProductMetaEndpoint
-{
-    /**
-     * Meta key prefix for Productbird.
-     */
-    private const META_PREFIX = '_productbird_';
+class ClearProductMetaEndpoint {
 
-    /**
-     * Register hooks.
-     *
-     * @since 0.1.0
-     * @return void
-     */
-    public function init(): void
-    {
-        add_action('rest_api_init', [$this, 'register_routes']);
-    }
+	/**
+	 * Meta key prefix for Productbird.
+	 */
+	private const META_PREFIX = '_productbird_';
 
-    /**
-     * Registers the REST route.
-     *
-     * @since 0.1.0
-     * @return void
-     */
-    public function register_routes(): void
-    {
-        register_rest_route('productbird/v1', '/clear-product-meta', [
-            'methods'             => WP_REST_Server::CREATABLE, // POST
-            'callback'            => [$this, 'handle_clear'],
-            'permission_callback' => [$this, 'check_permission'],
-        ]);
-    }
+	/**
+	 * Register hooks.
+	 *
+	 * @since 0.1.0
+	 * @return void
+	 */
+	public function init(): void {
+		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
+	}
 
-    /**
-     * Checks if the current user has permission to clear meta.
-     *
-     * @since 0.1.0
-     * @return bool|WP_Error
-     */
-    public function check_permission()
-    {
-        return current_user_can('manage_woocommerce');
-    }
+	/**
+	 * Registers the REST route.
+	 *
+	 * @since 0.1.0
+	 * @return void
+	 */
+	public function register_routes(): void {
+		register_rest_route(
+			'productbird/v1',
+			'/clear-product-meta',
+			array(
+				'methods'             => WP_REST_Server::CREATABLE, // POST
+				'callback'            => array( $this, 'handle_clear' ),
+				'permission_callback' => array( $this, 'check_permission' ),
+			)
+		);
+	}
 
-    /**
-     * Handles clearing the meta.
-     *
-     * @since 0.1.0
-     * @param WP_REST_Request $request Request object.
-     * @return WP_REST_Response|WP_Error
-     */
-    public function handle_clear(WP_REST_Request $request)
-    {
-        global $wpdb;
+	/**
+	 * Checks if the current user has permission to clear meta.
+	 *
+	 * @since 0.1.0
+	 * @return bool|WP_Error
+	 */
+	public function check_permission() {
+		return current_user_can( 'manage_woocommerce' );
+	}
 
-        // Get all product IDs
-        $product_ids = $wpdb->get_col(
-            $wpdb->prepare(
-                "SELECT ID FROM {$wpdb->posts} WHERE post_type = %s",
-                'product'
-            )
-        );
+	/**
+	 * Handles clearing the meta.
+	 *
+	 * @since 0.1.0
+	 * @param WP_REST_Request $request Request object.
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function handle_clear( WP_REST_Request $request ) {
+		global $wpdb;
 
-        if (empty($product_ids)) {
-            return new WP_REST_Response([
-                'success' => true,
-                'cleared' => 0,
-            ]);
-        }
+		// Get all product IDs
+		$product_ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT ID FROM {$wpdb->posts} WHERE post_type = %s",
+				'product'
+			)
+		);
 
-        // Delete all meta keys with our prefix in one query
-        $cleared = $wpdb->query(
-            $wpdb->prepare(
-                "DELETE FROM {$wpdb->postmeta}
-                WHERE post_id IN (" . implode(',', array_fill(0, count($product_ids), '%d')) . ")
-                AND meta_key LIKE %s",
-                array_merge($product_ids, [self::META_PREFIX . '%'])
-            )
-        );
+		if ( empty( $product_ids ) ) {
+			return new WP_REST_Response(
+				array(
+					'success' => true,
+					'cleared' => 0,
+				)
+			);
+		}
 
-        return new WP_REST_Response([
-            'success' => true,
-            'cleared' => (int) $cleared,
-        ]);
-    }
+		// Delete all meta keys with our prefix in one query
+		$cleared = $wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->postmeta}
+                WHERE post_id IN (" . implode( ',', array_fill( 0, count( $product_ids ), '%d' ) ) . ')
+                AND meta_key LIKE %s',
+				array_merge( $product_ids, array( self::META_PREFIX . '%' ) )
+			)
+		);
+
+		return new WP_REST_Response(
+			array(
+				'success' => true,
+				'cleared' => (int) $cleared,
+			)
+		);
+	}
 }

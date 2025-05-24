@@ -1,9 +1,16 @@
 import { fontFamily } from "tailwindcss/defaultTheme";
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
+import typographyPlugin from "@tailwindcss/typography";
+import {
+	scopedPreflightStyles,
+	isolateInsideOfContainer,
+} from "tailwindcss-scoped-preflight";
 
 const config: Config = {
 	darkMode: ["class"],
+	// Add prefix to all utility classes to avoid conflicts
+	// prefix: "tw-", // Uncomment this line if you want to use prefixed classes instead of scoped CSS
 	content: [
 		"./src/**/*.{html,js,svelte,ts}",
 		"./assets/**/*.{html,js,svelte,ts}",
@@ -93,7 +100,19 @@ const config: Config = {
 			},
 		},
 	},
-	plugins: [tailwindcssAnimate],
+	plugins: [
+		tailwindcssAnimate,
+		typographyPlugin,
+		// scopedPreflightStyles({
+		// 	isolationStrategy: isolateInsideOfContainer(
+		// 		"[data-productbird-app=true]",
+		// 		{
+		// 			ignore: ["html", ":host", "*"],
+		// 			rootStyles: "move to container",
+		// 		},
+		// 	),
+		// }),
+	],
 };
 
 export default config;

@@ -7,67 +7,69 @@ namespace Productbird;
  *
  * Flags can be modified by hooking into the `productbird_feature_flags` filter or by
  * defining a `PRODUCTBIRD_<FLAG>_ENABLED` constant (boolean).
+ *
  * @since 0.1.0
  */
-class FeatureFlags
-{
-    /**
-     * Default feature matrix.  Extend as required.
-     * @since 0.1.0
-     */
-    private const DEFAULT_FLAGS = [
-        // OpenID-Connect
-        'oidc' => false,
+class FeatureFlags {
 
-        // Product description bulk modal
-        'product_description_bulk_modal' => false,
-    ];
+	/**
+	 * Default feature matrix.  Extend as required.
+	 *
+	 * @since 0.1.0
+	 */
+	private const DEFAULT_FLAGS = array(
+		// OpenID-Connect
+		'oidc'                           => false,
 
-    /**
-     * Check whether a feature is enabled.
-     * @since 0.1.0
-     */
-    public static function is_enabled(string $flag): bool
-    {
-        // Honour a constant override first (e.g. define( 'PRODUCTBIRD_OIDC_ENABLED', false ); )
-        $const_name = 'PRODUCTBIRD_' . strtoupper($flag) . '_ENABLED';
-        if (defined($const_name)) {
-            return (bool) constant($const_name);
-        }
+		// Product description bulk modal
+		'product_description_bulk_modal' => true,
+	);
 
-        // Allow external code to filter feature flags.
-        $filtered = apply_filters('productbird_feature_flags', []);
+	/**
+	 * Check whether a feature is enabled.
+	 *
+	 * @since 0.1.0
+	 */
+	public static function is_enabled( string $flag ): bool {
+		// Honour a constant override first (e.g. define( 'PRODUCTBIRD_OIDC_ENABLED', false ); )
+		$const_name = 'PRODUCTBIRD_' . strtoupper( $flag ) . '_ENABLED';
+		if ( defined( $const_name ) ) {
+			return (bool) constant( $const_name );
+		}
 
-        if (isset($filtered[$flag])) {
-            return (bool) $filtered[$flag];
-        }
+		// Allow external code to filter feature flags.
+		$filtered = apply_filters( 'productbird_feature_flags', array() );
 
-        return self::DEFAULT_FLAGS[$flag] ?? false;
-    }
+		if ( isset( $filtered[ $flag ] ) ) {
+			return (bool) $filtered[ $flag ];
+		}
 
-    /**
-     * Return the complete flag map after applying filters / constant overrides.
-     * @since 0.1.0
-     */
-    public static function get_all(): array
-    {
-        $flags = self::DEFAULT_FLAGS;
+		return self::DEFAULT_FLAGS[ $flag ] ?? false;
+	}
 
-        // Constant overrides.
-        foreach (array_keys($flags) as $flag) {
-            $const_name = 'PRODUCTBIRD_' . strtoupper($flag) . '_ENABLED';
-            if (defined($const_name)) {
-                $flags[$flag] = (bool) constant($const_name);
-            }
-        }
+	/**
+	 * Return the complete flag map after applying filters / constant overrides.
+	 *
+	 * @since 0.1.0
+	 */
+	public static function get_all(): array {
+		$flags = self::DEFAULT_FLAGS;
 
-        // Filter overrides.
-        $filtered = apply_filters('productbird_feature_flags', []);
+		// Constant overrides.
+		foreach ( array_keys( $flags ) as $flag ) {
+			$const_name = 'PRODUCTBIRD_' . strtoupper( $flag ) . '_ENABLED';
+			if ( defined( $const_name ) ) {
+				$flags[ $flag ] = (bool) constant( $const_name );
+			}
+		}
 
-        if (is_array($filtered)) {
-            $flags = array_merge($flags, $filtered);
-        }
+		// Filter overrides.
+		$filtered = apply_filters( 'productbird_feature_flags', array() );
 
-        return $flags;
-    }
+		if ( is_array( $filtered ) ) {
+			$flags = array_merge( $flags, $filtered );
+		}
+
+		return $flags;
+	}
 }

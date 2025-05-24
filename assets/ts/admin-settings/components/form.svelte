@@ -131,9 +131,9 @@
 
       <Alert.Title>
         {#if errorCount === 1}
-          {sprintf(__("Er is %s fout in het formulier", "ma"), errorCount)}
+          {sprintf(__("There is %s error in the form", "productbird"), errorCount)}
         {:else}
-          {sprintf(__("Er zijn %s fouten in het formulier", "ma"), errorCount)}
+          {sprintf(__("There are %s errors in the form", "productbird"), errorCount)}
         {/if}
       </Alert.Title>
 
@@ -152,7 +152,7 @@
   {#if errorMessage}
     <Alert.Root variant="destructive" class="mt-4">
       <ExclamationTriangle class="h-4 w-4" />
-      <Alert.Title>{__("Er is een fout opgetreden", "ma")}</Alert.Title>
+      <Alert.Title>{__("An error occurred", "productbird")}</Alert.Title>
       <Alert.Description>{errorMessage}</Alert.Description>
     </Alert.Root>
   {/if}
@@ -180,7 +180,13 @@
   <!-- Navigation buttons -->
   <div class="flex pt-4">
     <Form.Button variant="black" disabled={$submitting || isProcessing}>
-      {$submitting || isProcessing ? __("Saving...", "productbird") : __("Save settings", "productbird")}
+      {$submitting || isProcessing
+        ? sprintf(
+            // translators: %s is "..." to indicate that something is in progress
+            __("Saving %s", "productbird"),
+            "..."
+          )
+        : __("Save settings", "productbird")}
     </Form.Button>
   </div>
 </form>

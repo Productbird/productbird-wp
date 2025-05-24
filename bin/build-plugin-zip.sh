@@ -81,7 +81,7 @@ if [ $TYPE = 'DEV' ]; then
 	status "==========================="
 	status "Generating development build... (v${VERSION}) 👷‍♀️"
 	status "==========================="
-	pnpm build
+	pnpm build:dev
 	status "==========================="
 elif [ $TYPE = 'ZIP_ONLY' ]; then
 	composer install --no-dev
