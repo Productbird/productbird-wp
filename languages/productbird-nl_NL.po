@@ -1,0 +1,440 @@
+# Copyright (C) 2025 Productbird
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Productbird 0.6.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/productbird\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: nl_NL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-05-24T08:24:09+00:00\n"
+"PO-Revision-Date: 2024-03-19 12:00+0100\n"
+"X-Generator: WP-CLI 2.11.0\n"
+"X-Domain: productbird\n"
+
+#. Plugin Name of the plugin
+#. Author of the plugin
+msgid "Productbird"
+msgstr "Productbird"
+
+#. Plugin URI of the plugin
+msgid "https://productbird.ai"
+msgstr "https://productbird.ai"
+
+#. Description of the plugin
+msgid "Productbird helps ecommerce owners get more done by providing various AI tools."
+msgstr "Productbird helpt webshopeigenaren meer gedaan te krijgen door verschillende AI-tools aan te bieden."
+
+msgid "Generate description with AI"
+msgstr "Beschrijving genereren met AI"
+
+msgid "Filter by description"
+msgstr "Filteren op beschrijving"
+
+msgid "No description"
+msgstr "Geen beschrijving"
+
+msgid "AI generated"
+msgstr "AI gegenereerd"
+
+msgid "Generate AI Description"
+msgstr "AI-beschrijving genereren"
+
+msgid "Invalid request."
+msgstr "Ongeldige aanvraag."
+
+msgid "Security check failed."
+msgstr "Beveiligingscontrole mislukt."
+
+msgid "Productbird API key is missing. Please configure it in the settings."
+msgstr "Productbird API-sleutel ontbreekt. Configureer deze in de instellingen."
+
+msgid "Invalid product selected."
+msgstr "Ongeldig product geselecteerd."
+
+msgid "Productbird API returned Unauthorized. Please check your API key."
+msgstr "Productbird API gaf Ongeautoriseerd terug. Controleer je API-sleutel."
+
+msgid "Insufficient credits available. Please purchase more credits to continue using Productbird."
+msgstr "Onvoldoende credits beschikbaar. Koop meer credits om Productbird te blijven gebruiken."
+
+msgid "Failed to generate product description. Please try again."
+msgstr "Genereren van productbeschrijving mislukt. Probeer het opnieuw."
+
+msgid "An unknown error occurred."
+msgstr "Er is een onbekende fout opgetreden."
+
+msgid "Productbird has queued description generation. Status will update in the \"AI Desc.\" column."
+msgstr "Productbird heeft de beschrijvingsgeneratie in de wachtrij gezet. De status wordt bijgewerkt in de \"AI Desc.\" kolom."
+
+msgid "AI Desc."
+msgstr "AI Desc."
+
+msgid "No AI description requested"
+msgstr "Geen AI-beschrijving aangevraagd"
+
+msgid "Description generated successfully"
+msgstr "Beschrijving succesvol gegenereerd"
+
+msgid "Error generating description"
+msgstr "Fout bij genereren beschrijving"
+
+msgid "Description generation queued"
+msgstr "Beschrijvingsgeneratie in wachtrij"
+
+msgid "Description generation in progress"
+msgstr "Beschrijvingsgeneratie in uitvoering"
+
+msgid "Productbird API request failed with status %d."
+msgstr "Productbird API-verzoek mislukt met status %d."
+
+msgid "%s (%s)"
+msgstr "%s (%s)"
+
+msgid "Failed to retrieve organization"
+msgstr "Ophalen van organisatie mislukt"
+
+msgid "Not connected to Productbird"
+msgstr "Niet verbonden met Productbird"
+
+msgid "Productbird requires WooCommerce to be installed and active."
+msgstr "Productbird vereist dat WooCommerce is geïnstalleerd en actief is."
+
+msgid "You do not have permission to use this endpoint."
+msgstr "Je hebt geen toestemming om dit eindpunt te gebruiken."
+
+msgid "You can only generate %s for up to %d products at a time."
+msgstr "Je kunt alleen %s genereren voor maximaal %d producten tegelijk."
+
+msgid "API key not configured"
+msgstr "API-sleutel niet geconfigureerd"
+
+msgid "No valid products found to process."
+msgstr "Geen geldige producten gevonden om te verwerken."
+
+msgid "Missing productId or description."
+msgstr "ProductId of beschrijving ontbreekt."
+
+msgid "Product not found."
+msgstr "Product niet gevonden."
+
+msgid "Empty description content."
+msgstr "Lege beschrijvingsinhoud."
+
+msgid "No product IDs provided."
+msgstr "Geen product-ID's opgegeven."
+
+msgid "No description available to apply."
+msgstr "Geen beschrijving beschikbaar om toe te passen."
+
+msgid "Description applied successfully."
+msgstr "Beschrijving succesvol toegepast."
+
+msgid "Description declined."
+msgstr "Beschrijving afgewezen."
+
+msgid "Description declined undone."
+msgstr "Afwijzen van beschrijving ongedaan gemaakt."
+
+msgid "Magic Descriptions"
+msgstr "Magic Descriptions"
+
+msgid "Generate product descriptions with AI"
+msgstr "Genereer productbeschrijvingen met AI"
+
+msgid "Connect with Productbird"
+msgstr "Verbinden met Productbird"
+
+msgid "Disconnect"
+msgstr "Verbinding verbreken"
+
+msgid "Connected to Productbird"
+msgstr "Verbonden met Productbird"
+
+msgid "Unable to create connect URL. Please try again later."
+msgstr "Kan verbindings-URL niet maken. Probeer het later opnieuw."
+
+msgid "Hello %s 👋"
+msgstr "Hallo %s 👋"
+
+msgid "Your current credit balance"
+msgstr "Je huidige creditbalans"
+
+msgid "You are not connected to Productbird. Please enter your API key to continue."
+msgstr "Je bent niet verbonden met Productbird. Voer je API-sleutel in om door te gaan."
+
+msgid "View activity"
+msgstr "Activiteit bekijken"
+
+msgid "Get started"
+msgstr "Aan de slag"
+
+msgid "API Key"
+msgstr "API Key"
+
+msgid "Your API key is used to authenticate your requests to the Productbird API."
+msgstr "Je API-sleutel wordt gebruikt om je verzoeken aan de Productbird API te authenticeren."
+
+msgid "You can manage your API key in the Productbird dashboard."
+msgstr "Je kunt je API-sleutel beheren in het Productbird dashboard."
+
+msgid "Manage API key"
+msgstr "API-sleutel beheren"
+
+msgid "Webhook Secret"
+msgstr "Webhook Secret"
+
+msgid "Your webhook secret is used to verify webhook requests from Productbird."
+msgstr "Je webhook secret wordt gebruikt om webhook-verzoeken van Productbird te verifiëren."
+
+msgid "You can manage your webhook secret in the Productbird dashboard."
+msgstr "Je kunt je webhook secret beheren in het Productbird dashboard."
+
+msgid "Manage webhook secret"
+msgstr "Webhook secret beheren"
+
+msgid "Beta"
+msgstr "Beta"
+
+msgid "Connection Status"
+msgstr "Verbindingsstatus"
+
+msgid "Your connected Productbird account"
+msgstr "Je verbonden Productbird account"
+
+msgid "You can manage your organization in the Productbird dashboard."
+msgstr "Je kunt je organisatie beheren in het Productbird dashboard."
+
+msgid "Manage organization"
+msgstr "Organisatie beheren"
+
+msgid "Advanced Settings"
+msgstr "Geavanceerde instellingen"
+
+msgid "Advanced settings and troubleshooting options"
+msgstr "Geavanceerde instellingen en probleemoplossingsopties"
+
+msgid "Are you sure you want to clear all Productbird meta data? This cannot be undone."
+msgstr "Weet je zeker dat je alle Productbird meta-data wilt wissen? Dit kan niet ongedaan worden gemaakt."
+
+msgid "Clearing..."
+msgstr "Wissen..."
+
+msgid "Clear Product Meta"
+msgstr "Product Meta wissen"
+
+msgid "Troubleshooting"
+msgstr "Probleemoplossing"
+
+msgid "If you're experiencing issues with product descriptions, you can clear all Productbird meta data from your products."
+msgstr "Als je problemen ondervindt met productbeschrijvingen, kun je alle Productbird meta-data van je producten wissen."
+
+msgid "Global Settings"
+msgstr "Globale instellingen"
+
+msgid "These global settings will be used for all your tools."
+msgstr "Deze globale instellingen worden gebruikt voor al je tools."
+
+msgid "Tone"
+msgstr "Toon"
+
+msgid "Select the tone of the generated content."
+msgstr "Selecteer de toon van de gegenereerde inhoud."
+
+msgid "Formality"
+msgstr "Formaliteit"
+
+msgid "Select the formality of the generated content."
+msgstr "Selecteer de formaliteit van de gegenereerde inhoud."
+
+msgid "Onboarding"
+msgstr "Onboarding"
+
+msgid "There is %s error in the form"
+msgstr "Er is %s fout in het formulier"
+
+msgid "There are %s errors in the form"
+msgstr "Er zijn %s fouten in het formulier"
+
+msgid "Settings saved"
+msgstr "Instellingen opgeslagen"
+
+msgid "Saving %s"
+msgstr "Opslaan %s"
+
+msgid "Save settings"
+msgstr "Instellingen opslaan"
+
+msgid "Unfortunately regenerate is not available yet. Please try again later."
+msgstr "Helaas is opnieuw genereren nog niet beschikbaar. Probeer het later opnieuw."
+
+msgid "Generate AI product descriptions"
+msgstr "AI-productbeschrijvingen genereren"
+
+msgid "You're about to generate descriptions for %s products using %s."
+msgstr "Je staat op het punt om beschrijvingen te genereren voor %s producten met %s."
+
+msgid "Choose how you'd like to proceed:"
+msgstr "Kies hoe je wilt doorgaan:"
+
+msgid "Manual Review"
+msgstr "Handmatige controle"
+
+msgid "Carefully review each generated description before applying it."
+msgstr "Controleer elke gegenereerde beschrijving zorgvuldig voordat je deze toepast."
+
+msgid "YOLO Mode"
+msgstr "YOLO-modus"
+
+msgid "Skip the review process. All descriptions will be applied automatically."
+msgstr "Sla het controleproces over. Alle beschrijvingen worden automatisch toegepast."
+
+msgid "accepted"
+msgstr "geaccepteerd"
+
+msgid "declined"
+msgstr "afgewezen"
+
+msgid "These products already have AI descriptions."
+msgstr "Deze producten hebben al AI-beschrijvingen."
+
+msgid "You can choose to regenerate them or skip them."
+msgstr "Je kunt ervoor kiezen om ze opnieuw te genereren of over te slaan."
+
+msgid "Search by name or ID..."
+msgstr "Zoeken op naam of ID..."
+
+msgid "Check all"
+msgstr "Alles selecteren"
+
+msgid "Uncheck all"
+msgstr "Alles deselecteren"
+
+msgid "= Regenerate description"
+msgstr "= Beschrijving opnieuw genereren"
+
+msgid "= Skip this product"
+msgstr "= Dit product overslaan"
+
+msgid "No products match your search."
+msgstr "Geen producten gevonden die overeenkomen met je zoekopdracht."
+
+msgid "will be skipped"
+msgstr "wordt overgeslagen"
+
+msgid "products will be regenerated"
+msgstr "producten worden opnieuw gegenereerd"
+
+msgid "Cancel"
+msgstr "Annuleren"
+
+msgid "Starting %s"
+msgstr "Starten %s"
+
+msgid "Start Generation"
+msgstr "Generatie starten"
+
+msgid "Review descriptions"
+msgstr "Beschrijvingen controleren"
+
+msgid "%s of %s accepted"
+msgstr "%s van %s geaccepteerd"
+
+msgid "Progress"
+msgstr "Voortgang"
+
+msgid "%s descriptions still being generated..."
+msgstr "%s beschrijvingen worden nog gegenereerd..."
+
+msgid "Take a final look at the generated content before applying it to your products."
+msgstr "Bekijk de gegenereerde inhoud een laatste keer voordat je deze toepast op je producten."
+
+msgid "%s items remaining"
+msgstr "%s items resterend"
+
+msgid "Generating descriptions..."
+msgstr "Beschrijvingen genereren..."
+
+msgid "Please wait a moment while our AI works its magic. You're free to close this window and continue with other tasks. Your progress will be saved."
+msgstr "Even geduld terwijl onze AI zijn magie doet. Je kunt dit venster sluiten en doorgaan met andere taken. Je voortgang wordt opgeslagen."
+
+msgid "Item"
+msgstr "Item"
+
+msgid "of"
+msgstr "van"
+
+msgid "Previous"
+msgstr "Vorige"
+
+msgid "Next"
+msgstr "Volgende"
+
+msgid "Accepted"
+msgstr "Geaccepteerd"
+
+msgid "Declined"
+msgstr "Afgewezen"
+
+msgid "Ready for review"
+msgstr "Klaar voor controle"
+
+msgid "Preview"
+msgstr "Voorbeeld"
+
+msgid "Compare"
+msgstr "Vergelijken"
+
+msgid "Current Description"
+msgstr "Huidige beschrijving"
+
+msgid "Generated Description"
+msgstr "Gegenereerde beschrijving"
+
+msgid "Product ID"
+msgstr "Product ID"
+
+msgid "Close"
+msgstr "Sluiten"
+
+msgid "Regenerate"
+msgstr "Opnieuw genereren"
+
+msgid "Undo Decline"
+msgstr "Afwijzen ongedaan maken"
+
+msgid "Decline"
+msgstr "Afwijzen"
+
+msgid "Accepted ✓"
+msgstr "Geaccepteerd ✓"
+
+msgid "Accept & Apply"
+msgstr "Accepteren & Toepassen"
+
+msgid "Accept All"
+msgstr "Alles accepteren"
+
+msgid "Decline All"
+msgstr "Alles afwijzen"
+
+msgid "All descriptions processed"
+msgstr "Alle beschrijvingen verwerkt"
+
+msgid "Here's a quick summary of what's been applied."
+msgstr "Hier is een korte samenvatting van wat is toegepast."
+
+msgid "Your product catalog is looking better than ever."
+msgstr "Je productcatalogus ziet er beter uit dan ooit."
+
+msgid "Thanks for using Productbird."
+msgstr "Bedankt voor het gebruik van Productbird."
+
+msgid "You're all set!"
+msgstr "Je bent helemaal klaar!"
+
+msgid "Continue"
+msgstr "Doorgaan"

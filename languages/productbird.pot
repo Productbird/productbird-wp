@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-05-23T21:11:02+00:00\n"
+"POT-Creation-Date: 2025-05-24T08:24:09+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: productbird\n"
@@ -119,11 +119,16 @@ msgstr ""
 msgid "Productbird API request failed with status %d."
 msgstr ""
 
-#: src/Auth/OidcClient.php:489
-msgid "Failed to retrieve organization"
+#. translators: %s is the site name and %s is the site URL
+#: src/Auth/OidcClient.php:191
+msgid "%s (%s)"
 msgstr ""
 
 #: src/Auth/OidcClient.php:494
+msgid "Failed to retrieve organization"
+msgstr ""
+
+#: src/Auth/OidcClient.php:499
 msgid "Not connected to Productbird"
 msgstr ""
 
@@ -195,391 +200,404 @@ msgstr ""
 msgid "Generate product descriptions with AI"
 msgstr ""
 
-#: assets/dist/js/index-BPSWpm-5.js:4773
-msgid "Unfortunately regenerate is not available yet. Please try again later."
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:4848
-msgid "Generate Product Descriptions with AI"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:4864
-msgid "You are about to generate descriptions for"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:4865
-msgid "products"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:4910
-msgid "Review & Approve"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:4911
-msgid "Review each description before applying it to the product."
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:4937
-msgid "YOLO mode"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:4950
-msgid "Auto Apply"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:4951
-msgid "With YOLO mode, all generated descriptions will be applied to products without review."
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:4994
-#: assets/dist/js/index-BPSWpm-5.js:5341
-msgid "accepted"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5009
-msgid "declined"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5021
-msgid "Review products with existing AI descriptions"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5022
-msgid "Uncheck products you want to skip. Checked products will have their descriptions regenerated."
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5046
-msgid "Search by name or ID..."
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5076
-msgid "Check all"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5096
-msgid "Uncheck all"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5139
-msgid "= Regenerate description"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5140
-msgid "= Skip this product"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5156
-msgid "No products match your search."
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5227
-msgid "will be skipped"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5236
-msgid "products will be regenerated"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5271
-msgid "Cancel"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5286
-msgid "Starting..."
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5286
-msgid "Start Generation"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5316
-msgid "Review Generated Descriptions"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5353
-msgid "Progress"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5379
-msgid "descriptions still being generated..."
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5388
-msgid "Review and approve the descriptions for your products."
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5433
-msgid "items remaining"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5447
-msgid "Generating descriptions..."
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5448
-msgid "Please wait while AI creates product descriptions for your selected items. You can close this window and continue with other tasks."
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5481
-msgid "Item"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5482
-msgid "of"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5505
-msgid "Previous"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5525
-msgid "Next"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5541
-#: assets/dist/js/index-BPSWpm-5.js:6010
-msgid "Accepted"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5558
-#: assets/dist/js/index-BPSWpm-5.js:6012
-msgid "Declined"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5574
-msgid "Ready for review"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5643
-msgid "Preview"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5655
-msgid "Compare"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5674
-msgid "Current Description"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5677
-#: assets/dist/js/index-BPSWpm-5.js:5690
-msgid "Generated Description"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5702
-msgid "Product ID"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5751
-#: assets/dist/js/index-BPSWpm-5.js:6034
-msgid "Close"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5776
-msgid "Regenerate"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5794
-msgid "Undo Decline"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5815
-msgid "Decline"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5844
-msgid "Accepted ✓"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5844
-msgid "Accept & Apply"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5872
-msgid "Accept All"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5893
-msgid "Decline All"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5935
-msgid "All descriptions processed"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:5947
-msgid "Here is a quick summary of the descriptions."
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:6008
-msgid "You're all set!"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:6009
-msgid "All product descriptions have been processed successfully."
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:6011
-msgid "Applied to products"
-msgstr ""
-
-#: assets/dist/js/index-BPSWpm-5.js:6013
-msgid "Not applied"
-msgstr ""
-
-#: assets/dist/js/index-Do-VpLez.js:1209
+#: assets/dist/js/index-BX2p8Kiu.js:1209
 msgid "Connect with Productbird"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:1248
+#: assets/dist/js/index-BX2p8Kiu.js:1248
 msgid "Disconnect"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:1261
+#: assets/dist/js/index-BX2p8Kiu.js:1261
 msgid "Connected to Productbird"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:1283
+#: assets/dist/js/index-BX2p8Kiu.js:1283
 msgid "Unable to create connect URL. Please try again later."
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:7792
+#. translators: %s is the user's display name or email
+#: assets/dist/js/index-BX2p8Kiu.js:7794
 msgid "Hello %s 👋"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:7833
+#: assets/dist/js/index-BX2p8Kiu.js:7837
 msgid "Your current credit balance"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:7852
+#: assets/dist/js/index-BX2p8Kiu.js:7856
 msgid "You are not connected to Productbird. Please enter your API key to continue."
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:7898
+#: assets/dist/js/index-BX2p8Kiu.js:7902
 msgid "View activity"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:7922
+#: assets/dist/js/index-BX2p8Kiu.js:7926
 msgid "Get started"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:7972
+#: assets/dist/js/index-BX2p8Kiu.js:7976
 msgid "API Key"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:7984
+#: assets/dist/js/index-BX2p8Kiu.js:7988
 msgid "Your API key is used to authenticate your requests to the Productbird API."
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8059
+#: assets/dist/js/index-BX2p8Kiu.js:8063
 msgid "You can manage your API key in the Productbird dashboard."
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8061
+#: assets/dist/js/index-BX2p8Kiu.js:8065
 msgid "Manage API key"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8105
+#: assets/dist/js/index-BX2p8Kiu.js:8109
 msgid "Webhook Secret"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8117
+#: assets/dist/js/index-BX2p8Kiu.js:8121
 msgid "Your webhook secret is used to verify webhook requests from Productbird."
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8192
+#: assets/dist/js/index-BX2p8Kiu.js:8196
 msgid "You can manage your webhook secret in the Productbird dashboard."
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8194
+#: assets/dist/js/index-BX2p8Kiu.js:8198
 msgid "Manage webhook secret"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8249
+#: assets/dist/js/index-BX2p8Kiu.js:8253
 msgid "Beta"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8255
+#: assets/dist/js/index-BX2p8Kiu.js:8259
 msgid "Connection Status"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8268
+#: assets/dist/js/index-BX2p8Kiu.js:8272
 msgid "Your connected Productbird account"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8393
+#: assets/dist/js/index-BX2p8Kiu.js:8397
 msgid "You can manage your organization in the Productbird dashboard."
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8394
+#: assets/dist/js/index-BX2p8Kiu.js:8398
 msgid "Manage organization"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8462
+#: assets/dist/js/index-BX2p8Kiu.js:8466
 msgid "Advanced Settings"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8475
+#: assets/dist/js/index-BX2p8Kiu.js:8479
 msgid "Advanced settings and troubleshooting options"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8502
+#: assets/dist/js/index-BX2p8Kiu.js:8506
 msgid "Are you sure you want to clear all Productbird meta data? This cannot be undone."
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8512
+#: assets/dist/js/index-BX2p8Kiu.js:8516
 msgid "Clearing..."
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8512
+#: assets/dist/js/index-BX2p8Kiu.js:8516
 msgid "Clear Product Meta"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8525
+#: assets/dist/js/index-BX2p8Kiu.js:8529
 msgid "Troubleshooting"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8526
+#: assets/dist/js/index-BX2p8Kiu.js:8530
 msgid "If you're experiencing issues with product descriptions, you can clear all Productbird meta data from your products."
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8588
+#: assets/dist/js/index-BX2p8Kiu.js:8592
 msgid "Global Settings"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8600
+#: assets/dist/js/index-BX2p8Kiu.js:8604
 msgid "These global settings will be used for all your tools."
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8638
+#: assets/dist/js/index-BX2p8Kiu.js:8642
 msgid "Tone"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8714
+#: assets/dist/js/index-BX2p8Kiu.js:8718
 msgid "Select the tone of the generated content."
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8750
+#: assets/dist/js/index-BX2p8Kiu.js:8754
 msgid "Formality"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8826
+#: assets/dist/js/index-BX2p8Kiu.js:8830
 msgid "Select the formality of the generated content."
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:8863
+#: assets/dist/js/index-BX2p8Kiu.js:8867
 msgid "Onboarding"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:13195
+#: assets/dist/js/index-BX2p8Kiu.js:13085
+msgid "There is %s error in the form"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:13092
+msgid "There are %s errors in the form"
+msgstr ""
+
+#: assets/dist/js/index-BX2p8Kiu.js:13199
 msgid "Settings saved"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:13269
-msgid "Saving..."
+#. translators: %s is "..." to indicate that something is in progress
+#: assets/dist/js/index-BX2p8Kiu.js:13275
+msgid "Saving %s"
 msgstr ""
 
-#: assets/dist/js/index-Do-VpLez.js:13269
+#: assets/dist/js/index-BX2p8Kiu.js:13277
 msgid "Save settings"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:4774
+msgid "Unfortunately regenerate is not available yet. Please try again later."
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:4850
+msgid "Generate AI product descriptions"
+msgstr ""
+
+#. translators: %s is the number of products and %s is the tool name
+#: assets/dist/js/index-DTPaeoWE.js:4864
+msgid "You're about to generate descriptions for %s products using %s."
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:4897
+msgid "Choose how you’d like to proceed:"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:4924
+msgid "Manual Review"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:4925
+msgid "Carefully review each generated description before applying it."
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:4953
+msgid "YOLO Mode"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:4954
+msgid "Skip the review process. All descriptions will be applied automatically."
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:4997
+msgid "accepted"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5012
+msgid "declined"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5024
+msgid "These products already have AI descriptions."
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5025
+msgid "You can choose to regenerate them or skip them."
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5049
+msgid "Search by name or ID..."
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5079
+msgid "Check all"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5099
+msgid "Uncheck all"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5144
+msgid "= Regenerate description"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5145
+msgid "= Skip this product"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5161
+msgid "No products match your search."
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5232
+msgid "will be skipped"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5241
+msgid "products will be regenerated"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5276
+msgid "Cancel"
+msgstr ""
+
+#. translators: %s is "..." to indicate that something is in progress
+#: assets/dist/js/index-DTPaeoWE.js:5293
+msgid "Starting %s"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5295
+msgid "Start Generation"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5325
+msgid "Review descriptions"
+msgstr ""
+
+#. translators: %s is the number of accepted items and %s is the total number of items
+#: assets/dist/js/index-DTPaeoWE.js:5350
+msgid "%s of %s accepted"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5365
+msgid "Progress"
+msgstr ""
+
+#. translators: %s is the number of items remaining
+#: assets/dist/js/index-DTPaeoWE.js:5393
+msgid "%s descriptions still being generated..."
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5404
+msgid "Take a final look at the generated content before applying it to your products."
+msgstr ""
+
+#. translators: %s is the number of items remaining
+#: assets/dist/js/index-DTPaeoWE.js:5449
+msgid "%s items remaining"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5465
+msgid "Generating descriptions..."
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5466
+msgid "Please wait a moment while our AI works its magic. You’re free to close this window and continue with other tasks. Your progress will be saved."
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5499
+msgid "Item"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5500
+msgid "of"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5523
+msgid "Previous"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5543
+msgid "Next"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5559
+#: assets/dist/js/index-DTPaeoWE.js:6040
+msgid "Accepted"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5576
+#: assets/dist/js/index-DTPaeoWE.js:6041
+msgid "Declined"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5592
+msgid "Ready for review"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5661
+msgid "Preview"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5673
+msgid "Compare"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5692
+msgid "Current Description"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5695
+#: assets/dist/js/index-DTPaeoWE.js:5708
+msgid "Generated Description"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5720
+msgid "Product ID"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5769
+msgid "Close"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5794
+msgid "Regenerate"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5812
+msgid "Undo Decline"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5833
+msgid "Decline"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5862
+msgid "Accepted ✓"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5862
+msgid "Accept & Apply"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5890
+msgid "Accept All"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5911
+msgid "Decline All"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5953
+msgid "All descriptions processed"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:5965
+msgid "Here’s a quick summary of what’s been applied."
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:6001
+msgid "Your product catalog is looking better than ever."
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:6008
+msgid "Thanks for using Productbird."
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:6039
+msgid "You're all set!"
+msgstr ""
+
+#: assets/dist/js/index-DTPaeoWE.js:6062
+msgid "Continue"
 msgstr ""
