@@ -19,6 +19,16 @@ class MagicDescriptionsBulkAction {
 	use ProductDataHelpers;
 	use ToolsConfig;
 
+	/**
+	 * Script handle.
+	 */
+	private const SCRIPT_HANDLE = 'productbird-magic-descriptions';
+
+	/**
+	 * Tool config.
+	 *
+	 * @var array|null
+	 */
 	private $tool_config;
 
 	/**
@@ -42,7 +52,7 @@ class MagicDescriptionsBulkAction {
 	 * @return array
 	 */
 	private function get_tool_config_lazy(): array {
-		if ( $this->tool_config === null ) {
+		if ( null === $this->tool_config ) {
 			$this->tool_config = $this->get_tool_config( 'MAGIC_DESCRIPTIONS' );
 		}
 		return $this->tool_config;
@@ -96,7 +106,7 @@ class MagicDescriptionsBulkAction {
 	 */
 	public function enqueue_assets( string $hook_suffix ): void {
 		// Only load on the products list table (edit.php for post_type=product).
-		if ( $hook_suffix !== 'edit.php' ) {
+		if ( 'edit.php' !== $hook_suffix ) {
 			return;
 		}
 
@@ -105,7 +115,7 @@ class MagicDescriptionsBulkAction {
 		}
 
 		$screen = get_current_screen();
-		if ( ! $screen || $screen->post_type !== 'product' ) {
+		if ( ! $screen || 'product' !== $screen->post_type ) {
 			return;
 		}
 
@@ -116,14 +126,16 @@ class MagicDescriptionsBulkAction {
 			$dist_path,
 			$source_entry,
 			array(
-				'handle'       => 'productbird-magic-descriptions',
+				'handle'       => self::SCRIPT_HANDLE,
 				'dependencies' => array( 'jquery', 'wp-api-fetch', 'wp-i18n' ),
 				'in-footer'    => true,
 			)
 		);
 
+		wp_set_script_translations( self::SCRIPT_HANDLE, 'productbird', PRODUCTBIRD_PLUGIN_DIR . '/languages' );
+
 		wp_localize_script(
-			'productbird-magic-descriptions',
+			self::SCRIPT_HANDLE,
 			'productbird_tool_magic_descriptions',
 			array_merge(
 				$this->get_common_localization_data(),
@@ -141,9 +153,9 @@ class MagicDescriptionsBulkAction {
 	 * @since 0.1.0
 	 */
 	public function output_app_container(): void {
-		// Only output on the products list table
 		$screen = get_current_screen();
-		if ( ! $screen || $screen->post_type !== 'product' || $screen->base !== 'edit' ) {
+
+		if ( ! $screen || 'product' !== $screen->post_type || 'edit' !== $screen->base ) {
 			return;
 		}
 

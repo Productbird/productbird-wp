@@ -16,9 +16,9 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: productbird.php
-#: src/Admin/Admin.php:75
-#: src/Admin/Admin.php:76
-#: src/Admin/MagicDescriptionsBulkAction.php:81
+#: src/Admin/Admin.php:73
+#: src/Admin/Admin.php:74
+#: src/Admin/MagicDescriptionsBulkAction.php:89
 msgid "Productbird"
 msgstr "Productbird"
 
@@ -32,7 +32,7 @@ msgstr "https://productbird.ai"
 msgid "Productbird helps ecommerce owners get more done by providing various AI tools."
 msgstr "Productbird helpt webshopeigenaren meer gedaan te krijgen door verschillende AI-tools aan te bieden."
 
-#: src/Admin/MagicDescriptionsBulkAction.php:84
+#: src/Admin/MagicDescriptionsBulkAction.php:92
 msgid "Generate description with AI"
 msgstr "Beschrijving genereren met AI"
 
@@ -48,15 +48,15 @@ msgstr "Geen beschrijving"
 msgid "AI generated"
 msgstr "AI gegenereerd"
 
-#: src/Admin/ProductDescriptionRowAction.php:59
+#: src/Admin/ProductDescriptionRowAction.php:58
 msgid "Generate AI Description"
 msgstr "AI-beschrijving genereren"
 
-#: src/Admin/ProductDescriptionRowAction.php:85
+#: src/Admin/ProductDescriptionRowAction.php:83
 msgid "Invalid request."
 msgstr "Ongeldige aanvraag."
 
-#: src/Admin/ProductDescriptionRowAction.php:90
+#: src/Admin/ProductDescriptionRowAction.php:88
 msgid "Security check failed."
 msgstr "Beveiligingscontrole mislukt."
 
@@ -88,117 +88,105 @@ msgstr "Er is een onbekende fout opgetreden."
 msgid "Productbird has queued description generation. Status will update in the \"AI Desc.\" column."
 msgstr "Productbird heeft de beschrijvingsgeneratie in de wachtrij gezet. De status wordt bijgewerkt in de \"AI Desc.\" kolom."
 
-#: src/Admin/ProductGenerationStatusColumn.php:51
+#: src/Admin/ProductGenerationStatusColumn.php:50
 msgid "AI Desc."
 msgstr "AI Desc."
 
-#: src/Admin/ProductGenerationStatusColumn.php:78
+#: src/Admin/ProductGenerationStatusColumn.php:76
 msgid "No AI description requested"
 msgstr "Geen AI-beschrijving aangevraagd"
 
-#: src/Admin/ProductGenerationStatusColumn.php:80
+#: src/Admin/ProductGenerationStatusColumn.php:78
 msgid "Description generated successfully"
 msgstr "Beschrijving succesvol gegenereerd"
 
-#: src/Admin/ProductGenerationStatusColumn.php:82
+#: src/Admin/ProductGenerationStatusColumn.php:80
 msgid "Error generating description"
 msgstr "Fout bij genereren beschrijving"
 
-#: src/Admin/ProductGenerationStatusColumn.php:84
+#: src/Admin/ProductGenerationStatusColumn.php:82
 msgid "Description generation queued"
 msgstr "Beschrijvingsgeneratie in wachtrij"
 
-#: src/Admin/ProductGenerationStatusColumn.php:87
+#: src/Admin/ProductGenerationStatusColumn.php:85
 msgid "Description generation in progress"
 msgstr "Beschrijvingsgeneratie in uitvoering"
 
 #. Translators: %d is the HTTP status code.
-#: src/Api/Client.php:176
-#: src/Api/Client.php:224
+#: src/Api/Client.php:172
+#: src/Api/Client.php:218
 #, php-format
 msgid "Productbird API request failed with status %d."
 msgstr "Productbird API-verzoek mislukt met status %d."
 
-#. translators: %s is the site name and %s is the site URL
-#: src/Auth/OidcClient.php:191
-#, php-format
-msgid "%s (%s)"
-msgstr "%s (%s)"
-
-#: src/Auth/OidcClient.php:494
+#: src/Auth/OidcClient.php:536
 msgid "Failed to retrieve organization"
 msgstr "Ophalen van organisatie mislukt"
 
-#: src/Auth/OidcClient.php:499
+#: src/Auth/OidcClient.php:544
 msgid "Not connected to Productbird"
 msgstr "Niet verbonden met Productbird"
 
-#: src/Plugin.php:67
+#: src/Plugin.php:62
 msgid "Productbird requires WooCommerce to be installed and active."
 msgstr "Productbird vereist dat WooCommerce is geïnstalleerd en actief is."
 
-#: src/Rest/RestUtils.php:73
+#: src/Rest/RestUtils.php:84
 msgid "You do not have permission to use this endpoint."
 msgstr "Je hebt geen toestemming om dit eindpunt te gebruiken."
 
-#. translators: %s: tool name, %d: max batch size
-#: src/Rest/RestUtils.php:96
-#, php-format
-msgid "You can only generate %s for up to %d products at a time."
-msgstr "Je kunt alleen %s genereren voor maximaal %d producten tegelijk."
-
-#: src/Rest/ToolMagicDescriptionsEndpoints.php:284
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:315
 msgid "API key not configured"
 msgstr "API-sleutel niet geconfigureerd"
 
-#: src/Rest/ToolMagicDescriptionsEndpoints.php:363
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:412
 msgid "No valid products found to process."
 msgstr "Geen geldige producten gevonden om te verwerken."
 
-#: src/Rest/ToolMagicDescriptionsEndpoints.php:443
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:507
 #: src/Rest/WebhookCallbackEndpoint.php:115
 msgid "Missing productId or description."
 msgstr "ProductId of beschrijving ontbreekt."
 
-#: src/Rest/ToolMagicDescriptionsEndpoints.php:451
-#: src/Rest/ToolMagicDescriptionsEndpoints.php:831
-#: src/Rest/ToolMagicDescriptionsEndpoints.php:895
-#: src/Rest/ToolMagicDescriptionsEndpoints.php:938
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:518
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:945
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:1022
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:1075
 #: src/Rest/WebhookCallbackEndpoint.php:120
 msgid "Product not found."
 msgstr "Product niet gevonden."
 
-#: src/Rest/ToolMagicDescriptionsEndpoints.php:494
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:567
 #: src/Rest/WebhookCallbackEndpoint.php:154
 msgid "Empty description content."
 msgstr "Lege beschrijvingsinhoud."
 
-#: src/Rest/ToolMagicDescriptionsEndpoints.php:562
-#: src/Rest/ToolMagicDescriptionsEndpoints.php:982
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:650
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:1124
 msgid "No product IDs provided."
 msgstr "Geen product-ID's opgegeven."
 
-#: src/Rest/ToolMagicDescriptionsEndpoints.php:847
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:964
 msgid "No description available to apply."
 msgstr "Geen beschrijving beschikbaar om toe te passen."
 
-#: src/Rest/ToolMagicDescriptionsEndpoints.php:869
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:990
 msgid "Description applied successfully."
 msgstr "Beschrijving succesvol toegepast."
 
-#: src/Rest/ToolMagicDescriptionsEndpoints.php:912
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:1043
 msgid "Description declined."
 msgstr "Beschrijving afgewezen."
 
-#: src/Rest/ToolMagicDescriptionsEndpoints.php:955
+#: src/Rest/ToolMagicDescriptionsEndpoints.php:1096
 msgid "Description declined undone."
 msgstr "Afwijzen van beschrijving ongedaan gemaakt."
 
-#: src/Traits/ToolsConfig.php:36
+#: src/Traits/ToolsConfig.php:35
 msgid "Magic Descriptions"
 msgstr "Magic Descriptions"
 
-#: src/Traits/ToolsConfig.php:37
+#: src/Traits/ToolsConfig.php:36
 msgid "Generate product descriptions with AI"
 msgstr "Genereer productbeschrijvingen met AI"
 
@@ -611,4 +599,16 @@ msgstr ""
 
 #: assets/dist/js/index-DMGziD-B.js:5967
 msgid "Here’s a quick summary of what’s been applied."
+msgstr ""
+
+#. translators: %s is the site name and %s is the site URL
+#: src/Auth/OidcClient.php:199
+#, php-format
+msgid "%1$s (%2$s)"
+msgstr ""
+
+#. translators: %s: tool name, %d: max batch size
+#: src/Rest/RestUtils.php:107
+#, php-format
+msgid "You can only generate %1$s for up to %2$d products at a time."
 msgstr ""
