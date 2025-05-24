@@ -489,7 +489,7 @@
       <Dialog.Header>
         <Dialog.Title>{@render stepTitle(__("Generate AI product descriptions", "productbird"))}</Dialog.Title>
 
-        <Dialog.Description>
+        <Dialog.Description class="text-left">
           {sprintf(
             // translators: %s is the number of products and %s is the tool name
             __("You're about to generate descriptions for %s products using %s.", "productbird"),
@@ -1001,7 +1001,7 @@
           >{@render stepTitle(__("All descriptions processed", "productbird"))}</Dialog.Title
         >
 
-        <Dialog.Description>
+        <Dialog.Description class="text-left">
           {__("Here’s a quick summary of what’s been applied.", "productbird")}
         </Dialog.Description>
       </Dialog.Header>
