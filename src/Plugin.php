@@ -7,13 +7,11 @@ use Productbird\Admin\MagicDescriptionsBulkAction;
 use Productbird\Admin\NoDescriptionFilter;
 use Productbird\Admin\GlobalAdminScript;
 use Productbird\Rest\WebhookCallbackEndpoint;
-use Productbird\Rest\ProductStatusCheckEndpoint;
 use Productbird\Rest\OidcCallbackEndpoint;
 use Productbird\Auth\OidcClient;
 use Productbird\Rest\OrganizationsEndpoint;
 use Productbird\Rest\SettingsEndpoint;
 use Productbird\Rest\ToolMagicDescriptionsEndpoints;
-use Productbird\Rest\RegenerateEndpoint;
 use Productbird\Rest\ClearProductMetaEndpoint;
 use Productbird\FeatureFlags;
 
