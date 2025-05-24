@@ -9,9 +9,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-05-24T09:15:33+00:00\n"
+"POT-Creation-Date: 2025-05-24T12:19:54+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.11.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: productbird\n"
 
 #. Plugin Name of the plugin
@@ -116,11 +116,13 @@ msgstr ""
 #. Translators: %d is the HTTP status code.
 #: src/Api/Client.php:176
 #: src/Api/Client.php:224
+#, php-format
 msgid "Productbird API request failed with status %d."
 msgstr ""
 
 #. translators: %s is the site name and %s is the site URL
 #: src/Auth/OidcClient.php:191
+#, php-format
 msgid "%s (%s)"
 msgstr ""
 
@@ -142,6 +144,7 @@ msgstr ""
 
 #. translators: %s: tool name, %d: max batch size
 #: src/Rest/RestUtils.php:96
+#, php-format
 msgid "You can only generate %s for up to %d products at a time."
 msgstr ""
 
@@ -218,6 +221,7 @@ msgstr ""
 
 #. translators: %s is the user's display name or email
 #: assets/dist/js/index-BX2p8Kiu.js:7794
+#, js-format
 msgid "Hello %s 👋"
 msgstr ""
 
@@ -346,10 +350,12 @@ msgid "Onboarding"
 msgstr ""
 
 #: assets/dist/js/index-BX2p8Kiu.js:13085
+#, js-format
 msgid "There is %s error in the form"
 msgstr ""
 
 #: assets/dist/js/index-BX2p8Kiu.js:13092
+#, js-format
 msgid "There are %s errors in the form"
 msgstr ""
 
@@ -359,6 +365,7 @@ msgstr ""
 
 #. translators: %s is "..." to indicate that something is in progress
 #: assets/dist/js/index-BX2p8Kiu.js:13275
+#, js-format
 msgid "Saving %s"
 msgstr ""
 
@@ -376,6 +383,7 @@ msgstr ""
 
 #. translators: %s is the number of products and %s is the tool name
 #: assets/dist/js/index-DMGziD-B.js:4865
+#, js-format
 msgid "You're about to generate descriptions for %s products using %s."
 msgstr ""
 
@@ -453,6 +461,7 @@ msgstr ""
 
 #. translators: %s is "..." to indicate that something is in progress
 #: assets/dist/js/index-DMGziD-B.js:5294
+#, js-format
 msgid "Starting %s"
 msgstr ""
 
@@ -466,6 +475,7 @@ msgstr ""
 
 #. translators: %s is the number of accepted items and %s is the total number of items
 #: assets/dist/js/index-DMGziD-B.js:5351
+#, js-format
 msgid "%s of %s accepted"
 msgstr ""
 
@@ -475,6 +485,7 @@ msgstr ""
 
 #. translators: %s is the number of items remaining
 #: assets/dist/js/index-DMGziD-B.js:5394
+#, js-format
 msgid "%s descriptions still being generated..."
 msgstr ""
 
@@ -484,6 +495,7 @@ msgstr ""
 
 #. translators: %s is the number of items remaining
 #: assets/dist/js/index-DMGziD-B.js:5450
+#, js-format
 msgid "%s items remaining"
 msgstr ""
 
