@@ -21,120 +21,113 @@ use Productbird\FeatureFlags;
  * @package Productbird
  * @since 0.1.0
  */
-class Plugin
-{
-    /**
-     * Initialize the plugin.
-     *
-     * @return void
-     */
-    public function init(): void
-    {
-        // Check if WooCommerce is active
-        if (!$this->is_woocommerce_active()) {
-            add_action('admin_notices', [$this, 'woocommerce_missing_notice']);
-            return;
-        }
+class Plugin {
 
-        // Hook text domain loading to the init action
-        add_action('init', [$this, 'load_text_domain']);
+	/**
+	 * Initialize the plugin.
+	 *
+	 * @return void
+	 */
+	public function init(): void {
+		// Check if WooCommerce is active.
+		if ( ! $this->is_woocommerce_active() ) {
+			add_action( 'admin_notices', array( $this, 'woocommerce_missing_notice' ) );
+			return;
+		}
 
-        // Initialize plugin components
-        $this->init_components();
-    }
+		// Hook text domain loading to the init action.
+		add_action( 'init', array( $this, 'load_text_domain' ) );
 
-    /**
-     * Check if WooCommerce is active.
-     *
-     * @return bool
-     */
-    private function is_woocommerce_active(): bool
-    {
-        return class_exists('WooCommerce') && function_exists('wc_get_product');
-    }
+		// Initialize plugin components.
+		$this->init_components();
+	}
 
-    /**
-     * Display admin notice if WooCommerce is not active.
-     *
-     * @return void
-     */
-    public function woocommerce_missing_notice(): void
-    {
-        ?>
-        <div class="error notice is-dismissible">
-            <p><?php esc_html_e('Productbird requires WooCommerce to be installed and active.', 'productbird'); ?></p>
-        </div>
-        <?php
-    }
+	/**
+	 * Check if WooCommerce is active.
+	 *
+	 * @return bool
+	 */
+	private function is_woocommerce_active(): bool {
+		return class_exists( 'WooCommerce' ) && function_exists( 'wc_get_product' );
+	}
 
-    /**
-     * Load plugin text domain for translations.
-     *
-     * @return void
-     */
-    public function load_text_domain(): void
-    {
-        load_plugin_textdomain(
-            'productbird',
-            false,
-            dirname(plugin_basename(__FILE__), 2) . '/languages'
-        );
-    }
+	/**
+	 * Display admin notice if WooCommerce is not active.
+	 *
+	 * @return void
+	 */
+	public function woocommerce_missing_notice(): void {
+		?>
+		<div class="error notice is-dismissible">
+			<p><?php esc_html_e( 'Productbird requires WooCommerce to be installed and active.', 'productbird' ); ?></p>
+		</div>
+		<?php
+	}
 
-    /**
-     * Initialize plugin components.
-     *
-     * @return void
-     */
-    private function init_components(): void
-    {
-        if (is_admin()) {
-            (new GlobalAdminScript())->init();
-            (new Admin())->init();
-            (new MagicDescriptionsBulkAction())->init();
-            // (new ProductGenerationStatusColumn())->init();
-            (new NoDescriptionFilter())->init();
-            // (new ProductDescriptionRowAction())->init();
-        }
+	/**
+	 * Load plugin text domain for translations.
+	 *
+	 * @return void
+	 */
+	public function load_text_domain(): void {
+		load_plugin_textdomain(
+			'productbird',
+			false,
+			dirname( plugin_basename( __FILE__ ), 2 ) . '/languages'
+		);
+	}
 
-        (new WebhookCallbackEndpoint())->init();
-        (new OrganizationsEndpoint())->init();
-        (new SettingsEndpoint())->init();
-        (new ClearProductMetaEndpoint())->init();
+	/**
+	 * Initialize plugin components.
+	 *
+	 * @return void
+	 */
+	private function init_components(): void {
+		if ( is_admin() ) {
+			( new GlobalAdminScript() )->init();
+			( new Admin() )->init();
+			( new MagicDescriptionsBulkAction() )->init();
+			// (new ProductGenerationStatusColumn())->init();
+			( new NoDescriptionFilter() )->init();
+			// (new ProductDescriptionRowAction())->init();
+		}
 
-        /**
-         * Tool endpoints
-         */
-        (new ToolMagicDescriptionsEndpoints())->init();
+		( new WebhookCallbackEndpoint() )->init();
+		( new OrganizationsEndpoint() )->init();
+		( new SettingsEndpoint() )->init();
+		( new ClearProductMetaEndpoint() )->init();
 
-        // Only bootstrap OIDC-related functionality if the feature flag is enabled.
-        if (FeatureFlags::is_enabled('oidc')) {
-            (new OidcCallbackEndpoint())->init();
+		/**
+		 * Tool endpoints
+		 */
+		( new ToolMagicDescriptionsEndpoints() )->init();
 
-            // The OidcClient registers its own hooks (e.g. disconnect handler).
-            (new OidcClient())->init();
-        }
-    }
+		// Only bootstrap OIDC-related functionality if the feature flag is enabled.
+		if ( FeatureFlags::is_enabled( 'oidc' ) ) {
+			( new OidcCallbackEndpoint() )->init();
 
-    /**
-     * Runs on plugin activation.
-     *
-     * @since 0.1.0
-     * @return void
-     */
-    public function activate(): void
-    {
-        // Silence is golden.
-    }
+			// The OidcClient registers its own hooks (e.g. disconnect handler).
+			( new OidcClient() )->init();
+		}
+	}
 
-    /**
-     * Runs on plugin deactivation.
-     *
-     * @since 0.1.0
-     * @return void
-     */
-    public function deactivate(): void
-    {
-        // Silence is golden.
-    }
+	/**
+	 * Runs on plugin activation.
+	 *
+	 * @since 0.1.0
+	 * @return void
+	 */
+	public function activate(): void {
+		// Silence is golden.
+	}
+
+	/**
+	 * Runs on plugin deactivation.
+	 *
+	 * @since 0.1.0
+	 * @return void
+	 */
+	public function deactivate(): void {
+		// Silence is golden.
+	}
 }

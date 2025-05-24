@@ -9,7 +9,9 @@
     <!-- Exclude patterns -->
     <exclude-pattern>/vendor/*</exclude-pattern>
     <exclude-pattern>/node_modules/*</exclude-pattern>
-    <exclude-pattern>/assets/*</exclude-pattern> <!-- Assuming assets are primarily JS/CSS -->
+    <exclude-pattern>/assets/*</exclude-pattern>
+    <exclude-pattern>/build/*</exclude-pattern>
+    <exclude-pattern>/dist/*</exclude-pattern>
 
     <!-- Show progress -->
     <arg value="p"/>
@@ -17,38 +19,55 @@
     <arg value="s"/>
     <!-- Use colors in output -->
     <arg name="colors"/>
+    <!-- Check 8 files in parallel -->
+    <arg name="parallel" value="8"/>
+    <!-- Only check PHP files -->
+    <arg name="extensions" value="php"/>
 
     <!-- Set PHP version for PHPCompatibility -->
     <config name="testVersion" value="8.2-"/>
 
     <!-- WordPress Coding Standards -->
-    <rule ref="WordPress-Extra">
-        <!-- You can exclude specific sniffs from WordPress-Extra if needed, e.g.: -->
-        <exclude name="WordPress.NamingConventions.PrefixAllGlobals"/>
-        <exclude name="WordPress.WP.I18n"/>
-        <!-- <exclude name="WordPress.Files.FileName.InvalidClassFileName"/> -->
-        <exclude name="Generic.Functions.CallTimePassByReference"/>
-        <exclude name="Squiz.WhiteSpace.LanguageConstructSpacing"/>
+    <rule ref="WordPress">
+        <!-- Allow short array syntax -->
+        <exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+        <exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+
+        <!-- Don't force file comments -->
+        <exclude name="Squiz.Commenting.FileComment"/>
+
+        <!-- Allow use of namespaces -->
+        <exclude name="PSR1.Files.SideEffects.FoundWithSymbols"/>
     </rule>
 
-    <!-- PSR12 Coding Standard -->
-    <rule ref="PSR12"/>
+    <!-- WordPress Extra rules with some exclusions -->
+    <rule ref="WordPress-Extra">
+        <!-- We use a custom autoloader, so filenames don't need to match class names -->
+        <exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+        <exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+    </rule>
 
-    <!-- PHPCompatibility -->
-    <rule ref="PHPCompatibility"/>
-
-    <!-- WooCommerce Coding Standards -->
-    <rule ref="WooCommerce">
-        <!-- WooCommerce standard requires a text domain. -->
+    <!-- Configure text domain check -->
+    <rule ref="WordPress.WP.I18n">
         <properties>
-            <property name="text_domain">
+            <property name="text_domain" type="array">
                 <element value="productbird"/>
             </property>
         </properties>
     </rule>
 
-    <!-- Include Generic.WhiteSpace.LanguageConstructSpacing -->
-    <rule ref="Generic.WhiteSpace.LanguageConstructSpacing"/>
+    <!-- Configure prefix for globals -->
+    <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+        <properties>
+            <property name="prefixes" type="array">
+                <element value="productbird"/>
+                <element value="PRODUCTBIRD"/>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- PHPCompatibility -->
+    <rule ref="PHPCompatibility"/>
 
     <!-- WordPress version config for WPCS -->
     <config name="minimum_supported_wp_version" value="5.0"/>
