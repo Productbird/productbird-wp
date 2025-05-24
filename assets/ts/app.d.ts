@@ -1,25 +1,6 @@
-interface OidcData {
-	is_connected: boolean;
-	auth_url?: string;
-	disconnect_url?: string;
-	name?: string;
-}
-
-interface FeatureFlags {
-	oidc: boolean;
-}
-
-interface GlobalAdminData {
-	admin_url: string;
-	app_url: string;
-	nonce: string;
-	settings_page_url: string;
-	api_root_url: string;
-}
-
 declare global {
 	interface Window {
-		productbird: GlobalAdminData;
+		productbird: import("$lib/utils/types").GlobalAdminData;
 		productbird_admin: {
 			admin_url: string;
 			app_url: string;
@@ -31,13 +12,8 @@ declare global {
 				email: string;
 				display_name: string;
 			};
-			oidc: {
-				is_connected: boolean;
-				auth_url: string;
-				disconnect_url: string;
-				name: string;
-			};
-			features: FeatureFlags;
+			oidc: import("$lib/utils/types").GlobalAdminOidcData;
+			features: import("$lib/utils/types").GlobalAdminFeatureFlags;
 		};
 	}
 }

@@ -30,7 +30,7 @@
   import "$lib/styles/global.pcss";
   import "$lib/styles/app.pcss";
 
-  import { __ } from "@wordpress/i18n";
+  import { __, sprintf } from "@wordpress/i18n";
   import {
     useGenerateMagicDescriptionsBulk,
     useApplyProductDescription,
@@ -66,6 +66,7 @@
   import LogoIcon from "$lib/components/logo-icon.svelte";
   import * as Checkbox from "$lib/components/ui/checkbox/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
+  import { PRODUCT_DESCRIPTION_GLOBALS } from "./utils";
 
   // Props
   let { selectedIds = [], open = $bindable() }: ProductDescriptionBulkModalProps = $props();
@@ -484,26 +485,34 @@
     )}
   >
     {#if currentStep === STEPS.confirm}
+      {@const toolName = PRODUCT_DESCRIPTION_GLOBALS.config.name}
       <Dialog.Header>
-        <Dialog.Title>{@render stepTitle(__("Generate Product Descriptions with AI", "productbird"))}</Dialog.Title>
+        <Dialog.Title>{@render stepTitle(__("Generate AI product descriptions", "productbird"))}</Dialog.Title>
 
         <Dialog.Description>
-          {__("You are about to generate descriptions for", "productbird")}
-          {selectedIds.length}
-          {__("products", "productbird")}.
+          {sprintf(
+            // translators: %s is the number of products and %s is the tool name
+            __("You're about to generate descriptions for %s products using %s.", "productbird"),
+            selectedIds.length,
+            toolName
+          )}
         </Dialog.Description>
       </Dialog.Header>
 
-      <div class="space-y-4 py-4">
+      <div class="space-y-6 pt-2 pb-4">
         <RadioGroup.Root bind:value={mode}>
-          <div class="space-y-6">
+          <Label class="text-sm font-medium mb-2">
+            {__("Choose how you’d like to proceed:", "productbird")}
+          </Label>
+
+          <div class="space-y-4">
             <div class="flex gap-2">
               <RadioGroup.Item value="review" id="review" />
               <Label for="review" class="flex flex-col gap-2">
-                {__("Review & Approve", "productbird")}
+                {__("Manual Review", "productbird")}
 
                 <small>
-                  {__("Review each description before applying it to the product.", "productbird")}
+                  {__("Carefully review each generated description before applying it.", "productbird")}
                 </small>
               </Label>
             </div>
@@ -512,18 +521,11 @@
               <RadioGroup.Item value="auto-apply" id="auto-apply" />
               <Label for="auto-apply" class="flex flex-col gap-2">
                 <div>
-                  {__("Auto Apply", "productbird")}
-
-                  <Badge variant="outline" class="ml-2">
-                    {__("YOLO mode", "productbird")}
-                  </Badge>
+                  {__("YOLO Mode", "productbird")}
                 </div>
 
                 <small>
-                  {__(
-                    "With YOLO mode, all generated descriptions will be applied to products without review.",
-                    "productbird"
-                  )}
+                  {__("Skip the review process. All descriptions will be applied automatically.", "productbird")}
                 </small>
               </Label>
             </div>
@@ -531,18 +533,15 @@
         </RadioGroup.Root>
 
         {#if overrideCandidates.length > 0}
-          <Card.Root class="border border-orange-300 bg-orange-50 dark:border-orange-800 dark:bg-orange-900/20">
+          <Card.Root class="border border-slate-300 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/20">
             <Card.Header class="pb-3">
               <div class="flex items-start justify-between gap-4">
                 <div class="space-y-1">
-                  <p class="text-sm font-medium text-orange-800 dark:text-orange-200">
-                    {__("Review products with existing AI descriptions", "productbird")}
+                  <p class="text-sm font-medium text-slate-800 dark:text-slate-200">
+                    {__("These products already have AI descriptions.", "productbird")}
                   </p>
-                  <p class="text-xs text-orange-700 dark:text-orange-300">
-                    {__(
-                      "Uncheck products you want to skip. Checked products will have their descriptions regenerated.",
-                      "productbird"
-                    )}
+                  <p class="text-xs text-slate-700 dark:text-slate-300">
+                    {__("You can choose to regenerate them or skip them.", "productbird")}
                   </p>
                 </div>
                 <div class="flex gap-2 text-xs">
@@ -553,6 +552,7 @@
                     {overrideStats.accepted}
                     {__("accepted", "productbird")}
                   </Badge>
+
                   <Badge variant="secondary" class="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">
                     {overrideStats.declined}
                     {__("declined", "productbird")}
@@ -602,18 +602,22 @@
                 </div>
               {/if}
 
-              <div class="rounded-md border border-orange-200 dark:border-orange-800">
+              <div class="rounded-md border border-slate-200 dark:border-slate-800">
                 {#if overrideCandidates.length <= 10}
                   <div
-                    class="px-3 py-2 bg-orange-100/50 dark:bg-orange-900/20 border-b border-orange-200 dark:border-orange-800"
+                    class="px-3 py-2 bg-slate-100/50 dark:bg-slate-900/20 border-b border-slate-200 dark:border-slate-800"
                   >
-                    <p class="text-xs text-orange-700 dark:text-orange-300 flex items-center gap-1">
-                      <Checkbox.Root checked={true} disabled class="h-3 w-3" />
-                      <span>{__("= Regenerate description", "productbird")}</span>
-                      <span class="mx-2">•</span>
-                      <Checkbox.Root checked={false} disabled class="h-3 w-3" />
-                      <span>{__("= Skip this product", "productbird")}</span>
-                    </p>
+                    <div class="text-xs text-slate-700 dark:text-slate-300 flex items-center gap-4">
+                      <div class="flex items-center gap-1">
+                        <Checkbox.Root checked={true} disabled class="h-3 w-3" />
+                        <span>{__("= Regenerate description", "productbird")}</span>
+                      </div>
+
+                      <div class="flex items-center gap-1">
+                        <Checkbox.Root checked={false} disabled class="h-3 w-3" />
+                        <span>{__("= Skip this product", "productbird")}</span>
+                      </div>
+                    </div>
                   </div>
                 {/if}
                 <div class="max-h-48 overflow-y-auto">
@@ -625,7 +629,7 @@
                     {#each filteredOverrideCandidates as item, index}
                       <div
                         class="flex items-center gap-3 px-3 py-2 text-sm {index !== 0
-                          ? 'border-t border-orange-100 dark:border-orange-900'
+                          ? 'border-t border-slate-100 dark:border-slate-900'
                           : ''}"
                       >
                         <Checkbox.Root
@@ -649,10 +653,11 @@
                             {item.name}
                           </a>
                         </div>
+
                         <Badge
                           variant="outline"
                           class={cn(
-                            "capitalize flex-shrink-0",
+                            "capitalize text-xs flex-shrink-0",
                             item.status === "accepted"
                               ? "text-emerald-700 border-emerald-300 dark:text-emerald-300 dark:border-emerald-700"
                               : "text-red-700 border-red-300 dark:text-red-300 dark:border-red-700"
@@ -670,7 +675,7 @@
                 <p class="text-xs text-muted-foreground text-center">
                   <strong>{overrideStats.selected} {__("products will be regenerated", "productbird")}</strong>
                   {#if deselectedIds.size > 0}
-                    <span class="text-orange-600 dark:text-orange-400">
+                    <span class="text-slate-600 dark:text-slate-400">
                       ({deselectedIds.size}
                       {__("will be skipped", "productbird")})
                     </span>
@@ -692,14 +697,18 @@
           disabled={generateMagicDescriptionsBulkMutation.isPending || idsToProcess.length === 0}
         >
           {generateMagicDescriptionsBulkMutation.isPending
-            ? __("Starting...", "productbird")
+            ? sprintf(
+                // translators: %s is "..." to indicate that something is in progress
+                __("Starting %s", "productbird"),
+                "..."
+              )
             : __("Start Generation", "productbird")}
         </Button>
       </Dialog.Footer>
     {:else if currentStep === STEPS.review}
       <Dialog.Header class="flex-shrink-0">
         <Dialog.Title class="flex items-center justify-between">
-          {@render stepTitle(__("Review Generated Descriptions", "productbird"))}
+          {@render stepTitle(__("Review descriptions", "productbird"))}
 
           <!-- Information bar-->
           <div class="flex items-center justify-end gap-2">
@@ -712,19 +721,29 @@
             </div>
 
             <Badge variant="secondary" class="flex-shrink-0">
-              {acceptedCount} / {totalItems}
-              {__("accepted", "productbird")}
+              {sprintf(
+                // translators: %s is the number of accepted items and %s is the total number of items
+                __("%s of %s accepted", "productbird"),
+                acceptedCount,
+                totalItems
+              )}
             </Badge>
           </div>
         </Dialog.Title>
 
         <Dialog.Description class="space-y-3 text-left">
-          <p>{__("Review and approve the descriptions for your products.", "productbird")}</p>
+          <p>{__("Take a final look at the generated content before applying it to your products.", "productbird")}</p>
 
           {#if remainingCount > 0}
             <div class="flex items-center gap-2 text-sm text-muted-foreground">
               <Clock class="h-4 w-4" />
-              <span>{remainingCount} {__("descriptions still being generated...", "productbird")}</span>
+              <span>
+                {sprintf(
+                  // translators: %s is the number of items remaining
+                  __("%s descriptions still being generated...", "productbird"),
+                  remainingCount
+                )}
+              </span>
             </div>
           {/if}
         </Dialog.Description>
@@ -745,14 +764,17 @@
                     </p>
                     <p class="text-sm text-muted-foreground">
                       {__(
-                        "Please wait while AI creates product descriptions for your selected items. You can close this window and continue with other tasks.",
+                        "Please wait a moment while our AI works its magic. You’re free to close this window and continue with other tasks. Your progress will be saved.",
                         "productbird"
                       )}
                     </p>
                     {#if remainingCount > 0}
                       <p class="text-xs text-muted-foreground">
-                        {remainingCount}
-                        {__("items remaining", "productbird")}
+                        {sprintf(
+                          // translators: %s is the number of items remaining
+                          __("%s items remaining", "productbird"),
+                          remainingCount
+                        )}
                       </p>
                     {/if}
                   </div>
@@ -906,7 +928,7 @@
                     size="default"
                     variant="outline"
                     onclick={() => handleUndoDeclineDescription(currentReviewItem.id)}
-                    class="flex items-center gap-2 text-orange-600 hover:text-orange-500 border-orange-200 hover:bg-orange-50 dark:text-orange-400 dark:border-orange-800 dark:hover:bg-orange-950/30"
+                    class="flex items-center gap-2 text-slate-600 hover:text-slate-500 border-slate-200 hover:bg-slate-50 dark:text-slate-400 dark:border-slate-800 dark:hover:bg-slate-950/30"
                   >
                     <RotateCcw class="h-4 w-4" />
                     {__("Undo Decline", "productbird")}
@@ -980,7 +1002,7 @@
         >
 
         <Dialog.Description>
-          {__("Here is a quick summary of the descriptions.", "productbird")}
+          {__("Here’s a quick summary of what’s been applied.", "productbird")}
         </Dialog.Description>
       </Dialog.Header>
 
@@ -995,7 +1017,11 @@
               </h3>
 
               <p class="text-muted-foreground text-center max-w-md">
-                {__("All product descriptions have been processed successfully.", "productbird")}
+                {#if acceptedCount > 0}
+                  {__("Your product catalog is looking better than ever.", "productbird")}
+                {:else}
+                  {__("Thanks for using Productbird.", "productbird")}
+                {/if}
               </p>
             </div>
 
@@ -1007,7 +1033,6 @@
                   <span class="text-2xl font-bold text-emerald-600">{acceptedCount}</span>
                 </div>
                 <span class="text-sm font-medium">{__("Accepted", "productbird")}</span>
-                <span class="text-xs text-muted-foreground">{__("Applied to products", "productbird")}</span>
               </div>
 
               <div class="flex flex-col items-center space-y-2">
@@ -1015,7 +1040,6 @@
                   <span class="text-2xl font-bold text-red-600">{declinedCount}</span>
                 </div>
                 <span class="text-sm font-medium">{__("Declined", "productbird")}</span>
-                <span class="text-xs text-muted-foreground">{__("Not applied", "productbird")}</span>
               </div>
             </div>
           </Card.Content>
@@ -1023,7 +1047,7 @@
       </div>
 
       <Dialog.Footer>
-        <Button onclick={() => (open = false)}>{__("Close", "productbird")}</Button>
+        <Button onclick={() => (open = false)}>{__("Continue", "productbird")}</Button>
       </Dialog.Footer>
     {/if}
   </Dialog.Content>

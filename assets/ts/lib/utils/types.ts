@@ -17,12 +17,32 @@ export type ToolConfigEndpoint = {
 
 export type ToolId = "magic-descriptions";
 
+export type MagicDescriptionsMetaKeys = {
+	generation_status: string;
+	status_id: string;
+	error: string;
+	description_draft: string;
+	delivered: string;
+	declined: string;
+};
+
+export type ToolMetaKeys = {
+	"magic-descriptions": MagicDescriptionsMetaKeys;
+};
+
 export type ToolConfig<T extends ToolId> = {
 	id: T;
 	slug: string;
 	name: string;
 	description: string;
 	icon: string;
+	max_batch_size: number;
+	bulk_action_group_label: string;
+	shared_meta_keys: {
+		global_status: string;
+		last_updated: string;
+	};
+	meta_keys: ToolMetaKeys[T];
 	endpoints: Record<string, ToolConfigEndpoint>;
 };
 
@@ -92,3 +112,26 @@ export type MagicDescriptionsPreflightWpJsonResponse = {
 		status: "accepted" | "declined" | "pending" | "never_generated";
 	}[];
 };
+
+/**
+ * Global window obj.
+ */
+
+export interface GlobalAdminOidcData {
+	is_connected: boolean;
+	auth_url?: string;
+	disconnect_url?: string;
+	name?: string;
+}
+
+export interface GlobalAdminFeatureFlags {
+	oidc: boolean;
+}
+
+export interface GlobalAdminData {
+	admin_url: string;
+	app_url: string;
+	nonce: string;
+	settings_page_url: string;
+	api_root_url: string;
+}

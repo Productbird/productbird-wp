@@ -41,6 +41,7 @@
     <Card.Header>
       <Card.Title class="text-lg font-semibold">
         {sprintf(
+          // translators: %s is the user's display name or email
           __("Hello %s 👋", "productbird"),
           adminSettings?.current_user
             ? (adminSettings.current_user.display_name ?? adminSettings.current_user.email)

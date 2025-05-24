@@ -186,7 +186,12 @@ class OidcClient
     private function register_client()
     {
         $body = [
-            'name'          => sprintf('%s (%s)', wp_specialchars_decode(get_bloginfo('name')), home_url()),
+            'name'          => sprintf(
+                // translators: %s is the site name and %s is the site URL
+                __('%s (%s)', 'productbird'),
+                wp_specialchars_decode(get_bloginfo('name')),
+                home_url()
+            ),
             'redirect_uris' => [$this->get_redirect_uri()],
         ];
 
